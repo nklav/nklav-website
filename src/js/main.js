@@ -1,0 +1,8 @@
+import barba from '@barba/core'
+import { gsap } from 'gsap'
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Curtains, Plane } from 'curtainsjs'
+import Rellax from 'rellax'
+import Plyr from 'plyr'
+import main from '../css/main'

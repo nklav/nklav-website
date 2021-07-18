@@ -1,0 +1,6 @@
+node_modules
+dist
+assets
+plyr.css
+.DS_Store
+.parcel-cache
