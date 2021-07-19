@@ -1,1 +1,95 @@
 @import './plyr.css';
+
+:root {
+    --font: 'Helvetica Neue', Helvetica, 'Neue Haas Grotesk Text Pro', 'Arial Nova', Arial, sans-serif;
+    --primary-ui-color: hsl(0, 100%, 100%);
+    --display-color: hsl(0, 0%, 0%);
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+::selection,
+::-moz-selection {
+    background: hsla(0, 100%, 100%, 50%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font: 300 62.5% / 100% var(--font);
+
+    color: var(--primary-ui-color);
+    background: var(--display-color);
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    display: none;
+}
+
+.loader__progress_bar_container {
+    position: relative;
+
+    width: 150px;
+    height: 2px;
+}
+
+.loader__progress_bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 2px;
+    
+    background: var(--primary-ui-color);
+
+    transform: scaleX(100%);
+    transform-origin: left;
+
+    pointer-events: none;
+}
+
+.gradient {
+    position: fixed;
+    left: 0;
+    z-index: -1;
+
+    width: 100%;
+    height: 15vh;
+}
+
+.ceil {
+    top: 0;
+
+    background: linear-gradient(180deg, hsla(0, 0%, 0%, 100%) 0%, hsla(0, 0%, 0%, 0%) 100%);
+}
+
+.floor {
+    bottom: 0;
+
+    background: linear-gradient(180deg, hsla(0, 0%, 0%, 0%) 0%, hsla(0, 0%, 0%, 100%) 100%);
+}
