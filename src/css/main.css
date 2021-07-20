@@ -40,10 +40,6 @@ body {
     margin: 0;
 }
 
-main {
-    min-height: inherit;
-}
-
 .loader {
     position: absolute;
     top: 50%;
@@ -106,7 +102,7 @@ main {
     transform: translate(-50%, 0);
 }
 
-.menu__ui_element {
+.menu__inner_ui_fragment {
     width: 50px;
     height: 3px;
     margin: 10px 0;
