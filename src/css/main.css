@@ -3,7 +3,7 @@
 :root {
     --font: 'Helvetica Neue', Helvetica, 'Neue Haas Grotesk Text Pro', 'Arial Nova', Arial, sans-serif;
     --primary-ui-color: hsl(0, 100%, 100%);
-    --display-color: hsl(0, 0%, 0%);
+    --ui-display-color: hsl(0, 0%, 0%);
 }
 
 ::-webkit-scrollbar {
@@ -23,7 +23,7 @@ html {
     font: 300 62.5% / 100% var(--font);
 
     color: var(--primary-ui-color);
-    background: var(--display-color);
+    background: var(--ui-display-color);
 
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -38,6 +38,10 @@ html {
 body {
     min-height: 100vh;
     margin: 0;
+}
+
+main {
+    min-height: inherit;
 }
 
 .loader {
@@ -65,7 +69,7 @@ body {
     left: 0;
 
     width: 100%;
-    height: 2px;
+    height: 100%;
     
     background: var(--primary-ui-color);
 
@@ -112,6 +116,56 @@ body {
     background: var(--primary-ui-color);
 }
 
+.close {
+    position: fixed;
+    left: 50%;
+    bottom: 25px;
+
+    display: none;
+    width: calc(50px + 50px);
+    height: calc(37.4767px + 50px);
+    padding: 0 0 0 25px;
+
+    transform: translate(-50%, 0);
+}
+
+.close__inner_container {
+    position: relative;
+    top: 47.5%;
+
+    width: 50px;
+    height: 3px;
+}
+
+.close__inner_container:nth-child(1) {
+    transform: translateY(50%) rotate(45deg);
+}
+
+.close__inner_container:nth-child(2) {
+    transform: translateY(-50%) rotate(-45deg);
+}
+
+.close__inner_ui_fragment {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--primary-ui-color);
+
+    transform: scaleX(100%);
+}
+
+.close__inner_container:nth-child(1) > .close__inner_ui_fragment {
+    transform-origin: left;
+}
+
+.close__inner_container:nth-child(2) > .close__inner_ui_fragment {
+    transform-origin: right;
+}
+
 .gradient {
     position: fixed;
     left: 0;
@@ -144,7 +198,8 @@ body {
         top: 10px;
     }
 
-    .menu {
+    .menu,
+    .close {
         bottom: 10px;
     }
 }
@@ -160,12 +215,17 @@ body {
         transform: translateX(0);
     }
 
-    .menu {
+    .menu,
+    .close {
         top: 50%;
         left: unset;
         right: 25px;
 
         transform: translate(0, -50%);
+    }
+
+    .close__inner_container {
+        top: 46.5%;
     }
 }
 
@@ -175,7 +235,8 @@ body {
         left: 50px;
     }
 
-    .menu {
+    .menu,
+    .close {
         right: 50px;
     }
 }
