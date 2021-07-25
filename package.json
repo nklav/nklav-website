@@ -10,7 +10,6 @@
   "dependencies": {
     "@barba/core": "^2.9.7",
     "curtainsjs": "^8.1.2",
-    "gsap": "^3.7.1",
     "plyr": "^3.6.8",
     "rellax": "^1.12.1"
   },
