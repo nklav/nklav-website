@@ -2,5 +2,6 @@ node_modules
 dist
 assets
 plyr.css
+module.js
 .DS_Store
 .parcel-cache

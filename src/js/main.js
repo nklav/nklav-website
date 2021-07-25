@@ -2,9 +2,11 @@ import barba from '@barba/core'
 import { Curtains, Plane } from 'curtainsjs'
 import Rellax from 'rellax'
 import Plyr from 'plyr'
+
+import module from './module'
 import main from '../css/main'
 
-gsap.registerPlugin(ScrollToPlugin, ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger)
 
 let iteration = 0
 
@@ -87,7 +89,9 @@ const wrap = (iterationDelta, scrollPoint) => {
     scroller.update()
 }
 
-ScrollTrigger.addEventListener('scrollEnd', () => scrollPointOffset(scrub.vars.offset))
+ScrollTrigger.addEventListener('scrollEnd', () => {
+    scrollPointOffset(scrub.vars.offset)
+})
 
 function scrollPointOffset(offset) {
     let time = snap(offset)
