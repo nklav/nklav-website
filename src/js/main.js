@@ -10,7 +10,9 @@ gsap.registerPlugin(ScrollTrigger)
 
 let iteration = 0
 
-const VIDEOS = gsap.utils.toArray('.items__video_layer video')
+const scope = document.querySelector('.items__video_layer')
+
+const VIDEOS = gsap.utils.toArray('video', scope)
 
 const spacing = 1 / VIDEOS.length
 const snap = gsap.utils.snap(spacing)
@@ -58,8 +60,8 @@ const scrub = gsap.to(playhead, {
     onUpdate() {
         loop.time(loopTime(playhead.offset))
     },
-    duration: .5,
-    ease: 'power3',
+    duration: 1,
+    ease: 'slow',
     paused: true
 })
 
@@ -172,3 +174,25 @@ function createLoop(items, spacing, animation) {
 
     return sequenceLoop
 }
+
+const playOnSnap = () => {
+    const videoElements = document.getElementsByTagName('video')
+    const videoArray = [ ...videoElements ]
+
+    let i
+
+    for (i = 0; i < videoArray.length; i++) {
+        const video = videoArray[i];
+        const videoStyles = video.getAttribute('style')
+
+        if (videoStyles.includes('z-index: -100')) {
+            video.play()
+        }
+
+        if (!videoStyles.includes('z-index: -100')) {
+            video.pause()
+        }
+    }
+}
+
+gsap.ticker.add(playOnSnap)
