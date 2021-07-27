@@ -8,15 +8,11 @@ import main from '../css/main'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const scopes = {
-    videoLayerScope: document.querySelector('.video_layer__UTIL_CONTAINER')
-}
+let iteration = 0
 
-const ITEMS = {
-    VIDEOS: gsap.utils.toArray('video', scopes.videoLayerScope)
-}
+const VIDEOS = gsap.utils.toArray('.video_layer__UTIL_CONTAINER video')
 
-const spacing = 1 / ITEMS.VIDEOS.length
+const spacing = 1 / VIDEOS.length
 const snap = gsap.utils.snap(spacing)
 
 const videoLayerAnimation = video => {
@@ -49,10 +45,90 @@ const videoLayerAnimation = video => {
     return tl
 }
 
+const loop = createLoop(VIDEOS, spacing, videoLayerAnimation)
+
+const playhead = {
+    offset: 0
+}
+
+const loopTime = gsap.utils.wrap(0, loop.duration())
+
+const scrub = gsap.to(playhead, {
+    offset: 0,
+    onUpdate() {
+        loop.time(loopTime(playhead.offset))
+    },
+    duration: 1,
+    ease: 'slow',
+    paused: true
+})
+
+const scroller = ScrollTrigger.create({
+    start: 0,
+    onUpdate(self) {
+        let scrollSelf = self.scroll()
+
+        if (scrollSelf > self.end - 1) {
+            wrap(1, 1)
+        } else if (scrollSelf < 1 && self.direction < 0) {
+            wrap(-1, self.end - 1)
+        } else {
+            scrub.vars.offset = (iteration + self.progress) * loop.duration()
+            scrub.invalidate().restart()
+        }
+    },
+    end: '+=3000',
+    pin: '.video_layer'
+})
+
+const scrollProgress = progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end)
+
+const wrap = (iterationDelta, scrollPoint) => {
+    iteration += iterationDelta
+    scroller.scroll(scrollPoint)
+    scroller.update()
+}
+
+ScrollTrigger.addEventListener('scrollEnd', () => {
+    scrollPointOffset(scrub.vars.offset)
+})
+
+function scrollPointOffset(offset) {
+    let time = snap(offset)
+    let progress = (time - loop.duration() * iteration) / loop.duration()
+    let scroll = scrollProgress(progress)
+
+    if (progress >= 1 || progress < 0) {
+        return wrap(Math.floor(progress), scroll)
+    }
+    scroller.scroll(scroll)
+}
+
+window.addEventListener('keydown', e => {
+    const keyCodes = [
+        'Space',
+        'ArrowUp',
+        'ArrowDown'
+    ]
+
+    if (keyCodes.indexOf(e.code) > -1) {
+        e.preventDefault()
+    }
+
+    if (e.code === 'ArrowDown') {
+        scrollPointOffset(scrub.vars.offset + spacing)
+    }
+    
+    if (e.code === 'ArrowUp') {
+        scrollPointOffset(scrub.vars.offset - spacing)
+    }
+
+}, false)
+
 function createLoop(items, spacing, animation) {
     let overlap = Math.ceil(1 / spacing)
     let start = items.length * spacing + .5
-    let end = (items.length + overlap) * spacing + 1
+    let end = (items.length + overlap) * spacing + .5
 
     let sequence = gsap.timeline({
         paused: true
@@ -96,91 +172,6 @@ function createLoop(items, spacing, animation) {
 
     return sequenceLoop
 }
-
-const loops = {
-    videoLayerLoop: createLoop(ITEMS.VIDEOS, spacing, videoLayerAnimation)
-}
-
-const loopTime = gsap.utils.wrap(0, loops.videoLayerLoop.duration())
-
-let iteration = 0
-
-const playhead = {
-    offset: 0
-}
-
-const scrub = gsap.to(playhead, {
-    offset: 0,
-    onUpdate() {
-        loops.videoLayerLoop.time(loopTime(playhead.offset))
-    },
-    duration: 1,
-    ease: 'slow',
-    paused: true
-})
-
-const scroller = ScrollTrigger.create({
-    start: 0,
-    onUpdate(self) {
-        let scrollSelf = self.scroll()
-
-        if (scrollSelf > self.end - 1) {
-            wrap(1, 1)
-        } else if (scrollSelf < 1 && self.direction < 0) {
-            wrap(-1, self.end - 1)
-        } else {
-            scrub.vars.offset = (iteration + self.progress) * loops.videoLayerLoop.duration()
-            scrub.invalidate().restart()
-        }
-    },
-    end: '+=3000',
-    pin: '.video_layer'
-})
-
-const scrollProgress = progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end)
-
-const wrap = (iterationDelta, scrollPoint) => {
-    iteration += iterationDelta
-    scroller.scroll(scrollPoint)
-    scroller.update()
-}
-
-function scrollPointOffset(offset) {
-    let time = snap(offset)
-    let progress = (time - loops.videoLayerLoop.duration() * iteration) / loops.videoLayerLoop.duration()
-    let scroll = scrollProgress(progress)
-
-    if (progress >= 1 || progress < 0) {
-        return wrap(Math.floor(progress), scroll)
-    }
-    scroller.scroll(scroll)
-}
-
-ScrollTrigger.addEventListener('scrollEnd', () => {
-    scrollPointOffset(scrub.vars.offset)
-})
-
-window.addEventListener('keydown', e => {
-    const keyCodes = [
-        'Space',
-        'ArrowUp',
-        'ArrowDown'
-    ]
-
-    if (keyCodes.indexOf(e.code) > -1) {
-        e.preventDefault()
-    }
-
-    if (e.code === 'ArrowDown') {
-        scrollPointOffset(scrub.vars.offset + spacing)
-    }
-    
-    if (e.code === 'ArrowUp') {
-        scrollPointOffset(scrub.vars.offset - spacing)
-    }
-
-}, false)
-
 
 const videoElements = document.getElementsByTagName('video')
 const videoArray = [ ...videoElements ]
