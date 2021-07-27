@@ -237,22 +237,6 @@ a {
     pointer-events: none;
 }
 
-.video_layer__item:nth-child(1) {
-    border: 5px solid red;
-}
-
-.video_layer__item:nth-child(2) {
-    border: 5px solid blue;
-}
-
-.video_layer__item:nth-child(3) {
-    border: 5px solid green;
-}
-
-.video_layer__item:nth-child(4) {
-    border: 5px solid yellow;
-}
-
 @media (min-width: 360px) {
     .loader__progress_bar_container {
         width: 125px;
