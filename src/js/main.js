@@ -9,7 +9,7 @@ import main from '../css/main'
 gsap.registerPlugin(ScrollTrigger)
 
 const scopes = {
-    videoLayerScope: document.querySelector('.items__video_layer')
+    videoLayerScope: document.querySelector('.video_layer__UTIL_CONTAINER')
 }
 
 const ITEMS = {
@@ -134,7 +134,7 @@ const scroller = ScrollTrigger.create({
         }
     },
     end: '+=3000',
-    pin: '.items'
+    pin: '.video_layer'
 })
 
 const scrollProgress = progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end)
@@ -181,10 +181,11 @@ window.addEventListener('keydown', e => {
 
 }, false)
 
-const playOnSnap = () => {
-    const videoElements = document.getElementsByTagName('video')
-    const videoArray = [ ...videoElements ]
 
+const videoElements = document.getElementsByTagName('video')
+const videoArray = [ ...videoElements ]
+
+const playOnSnap = () => {
     let i
 
     for (i = 0; i < videoArray.length; i++) {
