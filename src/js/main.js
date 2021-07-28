@@ -1,12 +1,10 @@
 import barba from '@barba/core'
-import { Curtains, Plane } from 'curtainsjs'
+
 import Rellax from 'rellax'
 import Plyr from 'plyr'
 
 import module from './module'
 import main from '../css/main'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const createLoop = (items, spacing, animation) => {
     const overlap = Math.ceil(1 / spacing)
@@ -56,21 +54,14 @@ const createLoop = (items, spacing, animation) => {
     return sequenceLoop
 }
 
-const SCOPE = {
-    videoLayerScope: document.querySelector('.video_layer__container')
-}
-
 const ITEMS = {
-    VIDEOS: gsap.utils.toArray('.video_layer__item', SCOPE.videoLayerScope)
+    VIDEOS: gsap.utils.toArray('.scroll_layers__video'),
+    VIDEO_ID: gsap.utils.toArray('.scroll_layers__video_id')
 }
 
-const spacing = {
-    videoLayerSpacing: 1 / ITEMS.VIDEOS.length
-}
+const spacing = 1 / ITEMS.VIDEOS.length
 
-const snap = {
-    videoLayerSnap: gsap.utils.snap(spacing.videoLayerSpacing)
-}
+const snap = gsap.utils.snap(spacing)
 
 const animation = {
     videoLayerAnimation: video => {
@@ -101,11 +92,37 @@ const animation = {
         }, 0)
 
         return tl
+    },
+    videoIDLayerAnimation: id => {
+        const tl = gsap.timeline()
+
+        tl.fromTo(id, {
+            scale: .9
+        }, {
+            scale: 1,
+            duration: .5,
+            ease: 'power1.in',
+            repeat: 1,
+            yoyo: true,
+            immediateRender: false
+        })
+
+        .fromTo(id, {
+            yPercent: 300
+        }, {
+            yPercent: -300,
+            duration: 1,
+            ease: 'none',
+            immediateRender: false
+        }, 0)
+
+        return tl
     }
 }
 
 const loop = {
-    videoLayerLoop: createLoop(ITEMS.VIDEOS, spacing.videoLayerSpacing, animation.videoLayerAnimation)
+    videoLayerLoop: createLoop(ITEMS.VIDEOS, spacing, animation.videoLayerAnimation),
+    videoIDLayerLoop: createLoop(ITEMS.VIDEO_ID, spacing, animation.videoIDLayerAnimation)
 }
 
 let iteration = 0
@@ -114,67 +131,60 @@ const playhead = {
     offset: 0
 }
 
-const timeLoop = {
-    videoLayerTimeLoop: gsap.utils.wrap(0, loop.videoLayerLoop.duration())
-}
+const loopTime = gsap.utils.wrap(0, loop.videoLayerLoop.duration())
 
-const scrub = {
-    videoLayerScrub: gsap.to(playhead, {
-        offset: 0,
-        onUpdate() {
-            loop.videoLayerLoop.time(timeLoop.videoLayerTimeLoop(playhead.offset))
-        },
-        duration: 1,
-        ease: 'slow',
-        paused: true
-    })
-}
+const scrub = gsap.to(playhead, {
+    offset: 0,
+    onUpdate() {
+        loop.videoLayerLoop.time(loopTime(playhead.offset))
+        loop.videoIDLayerLoop.time(loopTime(playhead.offset))
+    },
+    duration: 1,
+    ease: 'slow',
+    paused: true
+})
 
-const scroller = {
-    videoLayerScroller: ScrollTrigger.create({
-        start: 0,
-        onUpdate(self) {
-            const scrollSelf = self.scroll()
+const scroller = ScrollTrigger.create({
+    start: 0,
+    onUpdate(self) {
+        const scrollSelf = self.scroll()
 
-            if (scrollSelf > self.end - 1) {
-                scrollMeters.videoLayerWrap(1, 1)
-            } else if (scrollSelf < 1 && self.direction < 0) {
-                scrollMeters.videoLayerWrap(-1, self.end - 1)
-            } else {
-                scrub.videoLayerScrub.vars.offset = (iteration + self.progress) * loop.videoLayerLoop.duration()
-                scrub.videoLayerScrub.invalidate().restart()
-            }
-        },
-        end: '+=3000',
-        pin: '.video_layer'
-    })
-}
+        if (scrollSelf > self.end - 1) {
+            scrollMeters.wrap(1, 1)
+        } else if (scrollSelf < 1 && self.direction < 0) {
+            scrollMeters.wrap(-1, self.end - 1)
+        } else {
+            scrub.vars.offset = (iteration + self.progress) * loop.videoLayerLoop.duration()
+            scrub.invalidate().restart()
+        }
+    },
+    end: '+=3000',
+    pin: '.scroll_layers'
+})
 
 const scrollMeters = {
-    videoLayerScrollProgress: progress => gsap.utils.clamp(1, scroller.videoLayerScroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.videoLayerScroller.end),
-    videoLayerWrap: (iterationDelta, scrollPoint) => {
+    scrollProgress: progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end),
+    wrap: (iterationDelta, scrollPoint) => {
         iteration += iterationDelta
-        scroller.videoLayerScroller.scroll(scrollPoint)
-        scroller.videoLayerScroller.update()
+        scroller.scroll(scrollPoint)
+        scroller.update()
     }
 }
 
-const scrollPointOffset = {
-    videoLayerOffset: offset => {
-        const time = snap.videoLayerSnap(offset)
-        const progress = (time - loop.videoLayerLoop.duration() * iteration) / loop.videoLayerLoop.duration()
-        const scroll = scrollMeters.videoLayerScrollProgress(progress)
-        
-        if (progress >= 1 || progress < 0) {
-            return scrollMeters.videoLayerWrap(Math.floor(progress), scroll)
-        }
-
-        scroller.videoLayerScroller.scroll(scroll)
+const scrollPointOffset = offset => {
+    const time = snap(offset)
+    const progress = (time - loop.videoLayerLoop.duration() * iteration) / loop.videoLayerLoop.duration()
+    const scroll = scrollMeters.scrollProgress(progress)
+    
+    if (progress >= 1 || progress < 0) {
+        return scrollMeters.wrap(Math.floor(progress), scroll)
     }
+
+    scroller.scroll(scroll)
 }
 
 ScrollTrigger.addEventListener('scrollEnd', () => {
-    scrollPointOffset.videoLayerOffset(scrub.videoLayerScrub.vars.offset)
+    scrollPointOffset(scrub.vars.offset)
 })
 
 window.addEventListener('keydown', e => {
@@ -189,16 +199,16 @@ window.addEventListener('keydown', e => {
     }
 
     if (e.code === 'ArrowDown') {
-        scrollPointOffset.videoLayerOffset(scrub.videoLayerScrub.vars.offset + spacing.videoLayerSpacing)
+        scrollPointOffset(scrub.vars.offset + spacing)
     }
     
     if (e.code === 'ArrowUp') {
-        scrollPointOffset.videoLayerOffset(scrub.videoLayerScrub.vars.offset - spacing.videoLayerSpacing)
+        scrollPointOffset(scrub.vars.offset - spacing)
     }
 
 }, false)
 
-const videoElements = document.getElementsByClassName('video_layer__item')
+const videoElements = document.getElementsByClassName('scroll_layers__video')
 const videoArray = [ ...videoElements ]
 
 const playOnSnap = () => {
