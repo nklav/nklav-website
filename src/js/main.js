@@ -9,15 +9,15 @@ import main from '../css/main'
 gsap.registerPlugin(ScrollTrigger)
 
 const createLoop = (items, spacing, animation) => {
-    let overlap = Math.ceil(1 / spacing)
-    let start = items.length * spacing + .5
-    let end = (items.length + overlap) * spacing + .5
+    const overlap = Math.ceil(1 / spacing)
+    const start = items.length * spacing + .5
+    const end = (items.length + overlap) * spacing + .5
 
-    let sequence = gsap.timeline({
+    const sequence = gsap.timeline({
         paused: true
     })
 
-    let sequenceLoop = gsap.timeline({
+    const sequenceLoop = gsap.timeline({
         paused: true,
         repeat: -1,
         onRepeat() {
@@ -25,7 +25,7 @@ const createLoop = (items, spacing, animation) => {
         }
     })
 
-    let l = items.length + overlap * 2
+    const l = items.length + overlap * 2
 
     let i, index, time
 
@@ -57,7 +57,7 @@ const createLoop = (items, spacing, animation) => {
 }
 
 const SCOPE = {
-    videoLayerScope: document.querySelector('.video_layer__UTIL_CONTAINER')
+    videoLayerScope: document.querySelector('.video_layer__container')
 }
 
 const ITEMS = {
@@ -134,7 +134,7 @@ const scroller = {
     videoLayerScroller: ScrollTrigger.create({
         start: 0,
         onUpdate(self) {
-            let scrollSelf = self.scroll()
+            const scrollSelf = self.scroll()
 
             if (scrollSelf > self.end - 1) {
                 scrollMeters.videoLayerWrap(1, 1)
@@ -161,9 +161,9 @@ const scrollMeters = {
 
 const scrollPointOffset = {
     videoLayerOffset: offset => {
-        let time = snap.videoLayerSnap(offset)
-        let progress = (time - loop.videoLayerLoop.duration() * iteration) / loop.videoLayerLoop.duration()
-        let scroll = scrollMeters.videoLayerScrollProgress(progress)
+        const time = snap.videoLayerSnap(offset)
+        const progress = (time - loop.videoLayerLoop.duration() * iteration) / loop.videoLayerLoop.duration()
+        const scroll = scrollMeters.videoLayerScrollProgress(progress)
         
         if (progress >= 1 || progress < 0) {
             return scrollMeters.videoLayerWrap(Math.floor(progress), scroll)
@@ -198,7 +198,7 @@ window.addEventListener('keydown', e => {
 
 }, false)
 
-const videoElements = document.getElementsByTagName('video')
+const videoElements = document.getElementsByClassName('video_layer__item')
 const videoArray = [ ...videoElements ]
 
 const playOnSnap = () => {
