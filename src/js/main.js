@@ -97,7 +97,7 @@ const animation = {
         const tl = gsap.timeline()
 
         tl.fromTo(id, {
-            scale: .9
+            scale: 1
         }, {
             scale: 1,
             duration: .5,
@@ -108,9 +108,11 @@ const animation = {
         })
 
         .fromTo(id, {
-            yPercent: 300
+            yPercent: 300,
+            clipPath: 'inset(-500% 0px 500% -100%)'
         }, {
             yPercent: -300,
+            clipPath: 'inset(500% 0px -500% -100%)',
             duration: 1,
             ease: 'none',
             immediateRender: false
