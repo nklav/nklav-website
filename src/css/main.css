@@ -182,6 +182,20 @@ a {
     transform-origin: right;
 }
 
+.scroll_hint {
+    position: fixed;
+    left: 50%;
+    bottom: 50px;
+    z-index: 2;
+
+    display: none;
+
+    font: 300 1.8rem var(--font);
+    font-stretch: 110%;
+
+    transform: translateX(-50%);
+}
+
 .gradient {
     position: fixed;
     z-index: 1;
@@ -283,6 +297,10 @@ a {
     
     .menu--close__container {
         top: 46.5%;
+    }
+
+    .scroll_hint {
+        display: inline;
     }
 
     .scroll_layers__video_layer {
