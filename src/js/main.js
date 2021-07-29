@@ -1,7 +1,7 @@
 import barba from '@barba/core'
 
-import Rellax from 'rellax'
 import Plyr from 'plyr'
+import Rellax from 'rellax'
 
 import module from './module'
 import main from '../css/main'
@@ -231,3 +231,34 @@ const playOnSnap = () => {
 }
 
 gsap.ticker.add(playOnSnap)
+
+const mediaQuery = window.matchMedia('(min-width: 1280px)')
+
+const parallax = e => {
+
+    if (mediaQuery.matches) {
+        gsap.to('.scroll_layers__video', {
+            x: e.clientX * .01,
+            y: e.clientY * .01
+        })
+
+        gsap.to('.scroll_layers__video_id', {
+            x: e.clientX * -.03,
+            y: e.clientY * -.03
+        })
+    }
+
+    if (!mediaQuery.matches) {
+        gsap.set('.scroll_layers__video', {
+            x: '',
+            y: ''
+        })
+        
+        gsap.set('.scroll_layers__video_id', {
+            x: '',
+            y: ''
+        })
+    }
+}
+
+document.addEventListener('mousemove', parallax)
