@@ -182,7 +182,7 @@ a {
     transform-origin: right;
 }
 
-.scroll_hint {
+.scroll_index {
     position: fixed;
     left: 50%;
     bottom: 50px;
@@ -190,10 +190,13 @@ a {
 
     display: none;
 
-    font: 300 1.8rem var(--font);
+    font: 100 1.8rem var(--font);
     font-stretch: 110%;
+    letter-spacing: 10px;
 
     transform: translateX(-50%);
+
+    user-select: none;
 }
 
 .gradient {
@@ -299,7 +302,7 @@ a {
         top: 46.5%;
     }
 
-    .scroll_hint {
+    .scroll_index {
         display: inline;
     }
 

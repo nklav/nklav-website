@@ -109,10 +109,10 @@ const animation = {
 
         .fromTo(id, {
             yPercent: 300,
-            clipPath: 'inset(-500% 0px 500% -100%)'
+            clipPath: 'inset(-500% 0 500% -100%)'
         }, {
             yPercent: -300,
-            clipPath: 'inset(500% 0px -500% -100%)',
+            clipPath: 'inset(500% 0 -500% -100%)',
             duration: 1,
             ease: 'none',
             immediateRender: false
@@ -213,15 +213,21 @@ window.addEventListener('keydown', e => {
 const videoElements = document.getElementsByClassName('scroll_layers__video')
 const videoArray = [ ...videoElements ]
 
-const playOnSnap = () => {
+const scrollIndexNumber = document.querySelector('.scroll_index__number')
+
+const updateElementState = () => {
     let i
 
     for (i = 0; i < videoArray.length; i++) {
-        const video = videoArray[i];
+        const video = videoArray[i]
         const videoStyles = video.getAttribute('style')
 
-        if (videoStyles.includes('z-index: -100')) {
+        const videoData = video.dataset.index
+        const videoDataValues = [ ...videoData ]
+
+        if (videoDataValues.length > -1 && videoStyles.includes('z-index: -100')) {
             video.play()
+            scrollIndexNumber.innerHTML = videoData
         }
 
         if (!videoStyles.includes('z-index: -100')) {
@@ -230,12 +236,11 @@ const playOnSnap = () => {
     }
 }
 
-gsap.ticker.add(playOnSnap)
+gsap.ticker.add(updateElementState)
 
 const mediaQuery = window.matchMedia('(min-width: 1280px)')
 
 const parallax = e => {
-
     if (mediaQuery.matches) {
         gsap.to('.scroll_layers__video', {
             x: e.clientX * .01,
