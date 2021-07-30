@@ -3,7 +3,7 @@ import barba from '@barba/core'
 import Plyr from 'plyr'
 import Rellax from 'rellax'
 
-import module from './module'
+import module, { ScrollTrigger } from './module'
 import main from '../css/main'
 
 const createLoop = (items, spacing, animation) => {
@@ -214,6 +214,7 @@ const videoElements = document.getElementsByClassName('scroll_layers__video')
 const videoArray = [ ...videoElements ]
 
 const scrollIndexNumber = document.querySelector('.scroll_index__number')
+const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
 
 const updateElementState = () => {
     let i
@@ -228,6 +229,7 @@ const updateElementState = () => {
         if (videoDataValues.length > -1 && videoStyles.includes('z-index: -100')) {
             video.play()
             scrollIndexNumber.innerHTML = videoData
+            scrollIndicatorIndex.innerHTML = videoData
         }
 
         if (!videoStyles.includes('z-index: -100')) {
@@ -238,7 +240,7 @@ const updateElementState = () => {
 
 gsap.ticker.add(updateElementState)
 
-const mediaQuery = window.matchMedia('(min-width: 1280px)')
+const mediaQuery = window.matchMedia('(min-width: 1025px)')
 
 const parallax = e => {
     if (mediaQuery.matches) {
@@ -267,3 +269,14 @@ const parallax = e => {
 }
 
 document.addEventListener('mousemove', parallax)
+
+const scrollIndicator = document.querySelector('.scroll_indicator')
+
+const scrollSync = gsap.to(scrollIndicator, {
+    rotation: 360
+})
+
+ScrollTrigger.create({
+    animation: scrollSync,
+    scrub: 1
+})

@@ -112,6 +112,34 @@ a {
     fill: var(--primary-ui-color);
 }
 
+.scroll_indicator,
+.scroll_indicator_index {
+    position: fixed;
+    bottom: 20vh;
+    right: 40px;
+    z-index: 2;
+    
+    display: none;
+    
+    width: 50px;
+    height: 50px;
+}
+
+.scroll_indicator {
+    border: 2px solid hsla(0, 100%, 100%, 10%);
+    border-radius: 50%;
+    border-top: 2px solid var(--primary-ui-color);
+}
+
+.scroll_indicator_index {
+    font: 100 1.8rem var(--font);
+    font-stretch: 110%;
+    text-align: center;
+    line-height: 50px;
+
+    user-select: none;
+}
+
 .menu {
     position: fixed;
     left: 50%;
@@ -199,6 +227,10 @@ a {
     user-select: none;
 }
 
+.scroll_index > .scroll_index__number + span {
+    letter-spacing: 0;
+}
+
 .gradient {
     position: fixed;
     z-index: 1;
@@ -273,9 +305,26 @@ a {
     height: 30vw;
 }
 
+@media (min-width: 320px) {
+    .scroll_indicator,
+    .scroll_indicator_index {
+        display: block;
+    }
+}
+
 @media (min-width: 360px) {
     .loader__progress_bar_container {
         width: 125px;
+    }
+
+    .scroll_indicator,
+    .scroll_indicator_index {
+        width: 75px;
+        height: 75px;
+    }
+
+    .scroll_indicator_index {
+        line-height: 75px;
     }
 }
 
@@ -285,15 +334,29 @@ a {
     }
     
     .to_home {
-        left: 25px;
+        top: 50px;
+        left: 50px;
         
         transform: translateX(0);
+    }
+
+    .scroll_indicator {
+        top: 50px;
+        bottom: unset;
+        right: 50px;
+
+        width: 100px;
+        height: 100px;
+    }
+
+    .scroll_indicator_index {
+        display: none;
     }
     
     .menu {
         top: 50%;
         left: unset;
-        right: 25px;
+        right: 50px;
         
         transform: translate(0, -50%);
     }
@@ -333,15 +396,6 @@ a {
 }
 
 @media (min-width: 1024px) {
-    .to_home {
-        top: 50px;
-        left: 50px;
-    }
-    
-    .menu {
-        right: 50px;
-    }
-
     .scroll_layers__video_layer {
         perspective: 3000px;
     }
@@ -381,9 +435,26 @@ a {
     }
 }
 
+@media (orientation: landscape) and (max-width: 568px) {
+    .scroll_indicator,
+    .scroll_indicator_index {
+        width: 50px;
+        height: 50px;
+    }
+
+    .scroll_indicator_index {
+        line-height: 50px;
+    }
+}
+
 @media (orientation: landscape) and (max-width: 740px) {
     .to_home {
         top: 5px;
+    }
+
+    .scroll_indicator,
+    .scroll_indicator_index {
+        bottom: 40vh;
     }
 
     .menu {
