@@ -3,7 +3,7 @@ import barba from '@barba/core'
 import Plyr from 'plyr'
 import Rellax from 'rellax'
 
-import module, { ScrollTrigger } from './module'
+import module from './module'
 import main from '../css/main'
 
 const createLoop = (items, spacing, animation) => {
@@ -280,3 +280,55 @@ ScrollTrigger.create({
     animation: scrollSync,
     scrub: 1
 })
+
+const menuOpen = document.querySelector('.menu--open')
+const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
+
+const menuClose = document.querySelector('.menu--close')
+const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
+
+const menuAnimation = menuStateFragments => {
+    const tl = gsap.timeline({
+        repeat: -1,
+        repeatDelay: 6
+    })
+
+    tl.set(menuStateFragments, {
+        transformOrigin: 'right'
+    })
+
+    .to(menuStateFragments, {
+        scaleX: 0,
+        duration: .3,
+        ease: 'power2.out',
+        stagger: .2
+    })
+    
+    .set(menuStateFragments, {
+        transformOrigin: 'left'
+    })
+    
+    .to(menuStateFragments, {
+        scaleX: 1,
+        duration: .3,
+        ease: 'power2.out',
+        stagger: .2
+    })
+
+    return tl
+}
+
+const menuOpenAnimation = menuAnimation(menuOpenUIFragments)
+const menuCloseAnimation = menuAnimation(menuCloseUIFragments)
+
+const restartMenuOpenAnimation = () => menuOpenAnimation.restart().timeScale(1.5)
+const resetMenuOpenTimeScale = () => menuOpenAnimation.timeScale(1)
+
+const restartMenuCloseAnimation = () => menuCloseAnimation.restart().timeScale(1.5)
+const resetMenuCloseTimeScale = () => menuCloseAnimation.timeScale(1)
+
+menuOpen.addEventListener('mouseenter', restartMenuOpenAnimation)
+menuOpen.addEventListener('mouseleave', resetMenuOpenTimeScale)
+
+menuClose.addEventListener('mouseenter', restartMenuCloseAnimation)
+menuClose.addEventListener('mouseleave', resetMenuCloseTimeScale)
