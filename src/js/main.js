@@ -3,7 +3,7 @@ import barba from '@barba/core'
 import Plyr from 'plyr'
 import Rellax from 'rellax'
 
-import module from './module'
+import bundle from './bundle'
 import main from '../css/main'
 
 const createLoop = (items, spacing, animation) => {
