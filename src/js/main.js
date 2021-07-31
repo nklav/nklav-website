@@ -240,32 +240,16 @@ const updateElementState = () => {
 
 gsap.ticker.add(updateElementState)
 
-const mediaQuery = window.matchMedia('(min-width: 1025px)')
-
 const parallax = e => {
-    if (mediaQuery.matches) {
-        gsap.to('.scroll_layers__video', {
-            x: e.clientX * .01,
-            y: e.clientY * .01
-        })
+    gsap.to('.scroll_layers__video', {
+        x: e.clientX * .01,
+        y: e.clientY * .01
+    })
 
-        gsap.to('.scroll_layers__video_id', {
-            x: e.clientX * -.03,
-            y: e.clientY * -.03
-        })
-    }
-
-    if (!mediaQuery.matches) {
-        gsap.set('.scroll_layers__video', {
-            x: '',
-            y: ''
-        })
-        
-        gsap.set('.scroll_layers__video_id', {
-            x: '',
-            y: ''
-        })
-    }
+    gsap.to('.scroll_layers__video_id', {
+        x: e.clientX * -.03,
+        y: e.clientY * -.03
+    })
 }
 
 document.addEventListener('mousemove', parallax)

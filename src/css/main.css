@@ -9,8 +9,25 @@
     src: url('../assets/font/archivo.woff2') format('woff2');
 }
 
+@font-face {
+    font-family: 'Archivo-Light';
+    font-style: normal;
+    font-weight: 100;
+    font-stretch: 100%;
+    font-display: block;
+    src: url('../assets/font/archivo-light.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Archivo-Bold';
+    font-style: normal;
+    font-weight: 900;
+    font-stretch: 125%;
+    font-display: block;
+    src: url('../assets/font/archivo-bold.woff') format('woff');
+}
+
 :root {
-    --font: 'Archivo', sans-serif;
     --primary-ui-color: hsl(0, 100%, 100%);
     --ui-display-color: hsl(0, 0%, 0%);
 }
@@ -132,7 +149,7 @@ a {
 }
 
 .scroll_indicator_index {
-    font: 100 1.8rem var(--font);
+    font: 100 1.8rem 'Archivo', 'Archivo-Light', sans-serif;
     font-stretch: 110%;
     text-align: center;
     line-height: 50px;
@@ -216,7 +233,7 @@ a {
 
     display: none;
 
-    font: 100 1.8rem var(--font);
+    font: 100 1.8rem 'Archivo', 'Archivo-Light', sans-serif;
     font-stretch: 110%;
     letter-spacing: 10px;
 
@@ -275,6 +292,8 @@ a {
     width: 100%;
     height: auto;
 
+    opacity: .8;
+
     pointer-events: none;
 }
 
@@ -289,7 +308,8 @@ a {
     height: 100%;
     margin: 0;
 
-    font: 900 ultra-expanded 15vw var(--font);
+    font: 900 15vw 'Archivo', 'Archivo-Bold', sans-serif;
+    font-stretch: 125%;
 }
 
 .scroll_layers__video_id > a {
