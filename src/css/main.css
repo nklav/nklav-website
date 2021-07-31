@@ -308,8 +308,9 @@ a {
     height: 100%;
     margin: 0;
 
-    font: 900 15vw 'Archivo', 'Archivo-Bold', sans-serif;
+    font: 900 12vw 'Archivo', 'Archivo-Bold', sans-serif;
     font-stretch: 125%;
+    line-height: 100%;
 }
 
 .scroll_layers__video_id > a {
@@ -321,6 +322,8 @@ a {
 
     width: inherit;
     height: 30vw;
+
+    white-space: nowrap;
 }
 
 @media (min-width: 320px) {

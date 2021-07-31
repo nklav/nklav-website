@@ -88,6 +88,7 @@ const animation = {
             rotationX: '100px',
             duration: 1,
             ease: 'none',
+            reversed: true,
             immediateRender: false
         }, 0)
 
@@ -109,12 +110,13 @@ const animation = {
 
         .fromTo(id, {
             yPercent: 300,
-            clipPath: 'inset(-500% 0 500% -100%)'
+            clipPath: 'inset(-500% -100% 500% -100%)'
         }, {
             yPercent: -300,
-            clipPath: 'inset(500% 0 -500% -100%)',
+            clipPath: 'inset(500% -100% -500% -100%)',
             duration: 1,
             ease: 'none',
+            reversed: true,
             immediateRender: false
         }, 0)
 
