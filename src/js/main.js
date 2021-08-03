@@ -187,21 +187,23 @@ const scrollPointOffset = offset => {
     scroller.scroll(scroll)
 }
 
-ScrollTrigger.addEventListener('scrollEnd', () => {
+const scrollSnap = () => {
     scrollPointOffset(scrub.vars.offset)
-})
+}
 
-window.addEventListener('keydown', e => {
+ScrollTrigger.addEventListener('scrollEnd', scrollSnap)
+
+const keyScroll = e => {
     const keyCodes = [
         'Space',
         'ArrowUp',
         'ArrowDown'
     ]
-
+    
     if (keyCodes.indexOf(e.code) > -1) {
         e.preventDefault()
     }
-
+    
     if (e.code === 'ArrowDown') {
         scrollPointOffset(scrub.vars.offset + spacing)
     }
@@ -209,8 +211,9 @@ window.addEventListener('keydown', e => {
     if (e.code === 'ArrowUp') {
         scrollPointOffset(scrub.vars.offset - spacing)
     }
+}
 
-}, false)
+window.addEventListener('keydown', keyScroll, false)
 
 const videoElements = document.getElementsByClassName('scroll_layers__video')
 const videoArray = [ ...videoElements ]
@@ -243,14 +246,10 @@ const updateElementState = () => {
 gsap.ticker.add(updateElementState)
 
 const parallax = e => {
-    gsap.to('.scroll_layers__video', {
-        x: e.clientX * .01,
-        y: e.clientY * .01
-    })
-
     gsap.to('.scroll_layers__video_id', {
-        x: e.clientX * -.03,
-        y: e.clientY * -.03
+        x: e.clientX / 20 * -1,
+        y: e.clientY / 20 * -1,
+        duration: 1
     })
 }
 
@@ -318,3 +317,16 @@ menuOpen.addEventListener('mouseleave', resetMenuOpenTimeScale)
 
 menuClose.addEventListener('mouseenter', restartMenuCloseAnimation)
 menuClose.addEventListener('mouseleave', resetMenuCloseTimeScale)
+
+// Debugging
+document.addEventListener('dblclick', () => {
+    loop.videoLayerLoop.kill()
+    loop.videoIDLayerLoop.kill()
+
+    scrub.kill()
+    scroller.kill()
+
+    ScrollTrigger.removeEventListener('scrollEnd', scrollSnap)
+    window.removeEventListener('keydown', keyScroll)
+    document.removeEventListener('mousemove', parallax)
+})
