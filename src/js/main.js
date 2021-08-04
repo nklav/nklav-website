@@ -1,9 +1,7 @@
 import barba from '@barba/core'
-
 import Plyr from 'plyr'
-import Rellax from 'rellax'
 
-import bundle, {Curtains, Plane} from './bundle'
+import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
 const createLoop = (items, spacing, animation) => {
@@ -377,8 +375,6 @@ const init = new Curtains({
 
 gsap.ticker.add(init.render.bind(init))
 
-const planes = []
-
 const planeElements = document.getElementsByClassName('_gl__plane')
 
 const config = {
@@ -394,6 +390,8 @@ const config = {
         }
     }
 }
+
+const planes = []
 
 const renderPlanes = index => {
     const plane = planes[index]
