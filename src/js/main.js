@@ -3,7 +3,7 @@ import barba from '@barba/core'
 import Plyr from 'plyr'
 import Rellax from 'rellax'
 
-import bundle from './bundle'
+import bundle, {Curtains, Plane} from './bundle'
 import main from '../css/main'
 
 const createLoop = (items, spacing, animation) => {
@@ -330,3 +330,84 @@ document.addEventListener('dblclick', () => {
     window.removeEventListener('keydown', keyScroll)
     document.removeEventListener('mousemove', parallax)
 })
+
+const vertexShader = `
+precision mediump float;
+
+attribute vec3 aVertexPosition;
+attribute vec2 aTextureCoord;
+
+uniform mat4 uMVMatrix;
+uniform mat4 uPMatrix;
+
+varying vec3 vVertexPosition;
+varying vec2 vTextureCoord;
+
+uniform float uTime;
+
+void main() {
+    vec3 vertexPosition = aVertexPosition;
+
+    vertexPosition.z = sin(vertexPosition.x * 3.141592 + uTime * 0.0375) * 0.02;
+
+    gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
+
+    vTextureCoord = aTextureCoord;
+    vVertexPosition = vertexPosition;
+}
+`
+
+const fragmentShader = `
+precision mediump float;
+
+varying vec3 vVertexPosition;
+varying vec2 vTextureCoord;
+
+uniform sampler2D uSampler0;
+
+void main() {
+    gl_FragColor = texture2D(uSampler0, vTextureCoord);
+}
+`
+
+const init = new Curtains({
+    container: '_gl__c',
+    autoRender: false
+})
+
+gsap.ticker.add(init.render.bind(init))
+
+const planes = []
+
+const planeElements = document.getElementsByClassName('_gl__plane')
+
+const config = {
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader,
+    widthSegments: 30,
+    heightSegments: 30,
+    uniforms: {
+        time: {
+            name: 'uTime',
+            type: '1f',
+            value: 0
+        }
+    }
+}
+
+const renderPlanes = index => {
+    const plane = planes[index]
+
+    plane.onRender(() => {
+        plane.playVideos()
+        plane.uniforms.time.value++
+    })
+}
+
+for (let i = 0; i < planeElements.length; i++) {
+    const plane = new Plane(init, planeElements[i], config)
+
+    planes.push(plane)
+
+    renderPlanes(i)
+}
