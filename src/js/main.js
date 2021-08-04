@@ -371,7 +371,7 @@ void main() {
 `
 
 const init = new Curtains({
-    container: '_gl__c',
+    container: 'c',
     autoRender: false
 })
 

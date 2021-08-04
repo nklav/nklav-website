@@ -439,7 +439,7 @@ a {
     margin: 20px 0 20px 0;
 }
 
-#_gl__c {
+#c {
     position: fixed;
     top: 0;
     left: 0;
@@ -461,14 +461,19 @@ a {
 }
 
 ._gl__plane {
-    display: inline-block;
-
     width: 180px;
     height: 101.25px;
 }
 
 ._gl__plane video {
     display: none;
+}
+
+._gl__id {
+    margin: 20px 0 0 10px;
+
+    font: 100 2.4rem 'Archivo', 'Archivo-Thin', sans-serif;
+    font-stretch: 112.5%;
 }
 
 @media (min-width: 320px) {
@@ -680,6 +685,12 @@ a {
     ._gl {
         gap: 150px 100px;
     }
+
+    ._gl__id {
+        margin: 40px 0 0 20px;
+
+        font-size: 3.6rem;
+    }
 }
 
 @media (min-width: 1440px) {
@@ -693,7 +704,7 @@ a {
 
     ._gl {
         grid-template-columns: repeat(2, 480px);
-        gap: 150px 150px;
+        gap: 150px;
     }
 
     ._gl__plane {
