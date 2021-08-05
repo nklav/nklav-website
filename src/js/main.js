@@ -329,6 +329,31 @@ document.addEventListener('dblclick', () => {
     document.removeEventListener('mousemove', parallax)
 })
 
+const toSelf = document.querySelector('.works_page_as_menu__to_self')
+
+const scrollToGL = () => {
+    const tl = gsap.timeline()
+
+    .to(window, {
+        scrollTo: {
+            y: '#_gl_scroll',
+            offsetY: 250
+        },
+        duration: 2,
+        ease: 'power4.inOut'
+    })
+
+    .from('._gl_container', {
+        autoAlpha: 0,
+        duration: .5,
+        ease: 'slow'
+    }, '-=1')
+
+    return tl
+}
+
+toSelf.addEventListener('click', scrollToGL)
+
 const vertexShader = `
 precision mediump float;
 

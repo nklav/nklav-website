@@ -29,7 +29,6 @@
 
 :root {
     --primary-ui-color: hsl(0, 100%, 100%);
-    --ui-display-color: hsl(0, 0%, 0%);
 }
 
 ::-webkit-scrollbar {
@@ -52,7 +51,7 @@ html {
     font-size: 62.5%;
 
     color: var(--primary-ui-color);
-    background: var(--ui-display-color);
+    background: hsl(0, 0%, 0%);
 
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -369,7 +368,7 @@ a {
     -webkit-text-stroke: 1px hsl(0, 0%, 20%);
 }
 
-.to_self {
+.works_page_as_menu__to_self {
     cursor: pointer;
 }
 
@@ -418,7 +417,11 @@ a {
 .works_page_as_menu__to_home {
     display: inline-block;
 
-    height: 24px;
+    width: calc(48px + 50px);
+    height: calc(24px + 50px);
+    padding: 25px 0 0 25px;
+
+    transform: translateX(-25px);
 }
 
 .works_page_as_menu__logo {
@@ -436,7 +439,7 @@ a {
 
 .works_page_as_menu__about {
     width: 190px;
-    margin: 20px 0 20px 0;
+    margin: 5px 0 20px 0;
 }
 
 #c {
@@ -450,14 +453,14 @@ a {
 }
 
 ._gl_container {
-    margin: 50vh 0 300px 0;
+    margin: 500px 0 300px 0;
 }
 
 ._gl {
     display: grid;
     grid-template-columns: 180px;
     justify-content: center;
-    gap: 150px 0;
+    gap: 100px 0;
 }
 
 ._gl__to_this {
@@ -620,7 +623,7 @@ a {
     }
 
     .works_page_as_menu__about {
-        margin: 30px 0 20px 0;
+        margin: 10px 0 20px 0;
     }
 
     ._gl {
