@@ -394,7 +394,7 @@ void main() {
 `
 
 const init = new Curtains({
-    container: 'c',
+    container: '_c',
     autoRender: false
 })
 
