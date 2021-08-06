@@ -1,8 +1,11 @@
 import barba from '@barba/core'
 import Plyr from 'plyr'
 
-import bundle, { Curtains, Plane } from './bundle'
+import bundle, { ScrollTrigger, Curtains, Plane } from './bundle'
 import main from '../css/main'
+
+gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollToPlugin)
 
 const createLoop = (items, spacing, animation) => {
     const overlap = Math.ceil(1 / spacing)
@@ -330,6 +333,7 @@ document.addEventListener('dblclick', () => {
 })
 
 const toSelf = document.querySelector('.works_page_as_menu__to_self')
+const toSelfBack = document.querySelector('.to_self_back')
 
 const scrollToGL = () => {
     const tl = gsap.timeline()
@@ -337,7 +341,7 @@ const scrollToGL = () => {
     .to(window, {
         scrollTo: {
             y: '#_gl_scroll',
-            offsetY: 250
+            offsetY: 300
         },
         duration: 2,
         ease: 'power4.inOut'
@@ -352,7 +356,21 @@ const scrollToGL = () => {
     return tl
 }
 
+const scrollTop = () => {
+    gsap.to(window, {
+        scrollTo: {
+            y: '#_top'
+        },
+        duration: 1,
+        ease: 'power4.inOut'
+    })
+}
+
 toSelf.addEventListener('click', scrollToGL)
+toSelf.addEventListener('touchend', scrollToGL)
+
+toSelfBack.addEventListener('click', scrollTop)
+toSelfBack.addEventListener('touchend', scrollTop)
 
 const vertexShader = `
 precision mediump float;
