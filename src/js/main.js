@@ -332,6 +332,79 @@ document.addEventListener('dblclick', () => {
     document.removeEventListener('mousemove', parallax)
 })
 
+const show = document.querySelector('.page_transition_content__show_info')
+const hide = document.querySelector('.mobi_toggle_state_content__hide_info')
+
+const heading = document.querySelector('.page_transition_content__heading_container')
+const mobileContainer = document.querySelector('.page_transition_content__mobi_container')
+const mobileContent = document.querySelector('.mobi_toggle_state_content')
+const mobileUIFragments = document.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
+
+const showInfo = gsap.timeline({
+    paused: true
+})
+
+showInfo.to(heading, {
+    opacity: 0
+})
+
+.to(mobileContainer, {
+    opacity: 0
+}, '-=.5')
+
+.set(heading, {
+    display: 'none',
+    pointerEvents: 'none'
+})
+
+.set(mobileContainer, {
+    display: 'none',
+    pointerEvents: 'none'
+})
+
+.set(mobileContent, {
+    display: 'block',
+    pointerEvents: 'auto'
+})
+
+.fromTo(mobileContent, {
+    opacity: 0
+}, {
+    opacity: 1
+})
+
+.to(mobileUIFragments, {
+    scaleX: '100%',
+    duration: .3,
+    stagger: .2
+})
+
+show.addEventListener('click', () => {
+    showInfo.play()
+})
+
+show.addEventListener('touchend', () => {
+    showInfo.play()
+})
+
+hide.addEventListener('click', () => {
+    showInfo.reverse()
+})
+
+hide.addEventListener('touchend', () => {
+    showInfo.reverse()
+})
+
+const monitorWindow = () => {
+    let width = window.innerWidth
+
+    if (width >= 1024) {
+        showInfo.restart().pause()
+    }
+}
+
+gsap.ticker.add(monitorWindow)
+
 const toSelf = document.querySelector('.works_page_as_menu__to_self')
 const toSelfBack = document.querySelector('.to_self_back')
 
