@@ -1,11 +1,8 @@
 import barba from '@barba/core'
 import Plyr from 'plyr'
 
-import bundle, { ScrollTrigger, Curtains, Plane } from './bundle'
+import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
-
-gsap.registerPlugin(ScrollTrigger)
-gsap.registerPlugin(ScrollToPlugin)
 
 const createLoop = (items, spacing, animation) => {
     const overlap = Math.ceil(1 / spacing)
@@ -339,6 +336,7 @@ const heading = document.querySelector('.page_transition_content__heading_contai
 const mobileContainer = document.querySelector('.page_transition_content__mobi_container')
 const mobileContent = document.querySelector('.mobi_toggle_state_content')
 const mobileUIFragments = document.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
+const mobileShareIcons = document.querySelectorAll('.mobi_toggle_state_content .page_transition_content__icon')
 
 const showInfo = gsap.timeline({
     paused: true
@@ -378,6 +376,13 @@ showInfo.to(heading, {
     duration: .3,
     stagger: .2
 })
+
+.from(mobileShareIcons, {
+    scale: 0,
+    duration: .5,
+    ease: 'back',
+    stagger: .3
+}, '-=.5')
 
 show.addEventListener('click', () => {
     showInfo.play()

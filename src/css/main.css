@@ -73,18 +73,6 @@ br {
     user-select: none;
 }
 
-.no_scroll {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    overscroll-behavior: none;
-    -ms-scroll-chaining: chained;
-}
-
-.no_scroll::-webkit-scrollbar {
-    display: none;
-}
-
 .loader {
     position: fixed;
     top: 50%;
@@ -688,8 +676,6 @@ main div > video + div {
     font: 100 1.6rem 'Archivo', 'Archivo-Thin', sans-serif;
     font-stretch: 112.5%;
     text-align: justify;
-
-    transform: translateY(0);
 }
 
 .page_transition_content__social {
