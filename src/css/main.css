@@ -146,6 +146,8 @@ br {
     margin: 10px 0;
     
     background: var(--primary-ui-color);
+
+    transform: scaleX(0);
 }
 
 .menu--close {
@@ -181,6 +183,8 @@ br {
     height: 100%;
     
     background: var(--primary-ui-color);
+
+    transform: scaleX(0);
 }
 
 .menu--close__container:nth-child(1) .menu--close__ui_fragment {

@@ -273,7 +273,8 @@ const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragmen
 const menuAnimation = menuStateFragments => {
     const tl = gsap.timeline({
         repeat: -1,
-        repeatDelay: 6
+        repeatDelay: 6,
+        delay: 6
     })
 
     tl.set(menuStateFragments, {
@@ -301,14 +302,90 @@ const menuAnimation = menuStateFragments => {
     return tl
 }
 
-const menuEvent = (menuStateFragments, listener) => {
+const menuEvent = (menuState, menuStateFragments) => {
     const menuEventAnimation = menuAnimation(menuStateFragments)
 
     const restartMenuEventAnimation = () => menuEventAnimation.restart().timeScale(1.5)
     const resetTimeScale = () => menuEventAnimation.timeScale(1)
 
-    listener.addEventListener('mouseenter', restartMenuEventAnimation)
-    listener.addEventListener('mouseleave', resetTimeScale)
+    menuState.addEventListener('mouseenter', restartMenuEventAnimation)
+    menuState.addEventListener('mouseleave', resetTimeScale)
+}
+
+const loaderAnimation = () => {
+    const progressBar = document.querySelector('.loader__progress_bar')
+
+    const tl = gsap.timeline({
+        delay: 1
+    })
+
+    tl.to(progressBar, {
+        scaleX: .25,
+        ease: 'power2.out'
+    })
+
+    .to(progressBar, {
+        scaleX: .5,
+        ease: 'power2.out'
+    })
+
+    .to(progressBar, {
+        scaleX: 1,
+        ease: 'power4.in',
+        delay: .5
+    })
+
+    .set(progressBar, {
+        transformOrigin: 'right'
+    })
+
+    .to(progressBar, {
+        scaleX: 0,
+        ease: 'power4.out',
+        delay: .3
+    })
+
+    return tl
+}
+
+const userInterfaceAnimation = menuStateFragments => {
+    const logo = document.querySelector('.to_home__logo')
+
+    const tl = gsap.timeline()
+
+    tl.from(logo, {
+        autoAlpha: 0,
+        y: -20
+    })
+
+    .set(menuStateFragments, {
+        transformOrigin: 'left'
+    }, 0)
+
+    .to(menuStateFragments, {
+        scaleX: 1,
+        stagger: .3
+    }, 0)
+
+    return tl
+}
+
+const homeOnceAnimation = container => {
+    const tl = gsap.timeline()
+
+    tl.add(loaderAnimation())
+
+    .add(userInterfaceAnimation(menuOpenUIFragments), '+=.5')
+
+    .from(container, {
+        autoAlpha: 0,
+        duration: 1
+    }, '-=.5')
+
+    .from(scrollIndicator, {
+        rotation: 360,
+        duration: 1
+    }, '-=1')
 }
 
 barba.init({
@@ -546,6 +623,19 @@ barba.init({
                 }
 
                 gsap.ticker.add(monitorWindow)
+            }
+        }
+    ],
+    transitions: [
+        {
+            name: 'home-once-animation',
+            to: {
+                namespace: [
+                    'home'
+                ]
+            },
+            once({next}) {
+                homeOnceAnimation(next.container)
             }
         }
     ]
