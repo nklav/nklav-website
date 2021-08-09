@@ -30,7 +30,7 @@
 
         <script src="./js/main.js" defer></script>
     </head>
-    <body data-barba="wrapper">
+    <body data-push-state-ajax="container">
 
         <div class="loader">
             <div class="loader__progress_bar_container">
@@ -46,13 +46,13 @@
                 </svg>
             </a>
 
-            <div class="gradient gradient--ceil"></div>
-
         </header>
-
+        
         <main>
-
-            <div data-barba="container" data-barba-namespace="home">
+            
+            <div data-push-state-ajax="transition" data-push-state-ajax-namespace="home">
+                
+                <div class="gradient gradient--ceil"></div>
 
                 <div class="scroll_indicator"></div>
                 <div class="scroll_indicator_index"></div>
@@ -115,6 +115,8 @@
                     <span class="scroll_index__number"></span>/<span>4</span>
                 </span>
 
+                <div class="gradient gradient--floor"></div>
+
             </div>
 
         </main>
@@ -135,8 +137,6 @@
                     <span class="menu--close__ui_fragment"></span>
                 </span>
             </a>
-
-            <div class="gradient gradient--floor"></div>
 
         </footer>
         

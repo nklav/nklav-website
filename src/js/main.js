@@ -301,232 +301,252 @@ const menuAnimation = menuStateFragments => {
     return tl
 }
 
-const menuOpenAnimation = menuAnimation(menuOpenUIFragments)
-const menuCloseAnimation = menuAnimation(menuCloseUIFragments)
+const menuEvent = (menuStateFragments, listener) => {
+    const menuEventAnimation = menuAnimation(menuStateFragments)
 
-const restartMenuOpenAnimation = () => menuOpenAnimation.restart().timeScale(1.5)
-const resetMenuOpenTimeScale = () => menuOpenAnimation.timeScale(1)
+    const restartMenuEventAnimation = () => menuEventAnimation.restart().timeScale(1.5)
+    const resetTimeScale = () => menuEventAnimation.timeScale(1)
 
-const restartMenuCloseAnimation = () => menuCloseAnimation.restart().timeScale(1.5)
-const resetMenuCloseTimeScale = () => menuCloseAnimation.timeScale(1)
-
-menuOpen.addEventListener('mouseenter', restartMenuOpenAnimation)
-menuOpen.addEventListener('mouseleave', resetMenuOpenTimeScale)
-
-menuClose.addEventListener('mouseenter', restartMenuCloseAnimation)
-menuClose.addEventListener('mouseleave', resetMenuCloseTimeScale)
-
-// Debugging
-document.addEventListener('dblclick', () => {
-    loop.videoLayerLoop.kill()
-    loop.videoIDLayerLoop.kill()
-
-    scrub.kill()
-    scroller.kill()
-
-    ScrollTrigger.removeEventListener('scrollEnd', scrollSnap)
-    window.removeEventListener('keydown', keyScroll)
-    document.removeEventListener('mousemove', parallax)
-})
-
-const show = document.querySelector('.page_transition_content__show_info')
-const hide = document.querySelector('.mobi_toggle_state_content__hide_info')
-
-const heading = document.querySelector('.page_transition_content__heading_container')
-const mobileContainer = document.querySelector('.page_transition_content__mobi_container')
-const mobileContent = document.querySelector('.mobi_toggle_state_content')
-const mobileUIFragments = document.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
-const mobileShareIcons = document.querySelectorAll('.mobi_toggle_state_content .page_transition_content__icon')
-
-const showInfo = gsap.timeline({
-    paused: true
-})
-
-showInfo.to(heading, {
-    opacity: 0
-})
-
-.to(mobileContainer, {
-    opacity: 0
-}, '-=.5')
-
-.set(heading, {
-    display: 'none',
-    pointerEvents: 'none'
-})
-
-.set(mobileContainer, {
-    display: 'none',
-    pointerEvents: 'none'
-})
-
-.set(mobileContent, {
-    display: 'block',
-    pointerEvents: 'auto'
-})
-
-.fromTo(mobileContent, {
-    opacity: 0
-}, {
-    opacity: 1
-})
-
-.to(mobileUIFragments, {
-    scaleX: '100%',
-    duration: .3,
-    stagger: .2
-})
-
-.from(mobileShareIcons, {
-    scale: 0,
-    duration: .5,
-    ease: 'back',
-    stagger: .3
-}, '-=.5')
-
-show.addEventListener('click', () => {
-    showInfo.play()
-})
-
-show.addEventListener('touchend', () => {
-    showInfo.play()
-})
-
-hide.addEventListener('click', () => {
-    showInfo.reverse()
-})
-
-hide.addEventListener('touchend', () => {
-    showInfo.reverse()
-})
-
-const monitorWindow = () => {
-    let width = window.innerWidth
-
-    if (width >= 1024) {
-        showInfo.restart().pause()
-    }
+    listener.addEventListener('mouseenter', restartMenuEventAnimation)
+    listener.addEventListener('mouseleave', resetTimeScale)
 }
 
-gsap.ticker.add(monitorWindow)
+barba.init({
+    schema: {
+        prefix: 'data-push-state-ajax',
+        wrapper: 'container',
+        container: 'transition'
+    },
+    views: [
+        {
+            namespace: 'menu',
+            beforeEnter() {
+                loop.videoLayerLoop.kill()
+                loop.videoIDLayerLoop.kill()
+            
+                scrub.kill()
+                scroller.disable()
+            
+                ScrollTrigger.removeEventListener('scrollEnd', scrollSnap)
+                window.removeEventListener('keydown', keyScroll)
+                document.removeEventListener('mousemove', parallax)
 
-const toSelf = document.querySelector('.works_page_as_menu__to_self')
-const toSelfBack = document.querySelector('.to_self_back')
+                const toSelf = document.querySelector('.works_page_as_menu__to_self')
+                const toSelfBack = document.querySelector('.to_self_back')
 
-const scrollToGL = () => {
-    const tl = gsap.timeline()
+                const scrollToGL = () => {
+                    const tl = gsap.timeline()
 
-    .to(window, {
-        scrollTo: {
-            y: '#_gl_scroll',
-            offsetY: 300
+                    .to(window, {
+                        scrollTo: {
+                            y: '#_gl_scroll',
+                            offsetY: 300
+                        },
+                        duration: 2,
+                        ease: 'power4.inOut'
+                    })
+
+                    .from('._gl_container', {
+                        autoAlpha: 0,
+                        duration: .5,
+                        ease: 'slow'
+                    }, '-=1')
+
+                    return tl
+                }
+
+                const scrollTop = () => {
+                    gsap.to(window, {
+                        scrollTo: {
+                            y: '#_top'
+                        },
+                        duration: 1,
+                        ease: 'power4.inOut'
+                    })
+                }
+                
+                toSelf.addEventListener('click', scrollToGL)
+                toSelf.addEventListener('touchend', scrollToGL)
+                
+                toSelfBack.addEventListener('click', scrollTop)
+                toSelfBack.addEventListener('touchend', scrollTop)
+                
+                const vertexShader = `
+                precision mediump float;
+
+                attribute vec3 aVertexPosition;
+                attribute vec2 aTextureCoord;
+
+                uniform mat4 uMVMatrix;
+                uniform mat4 uPMatrix;
+
+                varying vec3 vVertexPosition;
+                varying vec2 vTextureCoord;
+
+                uniform float uTime;
+
+                void main() {
+                    vec3 vertexPosition = aVertexPosition;
+
+                    vertexPosition.z = sin(vertexPosition.x * 3.141592 + uTime * 0.0375) * 0.02;
+
+                    gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
+
+                    vTextureCoord = aTextureCoord;
+                    vVertexPosition = vertexPosition;
+                }
+                `
+
+                const fragmentShader = `
+                precision mediump float;
+
+                varying vec3 vVertexPosition;
+                varying vec2 vTextureCoord;
+
+                uniform sampler2D uSampler0;
+
+                void main() {
+                    gl_FragColor = texture2D(uSampler0, vTextureCoord);
+                }
+                `
+
+                const init = new Curtains({
+                    container: '_c',
+                    autoRender: false
+                })
+
+                gsap.ticker.add(init.render.bind(init))
+
+                const planeElements = document.getElementsByClassName('_gl__plane')
+
+                const config = {
+                    vertexShader: vertexShader,
+                    fragmentShader: fragmentShader,
+                    widthSegments: 30,
+                    heightSegments: 30,
+                    uniforms: {
+                        time: {
+                            name: 'uTime',
+                            type: '1f',
+                            value: 0
+                        }
+                    }
+                }
+
+                const planes = []
+
+                const renderPlanes = index => {
+                    const plane = planes[index]
+
+                    plane.onRender(() => {
+                        plane.playVideos()
+                        plane.uniforms.time.value++
+                    })
+                }
+
+                for (let i = 0; i < planeElements.length; i++) {
+                    const plane = new Plane(init, planeElements[i], config)
+
+                    planes.push(plane)
+
+                    renderPlanes(i)
+                }
+            }
         },
-        duration: 2,
-        ease: 'power4.inOut'
-    })
+        {
+            namespace: 'content',
+            beforeEnter() {
+                loop.videoLayerLoop.kill()
+                loop.videoIDLayerLoop.kill()
+            
+                scrub.kill()
+                scroller.disable()
+            
+                ScrollTrigger.removeEventListener('scrollEnd', scrollSnap)
+                window.removeEventListener('keydown', keyScroll)
+                document.removeEventListener('mousemove', parallax)
 
-    .from('._gl_container', {
-        autoAlpha: 0,
-        duration: .5,
-        ease: 'slow'
-    }, '-=1')
+                const show = document.querySelector('.page_transition_content__show_info')
+                const hide = document.querySelector('.mobi_toggle_state_content__hide_info')
 
-    return tl
-}
+                const heading = document.querySelector('.page_transition_content__heading_container')
+                const mobileContainer = document.querySelector('.page_transition_content__mobi_container')
+                const mobileContent = document.querySelector('.mobi_toggle_state_content')
+                const mobileUIFragments = document.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
+                const mobileShareIcons = document.querySelectorAll('.mobi_toggle_state_content .page_transition_content__icon')
 
-const scrollTop = () => {
-    gsap.to(window, {
-        scrollTo: {
-            y: '#_top'
-        },
-        duration: 1,
-        ease: 'power4.inOut'
-    })
-}
+                const showInfo = gsap.timeline({
+                    paused: true
+                })
 
-toSelf.addEventListener('click', scrollToGL)
-toSelf.addEventListener('touchend', scrollToGL)
+                showInfo.to(heading, {
+                    opacity: 0
+                })
 
-toSelfBack.addEventListener('click', scrollTop)
-toSelfBack.addEventListener('touchend', scrollTop)
+                .to(mobileContainer, {
+                    opacity: 0
+                }, '-=.5')
 
-const vertexShader = `
-precision mediump float;
+                .set(heading, {
+                    display: 'none',
+                    pointerEvents: 'none'
+                })
 
-attribute vec3 aVertexPosition;
-attribute vec2 aTextureCoord;
+                .set(mobileContainer, {
+                    display: 'none',
+                    pointerEvents: 'none'
+                })
 
-uniform mat4 uMVMatrix;
-uniform mat4 uPMatrix;
+                .set(mobileContent, {
+                    display: 'block',
+                    pointerEvents: 'auto'
+                })
 
-varying vec3 vVertexPosition;
-varying vec2 vTextureCoord;
+                .fromTo(mobileContent, {
+                    opacity: 0
+                }, {
+                    opacity: 1
+                })
 
-uniform float uTime;
+                .to(mobileUIFragments, {
+                    scaleX: '100%',
+                    duration: .3,
+                    stagger: .2
+                })
 
-void main() {
-    vec3 vertexPosition = aVertexPosition;
+                .from(mobileShareIcons, {
+                    scale: 0,
+                    duration: .5,
+                    ease: 'back',
+                    stagger: .3
+                }, '-=.5')
 
-    vertexPosition.z = sin(vertexPosition.x * 3.141592 + uTime * 0.0375) * 0.02;
+                show.addEventListener('click', () => {
+                    showInfo.play()
+                })
 
-    gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
+                show.addEventListener('touchend', () => {
+                    showInfo.play()
+                })
 
-    vTextureCoord = aTextureCoord;
-    vVertexPosition = vertexPosition;
-}
-`
+                hide.addEventListener('click', () => {
+                    showInfo.reverse()
+                })
 
-const fragmentShader = `
-precision mediump float;
+                hide.addEventListener('touchend', () => {
+                    showInfo.reverse()
+                })
 
-varying vec3 vVertexPosition;
-varying vec2 vTextureCoord;
+                const monitorWindow = () => {
+                    let width = window.innerWidth
 
-uniform sampler2D uSampler0;
+                    if (width >= 1024) {
+                        showInfo.restart().pause()
+                    }
+                }
 
-void main() {
-    gl_FragColor = texture2D(uSampler0, vTextureCoord);
-}
-`
-
-const init = new Curtains({
-    container: '_c',
-    autoRender: false
-})
-
-gsap.ticker.add(init.render.bind(init))
-
-const planeElements = document.getElementsByClassName('_gl__plane')
-
-const config = {
-    vertexShader: vertexShader,
-    fragmentShader: fragmentShader,
-    widthSegments: 30,
-    heightSegments: 30,
-    uniforms: {
-        time: {
-            name: 'uTime',
-            type: '1f',
-            value: 0
+                gsap.ticker.add(monitorWindow)
+            }
         }
-    }
-}
-
-const planes = []
-
-const renderPlanes = index => {
-    const plane = planes[index]
-
-    plane.onRender(() => {
-        plane.playVideos()
-        plane.uniforms.time.value++
-    })
-}
-
-for (let i = 0; i < planeElements.length; i++) {
-    const plane = new Plane(init, planeElements[i], config)
-
-    planes.push(plane)
-
-    renderPlanes(i)
-}
+    ]
+})

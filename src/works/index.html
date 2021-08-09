@@ -30,7 +30,7 @@
 
         <script src="../js/main.js" defer></script>
     </head>
-    <body data-barba="wrapper">
+    <body data-push-state-ajax="container">
 
         <div class="loader">
             <div class="loader__progress_bar_container">
@@ -45,14 +45,14 @@
                     <path d="M12 0H0v24h12V12h24v12h12V0H12z" />
                 </svg>
             </a>
-
-            <div class="gradient gradient--ceil"></div>
-
+            
         </header>
-
+        
         <main>
+            
+            <div data-push-state-ajax="transition" data-push-state-ajax-namespace="menu">
 
-            <div data-barba="container" data-barba-namespace="menu">
+                <div class="gradient gradient--ceil"></div>
 
                 <section>
 
@@ -264,6 +264,8 @@
                     
                 </section>
                 
+                <div class="gradient gradient--floor"></div>
+
             </div>
 
         </main>
@@ -284,8 +286,6 @@
                     <span class="menu--close__ui_fragment"></span>
                 </span>
             </a>
-
-            <div class="gradient gradient--floor"></div>
             
         </footer>
         
