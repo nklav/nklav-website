@@ -79,6 +79,10 @@ br {
     left: 50%;
     z-index: 2;
 
+    display: none;
+
+    background: hsl(0, 0%, 20%);
+
     transform: translate(-50%, -50%);
 
     pointer-events: none;
@@ -109,6 +113,8 @@ br {
     left: 50%;
     z-index: 2;
 
+    display: none;
+
     width: calc(48px + 50px);
     height: calc(24px + 50px);
     padding: 25px 0 0 25px;
@@ -130,13 +136,15 @@ br {
     bottom: 25px;
     z-index: 2;
 
-    display: block;
+    display: none;
     
     width: calc(50px + 50px);
     height: calc(36px + 50px);
     padding: 25px 0 0 25px;
     
     transform: translate(-50%, 0);
+
+    pointer-events: none;
 }
 
 .menu--open__ui_fragment {
@@ -152,11 +160,7 @@ br {
 }
 
 .menu--close {
-    display: none;
-
     padding: 0 0 0 25px;
-
-    pointer-events: none;
 }
 
 .menu--close__container {
@@ -390,7 +394,7 @@ br {
 }
 
 .works_page_as_menu__list_item:nth-child(5) a span::after {
-    content: 'twitter';
+    content: '@nklav';
 }
 
 .works_page_as_menu__list_item:nth-child(6) a span::after {
@@ -404,13 +408,13 @@ br {
     color: var(--primary-ui-color);
     -webkit-text-stroke: 1px hsl(0, 100%, 100%);
 
-    clip-path: polygon(0% 0%, 60% 0%, 30% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
 
     transition: clip-path .3s ease;
 }
 
 .works_page_as_menu__list_item a:hover span::after {
-    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 60% 0%, 30% 100%, 0% 100%);
 }
 
 .works_page_as_menu__footer {
@@ -499,7 +503,7 @@ br {
 }
 
 ._gl__to_this:hover ._gl__id::after {
-    transform: scaleX(100%);
+    transform: scaleX(1);
 }
 
 .to_self_back {
@@ -548,7 +552,7 @@ br {
 
     background: hsl(0, 0%, 0%);
 
-    transform: scaleY(0);
+    transform: scaleY(1);
 }
 
 .ui_page_transition_component--ceil {
@@ -563,8 +567,8 @@ br {
     transform-origin: bottom;
 }
 
-main div > video,
-main div > video + div {
+main > div > video,
+main > div > video + div {
     position: fixed;
     z-index: -1;
 
@@ -573,7 +577,7 @@ main div > video + div {
     object-fit: cover;
 }
 
-main div > video + div {
+main > div > video + div {
     background: hsla(0, 0%, 0%, 20%);
 }
 
@@ -612,7 +616,7 @@ main div > video + div {
 
     white-space: nowrap;
 
-    transform: translateX(0);
+    transform-origin: left;
 }
 
 .page_transition_content__desk_container,
@@ -659,8 +663,6 @@ main div > video + div {
     background: var(--primary-ui-color);
 
     cursor: pointer;
-
-    transition: transform .5s cubic-bezier(0.175, 0.885, 0.32, 2);
 }
 
 .page_transition_content__play:hover {
@@ -676,6 +678,8 @@ main div > video + div {
     font: 100 1.6rem 'Archivo', 'Archivo-Thin', sans-serif;
     font-stretch: 112.5%;
     text-align: justify;
+
+    transform-origin: top;
 }
 
 .page_transition_content__social {
@@ -716,7 +720,7 @@ main div > video + div {
 
     font: 100 1.6rem 'Archivo', 'Archivo-Thin', sans-serif;
 
-    transform: translateX(0);
+    transform-origin: bottom;
 }
 
 .page_transition_content__icon {

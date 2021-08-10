@@ -264,17 +264,6 @@ ScrollTrigger.create({
     scrub: 1
 })
 
-const logoHeader = document.querySelector('.to_home__logo')
-const logoFooter = document.querySelector('.works_page_as_menu__logo')
-
-const listItem = document.querySelectorAll('.works_page_as_menu__list_item')
-
-const menuOpen = document.querySelector('.menu--open')
-const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
-
-const menuClose = document.querySelector('.menu--close')
-const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
-
 const menuAnimation = menuStateFragments => {
     const tl = gsap.timeline({
         repeat: -1,
@@ -317,16 +306,28 @@ const menuEvent = (menuState, menuStateFragments) => {
     menuState.addEventListener('mouseleave', resetTimeScale)
 }
 
-const loaderAnimation = () => {
-    const progressBar = document.querySelector('.loader__progress_bar')
+const loader = document.querySelector('.loader')
+const progressBar = document.querySelector('.loader__progress_bar')
 
+const loaderAnimation = () => {
     const tl = gsap.timeline({
         delay: 1
     })
 
-    tl.to(progressBar, {
+    .set(loader, {
+        display: 'block'
+    })
+
+    .from(loader, {
+        opacity: 0,
+        duration: .3,
+        ease: 'none'
+    })
+
+    .to(progressBar, {
         scaleX: .25,
-        ease: 'power2.out'
+        ease: 'power2.out',
+        delay: .3
     })
 
     .to(progressBar, {
@@ -340,14 +341,18 @@ const loaderAnimation = () => {
         delay: .5
     })
 
-    .set(progressBar, {
+    .set(loader, {
         transformOrigin: 'right'
     })
 
-    .to(progressBar, {
+    .to(loader, {
         scaleX: 0,
         ease: 'power4.out',
         delay: .3
+    })
+
+    .set(loader, {
+        display: 'none'
     })
 
     return tl
@@ -357,8 +362,7 @@ const userInterfaceAnimation = (logoPosition, menuStateFragments) => {
     const tl = gsap.timeline()
 
     tl.from(logoPosition, {
-        autoAlpha: 0,
-        y: -20
+        opacity: 0
     })
 
     .set(menuStateFragments, {
@@ -373,10 +377,29 @@ const userInterfaceAnimation = (logoPosition, menuStateFragments) => {
     return tl
 }
 
+const logoHeader = document.querySelector('.to_home')
+const logoFooter = document.querySelector('.works_page_as_menu__to_home')
+
+const menuOpen = document.querySelector('.menu--open')
+const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
+
+const menuClose = document.querySelector('.menu--close')
+const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
+
 const homeOnceAnimation = container => {
     const tl = gsap.timeline()
     
     tl.add(loaderAnimation())
+
+    .set(logoHeader, {
+        display: 'block',
+        pointerEvents: 'auto'
+    })
+
+    .set(menuOpen, {
+        display: 'block',
+        pointerEvents: 'auto'
+    })
 
     .add(userInterfaceAnimation(logoHeader, menuOpenUIFragments), '+=.5')
 
@@ -389,22 +412,16 @@ const homeOnceAnimation = container => {
         rotation: 360,
         duration: 1
     }, '-=1')
+
+    return tl
 }
+
+const listItems = document.querySelectorAll('.works_page_as_menu__list_item')
 
 const menuOnceAnimation = container => {
     const tl = gsap.timeline()
-    
-    tl.set(logo, {
-        display: 'none',
-        pointerEvents: 'none'
-    })
 
-    .set(menuOpen, {
-        display: 'none',
-        pointerEvents: 'none'
-    })
-
-    .add(loaderAnimation())
+    tl.add(loaderAnimation())
 
     .set(menuClose, {
         display: 'block',
@@ -418,10 +435,81 @@ const menuOnceAnimation = container => {
         duration: 1
     }, '-=.5')
 
-    .from(listItem, {
+    .from(listItems, {
         xPercent: 100,
-        stagger: .3
+        duration: .8,
+        stagger: .1,
+        ease: 'power1.out'
+    }, '-=1')
+
+    return tl
+}
+
+const pageTransitionComponents = document.querySelectorAll('.ui_page_transition_component')
+
+const contentHeading = document.querySelector('.page_transition_content__heading')
+const contentDescription = document.querySelector('.page_transition_content__description')
+const contentShareLabel = document.querySelector('.page_transition_content__share_label')
+const contentSocialIcons = document.querySelectorAll('.page_transition_content__icon')
+
+const play = document.querySelectorAll('.page_transition_content__play')
+const info = document.querySelector('.page_transition_content__show_info')
+
+const contentOnceAnimation = () => {
+    const tl = gsap.timeline()
+
+    tl.add(loaderAnimation())
+
+    .set(logoHeader, {
+        display: 'block',
+        pointerEvents: 'auto'
     })
+
+    .set(menuOpen, {
+        display: 'block',
+        pointerEvents: 'auto'
+    })
+
+    .to(pageTransitionComponents, {
+        scaleY: 0,
+        duration: 4,
+        ease: 'slow'
+    })
+
+    .add(userInterfaceAnimation(logoHeader, menuOpenUIFragments), '-=1.5')
+
+    .from(contentHeading, {
+        xPercent: -100
+    }, '-=1.5')
+
+    .from(contentDescription, {
+        yPercent: -100
+    }, '-=1.5')
+    
+    .from(contentShareLabel, {
+        yPercent: 100
+    }, '-=1.5')
+    
+    .from(contentSocialIcons, {
+        scale: 0,
+        ease: 'back',
+        stagger: .2
+    }, '-=1')
+    
+    .from(play, {
+        scale: 0,
+        ease: 'back',
+        clearProps: 'scale'
+    }, '-=1')
+
+    .set(play, {
+        transition: 'transform .5s cubic-bezier(0.175, 0.885, 0.32, 2)'
+    })
+
+    .from(info, {
+        autoAlpha: 0,
+        ease: 'none'
+    }, '-=1')
 
     return tl
 }
@@ -588,7 +676,7 @@ barba.init({
                 const mobileContainer = document.querySelector('.page_transition_content__mobi_container')
                 const mobileContent = document.querySelector('.mobi_toggle_state_content')
                 const mobileUIFragments = document.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
-                const mobileShareIcons = document.querySelectorAll('.mobi_toggle_state_content .page_transition_content__icon')
+                const mobileSocialIcons = document.querySelectorAll('.mobi_toggle_state_content .page_transition_content__icon')
 
                 const showInfo = gsap.timeline({
                     paused: true
@@ -629,9 +717,8 @@ barba.init({
                     stagger: .2
                 })
 
-                .from(mobileShareIcons, {
+                .from(mobileSocialIcons, {
                     scale: 0,
-                    duration: .5,
                     ease: 'back',
                     stagger: .3
                 }, '-=.5')
@@ -666,27 +753,27 @@ barba.init({
     ],
     transitions: [
         {
-            name: 'home-once-animation',
-            to: {
-                namespace: [
-                    'home'
-                ]
+            async once({next}) {
+                if (next.namespace === 'home') {
+                    await homeOnceAnimation(next.container)
+                }
+
+                if (next.namespace === 'menu') {
+                    await menuOnceAnimation(next.container)
+                }
+
+                if (next.namespace === 'content') {
+                    await contentOnceAnimation()
+                }
             },
-            once({next}) {
-                homeOnceAnimation(next.container)
-                console.log('home once')
-            }
-        },
-        {
-            name: 'menu-once-animation',
-            to: {
-                namespace: [
-                    'menu'
-                ]
-            },
-            once({next}) {
-                menuOnceAnimation(next.container)
-                console.log('menu once')
+            afterOnce({next}) {
+                if (next.namespace === 'home' || 'content') {
+                    menuEvent(menuOpen, menuOpenUIFragments)
+                }
+
+                if (next.namespace === 'menu') {
+                    menuEvent(menuClose, menuCloseUIFragments)
+                }
             }
         }
     ]
