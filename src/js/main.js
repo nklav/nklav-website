@@ -4,308 +4,6 @@ import Plyr from 'plyr'
 import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
-const createLoop = (items, spacing, animation) => {
-    const overlap = Math.ceil(1 / spacing)
-    const start = items.length * spacing + .5
-    const end = (items.length + overlap) * spacing + .5
-
-    const sequence = gsap.timeline({
-        paused: true
-    })
-
-    const sequenceLoop = gsap.timeline({
-        paused: true,
-        repeat: -1,
-        onRepeat() {
-            this._time === this._dur && (this._tTime += this._dur - .01)
-        }
-    })
-
-    const l = items.length + overlap * 2
-
-    let i, index, time
-
-    for (i = 0; i < l; i++) {
-        index = i % items.length
-        time = i * spacing
-
-        sequence.add(animation(items[index]), time)
-    }
-
-    sequence.time(start)
-
-    sequenceLoop.to(sequence, {
-        time: end,
-        duration: end - start,
-        ease: 'none'
-    })
-
-    .fromTo(sequence, {
-        time: overlap * spacing + 1
-    }, {
-        time: start,
-        duration: start - (overlap * spacing + 1),
-        ease: 'none',
-        immediateRender: false
-    })
-
-    return sequenceLoop
-}
-
-const ITEMS = {
-    VIDEOS: gsap.utils.toArray('.scroll_layers__video'),
-    VIDEO_ID: gsap.utils.toArray('.scroll_layers__video_id')
-}
-
-const spacing = 1 / ITEMS.VIDEOS.length
-
-const snap = gsap.utils.snap(spacing)
-
-const animation = {
-    videoLayerAnimation: video => {
-        const tl = gsap.timeline()
-
-        tl.fromTo(video, {
-            scale: .8,
-            zIndex: -200
-        }, {
-            scale: 1,
-            zIndex: -100,
-            duration: .5,
-            ease: 'power1.in',
-            repeat: 1,
-            yoyo: true,
-            immediateRender: false
-        })
-
-        .fromTo(video, {
-            yPercent: 300,
-            rotationX: '-100px'
-        }, {
-            yPercent: -300,
-            rotationX: '100px',
-            duration: 1,
-            ease: 'none',
-            reversed: true,
-            immediateRender: false
-        }, 0)
-
-        return tl
-    },
-    videoIDLayerAnimation: id => {
-        const tl = gsap.timeline()
-
-        tl.fromTo(id, {
-            scale: 1
-        }, {
-            scale: 1,
-            duration: .5,
-            ease: 'power1.in',
-            repeat: 1,
-            yoyo: true,
-            immediateRender: false
-        })
-
-        .fromTo(id, {
-            yPercent: 300,
-            clipPath: 'inset(-500% -100% 500% -100%)'
-        }, {
-            yPercent: -300,
-            clipPath: 'inset(500% -100% -500% -100%)',
-            duration: 1,
-            ease: 'none',
-            reversed: true,
-            immediateRender: false
-        }, 0)
-
-        return tl
-    }
-}
-
-const loop = {
-    videoLayerLoop: createLoop(ITEMS.VIDEOS, spacing, animation.videoLayerAnimation),
-    videoIDLayerLoop: createLoop(ITEMS.VIDEO_ID, spacing, animation.videoIDLayerAnimation)
-}
-
-let iteration = 0
-
-const playhead = {
-    offset: 0
-}
-
-const loopTime = gsap.utils.wrap(0, loop.videoLayerLoop.duration())
-
-const scrub = gsap.to(playhead, {
-    offset: 0,
-    onUpdate() {
-        loop.videoLayerLoop.time(loopTime(playhead.offset))
-        loop.videoIDLayerLoop.time(loopTime(playhead.offset))
-    },
-    duration: 1,
-    ease: 'slow',
-    paused: true
-})
-
-const scroller = ScrollTrigger.create({
-    start: 0,
-    onUpdate(self) {
-        const scrollSelf = self.scroll()
-
-        if (scrollSelf > self.end - 1) {
-            scrollMeters.wrap(1, 1)
-        } else if (scrollSelf < 1 && self.direction < 0) {
-            scrollMeters.wrap(-1, self.end - 1)
-        } else {
-            scrub.vars.offset = (iteration + self.progress) * loop.videoLayerLoop.duration()
-            scrub.invalidate().restart()
-        }
-    },
-    end: '+=3000',
-    pin: '.scroll_layers'
-})
-
-const scrollMeters = {
-    scrollProgress: progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end),
-    wrap: (iterationDelta, scrollPoint) => {
-        iteration += iterationDelta
-        scroller.scroll(scrollPoint)
-        scroller.update()
-    }
-}
-
-const scrollPointOffset = offset => {
-    const time = snap(offset)
-    const progress = (time - loop.videoLayerLoop.duration() * iteration) / loop.videoLayerLoop.duration()
-    const scroll = scrollMeters.scrollProgress(progress)
-    
-    if (progress >= 1 || progress < 0) {
-        return scrollMeters.wrap(Math.floor(progress), scroll)
-    }
-
-    scroller.scroll(scroll)
-}
-
-const scrollSnap = () => {
-    scrollPointOffset(scrub.vars.offset)
-}
-
-ScrollTrigger.addEventListener('scrollEnd', scrollSnap)
-
-const keyScroll = e => {
-    const keyCodes = [
-        'Space',
-        'ArrowUp',
-        'ArrowDown'
-    ]
-    
-    if (keyCodes.indexOf(e.code) > -1) {
-        e.preventDefault()
-    }
-    
-    if (e.code === 'ArrowDown') {
-        scrollPointOffset(scrub.vars.offset + spacing)
-    }
-    
-    if (e.code === 'ArrowUp') {
-        scrollPointOffset(scrub.vars.offset - spacing)
-    }
-}
-
-window.addEventListener('keydown', keyScroll, false)
-
-const videoElements = document.getElementsByClassName('scroll_layers__video')
-const videoArray = [ ...videoElements ]
-
-const scrollIndexNumber = document.querySelector('.scroll_index__number')
-const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
-
-const updateElementState = () => {
-    let i
-
-    for (i = 0; i < videoArray.length; i++) {
-        const video = videoArray[i]
-        const videoStyles = video.getAttribute('style')
-
-        const videoData = video.dataset.index
-        const videoDataValues = [ ...videoData ]
-
-        if (videoDataValues.length > -1 && videoStyles.includes('z-index: -100')) {
-            video.play()
-            scrollIndexNumber.innerHTML = videoData
-            scrollIndicatorIndex.innerHTML = videoData
-        }
-
-        if (!videoStyles.includes('z-index: -100')) {
-            video.pause()
-        }
-    }
-}
-
-gsap.ticker.add(updateElementState)
-
-const parallax = e => {
-    gsap.to('.scroll_layers__video_id', {
-        x: e.clientX / 20 * -1,
-        y: e.clientY / 20 * -1,
-        duration: 1
-    })
-}
-
-document.addEventListener('mousemove', parallax)
-
-const scrollIndicator = document.querySelector('.scroll_indicator')
-
-const scrollSync = gsap.to(scrollIndicator, {
-    rotation: 360
-})
-
-ScrollTrigger.create({
-    animation: scrollSync,
-    scrub: 1
-})
-
-const menuAnimation = menuStateFragments => {
-    const tl = gsap.timeline({
-        repeat: -1,
-        repeatDelay: 6,
-        delay: 6
-    })
-
-    tl.set(menuStateFragments, {
-        transformOrigin: 'right'
-    })
-
-    .to(menuStateFragments, {
-        scaleX: 0,
-        duration: .3,
-        ease: 'power2.out',
-        stagger: .2
-    })
-    
-    .set(menuStateFragments, {
-        transformOrigin: 'left'
-    })
-    
-    .to(menuStateFragments, {
-        scaleX: 1,
-        duration: .3,
-        ease: 'power2.out',
-        stagger: .2
-    })
-
-    return tl
-}
-
-const menuEvent = (menuState, menuStateFragments) => {
-    const menuEventAnimation = menuAnimation(menuStateFragments)
-
-    const restartMenuEventAnimation = () => menuEventAnimation.restart().timeScale(1.5)
-    const resetTimeScale = () => menuEventAnimation.timeScale(1)
-
-    menuState.addEventListener('mouseenter', restartMenuEventAnimation)
-    menuState.addEventListener('mouseleave', resetTimeScale)
-}
-
 const loader = document.querySelector('.loader')
 const progressBar = document.querySelector('.loader__progress_bar')
 
@@ -385,6 +83,8 @@ const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment'
 
 const menuClose = document.querySelector('.menu--close')
 const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
+
+const scrollIndicator = document.querySelector('.scroll_indicator')
 
 const homeOnceAnimation = container => {
     const tl = gsap.timeline()
@@ -514,7 +214,50 @@ const contentOnceAnimation = () => {
     return tl
 }
 
+const menuInteractionAnimation = menuStateFragments => {
+    const tl = gsap.timeline({
+        repeat: -1,
+        repeatDelay: 6,
+        delay: 6
+    })
+
+    tl.set(menuStateFragments, {
+        transformOrigin: 'right'
+    })
+
+    .to(menuStateFragments, {
+        scaleX: 0,
+        duration: .3,
+        ease: 'power2.out',
+        stagger: .2
+    })
+    
+    .set(menuStateFragments, {
+        transformOrigin: 'left'
+    })
+    
+    .to(menuStateFragments, {
+        scaleX: 1,
+        duration: .3,
+        ease: 'power2.out',
+        stagger: .2
+    })
+
+    return tl
+}
+
+const menuInteractionEvent = (menuState, menuStateFragments) => {
+    const menuInteractionEventAnimation = menuInteractionAnimation(menuStateFragments)
+
+    const restartMenuInteractionEventAnimation = () => menuInteractionEventAnimation.restart().timeScale(1.5)
+    const resetTimeScale = () => menuInteractionEventAnimation.timeScale(1)
+
+    menuState.addEventListener('mouseenter', restartMenuInteractionEventAnimation)
+    menuState.addEventListener('mouseleave', resetTimeScale)
+}
+
 barba.init({
+    debug: true,
     schema: {
         prefix: 'data-page',
         wrapper: 'container',
@@ -522,18 +265,268 @@ barba.init({
     },
     views: [
         {
+            namespace: 'home',
+            beforeEnter() {
+                const createLoop = (items, spacing, animation) => {
+                    const overlap = Math.ceil(1 / spacing)
+                    const start = items.length * spacing + .5
+                    const end = (items.length + overlap) * spacing + .5
+                
+                    const sequence = gsap.timeline({
+                        paused: true
+                    })
+                
+                    const sequenceLoop = gsap.timeline({
+                        paused: true,
+                        repeat: -1,
+                        onRepeat() {
+                            this._time === this._dur && (this._tTime += this._dur - .01)
+                        }
+                    })
+                
+                    const l = items.length + overlap * 2
+                
+                    let i, index, time
+                
+                    for (i = 0; i < l; i++) {
+                        index = i % items.length
+                        time = i * spacing
+                
+                        sequence.add(animation(items[index]), time)
+                    }
+                
+                    sequence.time(start)
+                
+                    sequenceLoop.to(sequence, {
+                        time: end,
+                        duration: end - start,
+                        ease: 'none'
+                    })
+                
+                    .fromTo(sequence, {
+                        time: overlap * spacing + 1
+                    }, {
+                        time: start,
+                        duration: start - (overlap * spacing + 1),
+                        ease: 'none',
+                        immediateRender: false
+                    })
+                
+                    return sequenceLoop
+                }
+                
+                const ITEMS = {
+                    VIDEOS: gsap.utils.toArray('.scroll_layers__video'),
+                    VIDEO_ID: gsap.utils.toArray('.scroll_layers__video_id')
+                }
+                
+                const spacing = 1 / ITEMS.VIDEOS.length
+                
+                const snap = gsap.utils.snap(spacing)
+                
+                const animation = {
+                    videoLayerAnimation: video => {
+                        const tl = gsap.timeline()
+                
+                        tl.fromTo(video, {
+                            scale: .8,
+                            zIndex: -200
+                        }, {
+                            scale: 1,
+                            zIndex: -100,
+                            ease: 'power1.in',
+                            repeat: 1,
+                            yoyo: true,
+                            immediateRender: false
+                        })
+                
+                        .fromTo(video, {
+                            yPercent: 300,
+                            rotationX: '-100px'
+                        }, {
+                            yPercent: -300,
+                            rotationX: '100px',
+                            duration: 1,
+                            ease: 'none',
+                            reversed: true,
+                            immediateRender: false
+                        }, 0)
+                
+                        return tl
+                    },
+                    videoIDLayerAnimation: id => {
+                        const tl = gsap.timeline()
+                
+                        tl.fromTo(id, {
+                            scale: 1
+                        }, {
+                            scale: 1,
+                            ease: 'power1.in',
+                            repeat: 1,
+                            yoyo: true,
+                            immediateRender: false
+                        })
+                
+                        .fromTo(id, {
+                            yPercent: 300,
+                            clipPath: 'inset(-500% -100% 500% -100%)'
+                        }, {
+                            yPercent: -300,
+                            clipPath: 'inset(500% -100% -500% -100%)',
+                            duration: 1,
+                            ease: 'none',
+                            reversed: true,
+                            immediateRender: false
+                        }, 0)
+                
+                        return tl
+                    }
+                }
+                
+                const loop = {
+                    videoLayerLoop: createLoop(ITEMS.VIDEOS, spacing, animation.videoLayerAnimation),
+                    videoIDLayerLoop: createLoop(ITEMS.VIDEO_ID, spacing, animation.videoIDLayerAnimation)
+                }
+                
+                let iteration = 0
+                
+                const playhead = {
+                    offset: 0
+                }
+                
+                const loopTime = gsap.utils.wrap(0, loop.videoLayerLoop.duration())
+                
+                const scrub = gsap.to(playhead, {
+                    offset: 0,
+                    onUpdate() {
+                        loop.videoLayerLoop.time(loopTime(playhead.offset))
+                        loop.videoIDLayerLoop.time(loopTime(playhead.offset))
+                    },
+                    duration: 1,
+                    ease: 'slow',
+                    paused: true
+                })
+                
+                const scroller = ScrollTrigger.create({
+                    start: 0,
+                    onUpdate(self) {
+                        const scrollSelf = self.scroll()
+                
+                        if (scrollSelf > self.end - 1) {
+                            scrollMeters.wrap(1, 1)
+                        } else if (scrollSelf < 1 && self.direction < 0) {
+                            scrollMeters.wrap(-1, self.end - 1)
+                        } else {
+                            scrub.vars.offset = (iteration + self.progress) * loop.videoLayerLoop.duration()
+                            scrub.invalidate().restart()
+                        }
+                    },
+                    end: '+=3000',
+                    pin: '.scroll_layers'
+                })
+                
+                const scrollMeters = {
+                    scrollProgress: progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end),
+                    wrap: (iterationDelta, scrollPoint) => {
+                        iteration += iterationDelta
+                        scroller.scroll(scrollPoint)
+                        scroller.update()
+                    }
+                }
+                
+                const scrollPointOffset = offset => {
+                    const time = snap(offset)
+                    const progress = (time - loop.videoLayerLoop.duration() * iteration) / loop.videoLayerLoop.duration()
+                    const scroll = scrollMeters.scrollProgress(progress)
+                    
+                    if (progress >= 1 || progress < 0) {
+                        return scrollMeters.wrap(Math.floor(progress), scroll)
+                    }
+                
+                    scroller.scroll(scroll)
+                }
+                
+                const scrollSnap = () => {
+                    scrollPointOffset(scrub.vars.offset)
+                }
+                
+                ScrollTrigger.addEventListener('scrollEnd', scrollSnap)
+                
+                const keyScroll = e => {
+                    const keyCodes = [
+                        'Space',
+                        'ArrowUp',
+                        'ArrowDown'
+                    ]
+                    
+                    if (keyCodes.indexOf(e.code) > -1) {
+                        e.preventDefault()
+                    }
+                    
+                    if (e.code === 'ArrowDown') {
+                        scrollPointOffset(scrub.vars.offset + spacing)
+                    }
+                    
+                    if (e.code === 'ArrowUp') {
+                        scrollPointOffset(scrub.vars.offset - spacing)
+                    }
+                }
+                
+                window.addEventListener('keydown', keyScroll, false)
+                
+                const videoElements = document.getElementsByClassName('scroll_layers__video')
+                const videoArray = [ ...videoElements ]
+                
+                const scrollIndexNumber = document.querySelector('.scroll_index__number')
+                const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
+                
+                const updateElementState = () => {
+                    let i
+                
+                    for (i = 0; i < videoArray.length; i++) {
+                        const video = videoArray[i]
+                        const videoStyles = video.getAttribute('style')
+                
+                        const videoData = video.dataset.index
+                        const videoDataValues = [ ...videoData ]
+                
+                        if (videoDataValues.length > -1 && videoStyles.includes('z-index: -100')) {
+                            video.play()
+                            scrollIndexNumber.innerHTML = videoData
+                            scrollIndicatorIndex.innerHTML = videoData
+                        }
+                
+                        if (!videoStyles.includes('z-index: -100')) {
+                            video.pause()
+                        }
+                    }
+                }
+                
+                gsap.ticker.add(updateElementState)
+                
+                const parallax = e => {
+                    gsap.to('.scroll_layers__video_id', {
+                        x: e.clientX / 20 * -1,
+                        y: e.clientY / 20 * -1,
+                        duration: 1
+                    })
+                }
+                
+                document.addEventListener('mousemove', parallax)
+                
+                const scrollSync = gsap.to(scrollIndicator, {
+                    rotation: 360
+                })
+                
+                ScrollTrigger.create({
+                    animation: scrollSync,
+                    scrub: 1
+                })
+            }
+        },
+        {
             namespace: 'menu',
             beforeEnter() {
-                loop.videoLayerLoop.kill()
-                loop.videoIDLayerLoop.kill()
-            
-                scrub.kill()
-                scroller.disable()
-            
-                ScrollTrigger.removeEventListener('scrollEnd', scrollSnap)
-                window.removeEventListener('keydown', keyScroll)
-                document.removeEventListener('mousemove', parallax)
-
                 const toSelf = document.querySelector('.works_page_as_menu__to_self')
                 const toSelfBack = document.querySelector('.to_self_back')
 
@@ -659,16 +652,6 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter() {
-                loop.videoLayerLoop.kill()
-                loop.videoIDLayerLoop.kill()
-            
-                scrub.kill()
-                scroller.disable()
-            
-                ScrollTrigger.removeEventListener('scrollEnd', scrollSnap)
-                window.removeEventListener('keydown', keyScroll)
-                document.removeEventListener('mousemove', parallax)
-
                 const show = document.querySelector('.page_transition_content__show_info')
                 const hide = document.querySelector('.mobi_toggle_state_content__hide_info')
 
@@ -768,11 +751,11 @@ barba.init({
             },
             afterOnce({next}) {
                 if (next.namespace === 'home' || 'content') {
-                    menuEvent(menuOpen, menuOpenUIFragments)
+                    menuInteractionEvent(menuOpen, menuOpenUIFragments)
                 }
 
                 if (next.namespace === 'menu') {
-                    menuEvent(menuClose, menuCloseUIFragments)
+                    menuInteractionEvent(menuClose, menuCloseUIFragments)
                 }
             }
         }
