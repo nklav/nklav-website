@@ -264,6 +264,11 @@ ScrollTrigger.create({
     scrub: 1
 })
 
+const logoHeader = document.querySelector('.to_home__logo')
+const logoFooter = document.querySelector('.works_page_as_menu__logo')
+
+const listItem = document.querySelectorAll('.works_page_as_menu__list_item')
+
 const menuOpen = document.querySelector('.menu--open')
 const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
 
@@ -348,12 +353,10 @@ const loaderAnimation = () => {
     return tl
 }
 
-const userInterfaceAnimation = menuStateFragments => {
-    const logo = document.querySelector('.to_home__logo')
-
+const userInterfaceAnimation = (logoPosition, menuStateFragments) => {
     const tl = gsap.timeline()
 
-    tl.from(logo, {
+    tl.from(logoPosition, {
         autoAlpha: 0,
         y: -20
     })
@@ -372,10 +375,10 @@ const userInterfaceAnimation = menuStateFragments => {
 
 const homeOnceAnimation = container => {
     const tl = gsap.timeline()
-
+    
     tl.add(loaderAnimation())
 
-    .add(userInterfaceAnimation(menuOpenUIFragments), '+=.5')
+    .add(userInterfaceAnimation(logoHeader, menuOpenUIFragments), '+=.5')
 
     .from(container, {
         autoAlpha: 0,
@@ -388,9 +391,44 @@ const homeOnceAnimation = container => {
     }, '-=1')
 }
 
+const menuOnceAnimation = container => {
+    const tl = gsap.timeline()
+    
+    tl.set(logo, {
+        display: 'none',
+        pointerEvents: 'none'
+    })
+
+    .set(menuOpen, {
+        display: 'none',
+        pointerEvents: 'none'
+    })
+
+    .add(loaderAnimation())
+
+    .set(menuClose, {
+        display: 'block',
+        pointerEvents: 'auto'
+    })
+
+    .add(userInterfaceAnimation(logoFooter, menuCloseUIFragments), '+=.5')
+
+    .from(container, {
+        autoAlpha: 0,
+        duration: 1
+    }, '-=.5')
+
+    .from(listItem, {
+        xPercent: 100,
+        stagger: .3
+    })
+
+    return tl
+}
+
 barba.init({
     schema: {
-        prefix: 'data-push-state-ajax',
+        prefix: 'data-page',
         wrapper: 'container',
         container: 'transition'
     },
@@ -636,6 +674,19 @@ barba.init({
             },
             once({next}) {
                 homeOnceAnimation(next.container)
+                console.log('home once')
+            }
+        },
+        {
+            name: 'menu-once-animation',
+            to: {
+                namespace: [
+                    'menu'
+                ]
+            },
+            once({next}) {
+                menuOnceAnimation(next.container)
+                console.log('menu once')
             }
         }
     ]
