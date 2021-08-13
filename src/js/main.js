@@ -311,13 +311,16 @@ class Looper {
     
         return sequenceLoop
     }
+
+    get spacer() {
+        return this.items.length
+    }
 }
 
 class Scroller extends Looper {
     constructor(config) {
         super()
-        
-        this.items = config.items
+
         this.instances = config.instances
         this.pinner = config.pinner
         this.scrollSnapping = config.scrollSnapping
@@ -329,7 +332,8 @@ class Scroller extends Looper {
         const parameters = {
             LooperInstance: this.instances[0].loop(),
             instances: this.instances,
-            pinner: this.pinner
+            pinner: this.pinner,
+            spacer: this.instances[0].spacer
         }
 
         let iteration = 0
@@ -380,7 +384,7 @@ class Scroller extends Looper {
         }
 
         const scrollPointOffset = offset => {
-            const snap = gsap.utils.snap(1 / this.items.length)
+            const snap = gsap.utils.snap(1 / parameters.spacer)
             const time = snap(offset)
 
             const progress = (time - parameters.LooperInstance.duration() * iteration) / parameters.LooperInstance.duration()
@@ -425,11 +429,11 @@ class Scroller extends Looper {
                 }
                 
                 if (e.code == 'ArrowDown') {
-                    scrollPointOffset(scrub.vars.offset + 1 / this.items.length)
+                    scrollPointOffset(scrub.vars.offset + 1 / parameters.spacer)
                 }
                 
                 if (e.code == 'ArrowUp') {
-                    scrollPointOffset(scrub.vars.offset - 1 / this.items.length)
+                    scrollPointOffset(scrub.vars.offset - 1 / parameters.spacer)
                 }
             }
     
@@ -531,7 +535,6 @@ const videoLooper = new Looper(videos, videoAnimation)
 const videoIDLooper = new Looper(videoID, videoIDAnimation)
 
 const scrollLoop = new Scroller({
-    items: videos,
     instances: [videoLooper, videoIDLooper],
     pinner: pinner,
     scrollSnapping: true,
