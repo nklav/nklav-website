@@ -237,8 +237,8 @@ br {
 
 .scroll_indicator {
     border: 2px solid hsla(0, 100%, 100%, 10%);
-    border-radius: 50%;
     border-top: 2px solid var(--primary-ui-color);
+    border-radius: 50%;
 }
 
 .scroll_indicator_index {
@@ -406,7 +406,7 @@ br {
     right: 0;
     
     color: var(--primary-ui-color);
-    -webkit-text-stroke: 1px hsl(0, 100%, 100%);
+    -webkit-text-stroke: 1px var(--primary-ui-color);
 
     clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
 
@@ -532,8 +532,8 @@ br {
     position: absolute;
     left: 0;
 
-    color: hsl(0, 100%, 100%);
-    -webkit-text-stroke: 1px hsl(0, 100%, 100%);
+    color: var(--primary-ui-color);
+    -webkit-text-stroke: 1px var(--primary-ui-color);
 
     clip-path: inset(0 100% 0 0);
 
