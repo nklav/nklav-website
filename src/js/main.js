@@ -1,7 +1,7 @@
 import barba from '@barba/core'
 import Plyr from 'plyr'
 
-import bundle, { Curtains, Plane, ScrollTrigger } from './bundle'
+import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
 const loader = document.querySelector('.loader')
@@ -314,9 +314,10 @@ class Looper {
 }
 
 class Scroller extends Looper {
-    constructor(items, config) {
-        super(items)
-
+    constructor(config) {
+        super()
+        
+        this.items = config.items
         this.instances = config.instances
         this.pinner = config.pinner
         this.scrollSnapping = config.scrollSnapping
@@ -529,7 +530,8 @@ const controller = new AbortController()
 const videoLooper = new Looper(videos, videoAnimation)
 const videoIDLooper = new Looper(videoID, videoIDAnimation)
 
-const scrollLoop = new Scroller(videos, {
+const scrollLoop = new Scroller({
+    items: videos,
     instances: [videoLooper, videoIDLooper],
     pinner: pinner,
     scrollSnapping: true,
