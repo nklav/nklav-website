@@ -1,7 +1,7 @@
 import barba from '@barba/core'
 import Plyr from 'plyr'
 
-import bundle, { Curtains, Plane } from './bundle'
+import bundle, { Curtains, Plane, ScrollTrigger } from './bundle'
 import main from '../css/main'
 
 const loader = document.querySelector('.loader')
@@ -314,33 +314,37 @@ class Looper {
 }
 
 class Scroller extends Looper {
-    constructor(items, LooperInstance0, LooperInstance1, pinner, scrollSnapping, keyScrolling) {
+    constructor(items, config) {
         super(items)
 
-        this.LooperInstance0 = LooperInstance0
-        this.LooperInstance1 = LooperInstance1
-        this.pinner = pinner
-        this.scrollSnapping = scrollSnapping
-        this.keyScrolling = keyScrolling
+        this.instances = config.instances
+        this.pinner = config.pinner
+        this.scrollSnapping = config.scrollSnapping
+        this.keyScrolling = config.keyScrolling
+        this.parallax = config.parallaxElement
     }
 
     scrollLooper() {
         const parameters = {
-            videoLoop: this.LooperInstance0.loop(),
-            videoIDLoop: this.LooperInstance1.loop(),
+            LooperInstance: this.instances[0].loop(),
+            instances: this.instances,
             pinner: this.pinner
         }
 
         let iteration = 0
 
         const playhead = {offset: 0}
-        const loopTime = gsap.utils.wrap(0, parameters.videoLoop.duration())
+        const timeLoop = gsap.utils.wrap(0, parameters.LooperInstance.duration())
 
         const scrub = gsap.to(playhead, {
             offset: 0,
             onUpdate() {
-                parameters.videoLoop.time(loopTime(playhead.offset))
-                parameters.videoIDLoop.time(loopTime(playhead.offset))
+                parameters.LooperInstance.time(timeLoop(playhead.offset))
+
+                for (let i = 1; i < parameters.instances.length; i++) {
+                    const instance = parameters.instances[i].loop()
+                    instance.time(timeLoop(playhead.offset))
+                }
             },
             duration: 1,
             ease: 'slow',
@@ -357,7 +361,7 @@ class Scroller extends Looper {
                 } else if (scrollSelf < 1 && self.direction < 0) {
                     scrollMeters.wrap(-1, self.end - 1)
                 } else {
-                    scrub.vars.offset = (iteration + self.progress) * parameters.videoLoop.duration()
+                    scrub.vars.offset = (iteration + self.progress) * parameters.LooperInstance.duration()
                     scrub.invalidate().restart()
                 }
             },
@@ -378,7 +382,7 @@ class Scroller extends Looper {
             const snap = gsap.utils.snap(1 / this.items.length)
             const time = snap(offset)
 
-            const progress = (time - parameters.videoLoop.duration() * iteration) / parameters.videoLoop.duration()
+            const progress = (time - parameters.LooperInstance.duration() * iteration) / parameters.LooperInstance.duration()
             const scroll = scrollMeters.scrollProgress(progress)
 
             if (progress >= 1 || progress < 0) {
@@ -401,7 +405,10 @@ class Scroller extends Looper {
                 }, 200)
             }
     
-            window.addEventListener('scroll', scrollSnap, false)
+            window.addEventListener('scroll', scrollSnap, {
+                capture: false,
+                signal: controller.signal
+            })
         }
 
         if (this.keyScrolling) {
@@ -425,8 +432,32 @@ class Scroller extends Looper {
                 }
             }
     
-            window.addEventListener('keydown', keyScroll, false)
+            window.addEventListener('keydown', keyScroll, {
+                capture: false,
+                signal: controller.signal
+            })
         }
+
+        if (this.parallax) {
+            const parallax = e => {
+                gsap.to(this.parallax, {
+                    x: e.clientX / 20 * -1,
+                    y: e.clientY / 20 * -1,
+                    duration: 1
+                })
+            }
+
+            document.addEventListener('mousemove', parallax, {
+                signal: controller.signal
+            })
+        }
+    }
+
+    scrollSync(animation) {
+        ScrollTrigger.create({
+            animation: animation,
+            scrub: 1
+        })
     }
 }
 
@@ -493,12 +524,26 @@ const videoID = gsap.utils.toArray('.scroll_layers__video_id')
 
 const pinner = document.querySelector('.scroll_layers')
 
-const videoLoop = new Looper(videos, videoAnimation)
-const videoIDLoop = new Looper(videoID, videoIDAnimation)
+const controller = new AbortController()
 
-const scroller = new Scroller(videos, videoLoop, videoIDLoop, pinner, true, true)
+const videoLooper = new Looper(videos, videoAnimation)
+const videoIDLooper = new Looper(videoID, videoIDAnimation)
 
-scroller.scrollLooper()
+const scrollLoop = new Scroller(videos, {
+    instances: [videoLooper, videoIDLooper],
+    pinner: pinner,
+    scrollSnapping: true,
+    keyScrolling: true,
+    parallaxElement: videoID
+})
+
+scrollLoop.scrollLooper()
+
+const scrollIndicatorAnimation = gsap.to(scrollIndicator, {
+    rotation: 360
+})
+
+scrollLoop.scrollSync(scrollIndicatorAnimation)
 
 const videoElements = document.getElementsByClassName('scroll_layers__video')
 const videoArray = [ ...videoElements ]
@@ -507,9 +552,7 @@ const scrollIndexNumber = document.querySelector('.scroll_index__number')
 const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
 
 const updateElementState = () => {
-    let i
-
-    for (i = 0; i < videoArray.length; i++) {
+    for (let i = 0; i < videoArray.length; i++) {
         const video = videoArray[i]
         const videoStyles = video.getAttribute('style')
 
@@ -530,23 +573,6 @@ const updateElementState = () => {
 
 gsap.ticker.add(updateElementState)
 
-const parallax = e => {
-    gsap.to('.scroll_layers__video_id', {
-        x: e.clientX / 20 * -1,
-        y: e.clientY / 20 * -1,
-        duration: 1
-    })
-}
-
-const scrollSync = gsap.to(scrollIndicator, {
-    rotation: 360
-})
-
-ScrollTrigger.create({
-    animation: scrollSync,
-    scrub: 1
-})
-
 barba.init({
     debug: true,
     schema: {
@@ -556,24 +582,8 @@ barba.init({
     },
     views: [
         {
-            namespace: 'home',
-            beforeEnter() {
-                document.addEventListener('mousemove', parallax)
-            }
-        },
-        {
             namespace: 'menu',
             beforeEnter() {
-                loop.videoLayerLoop.kill()
-                loop.videoIDLayerLoop.kill()
-
-                scroller.kill()
-
-                window.removeEventListener('scroll', scrollSnap)
-                window.removeEventListener('keydown', keyScroll)
-
-                document.removeEventListener('mousemove', parallax)
-
                 const toSelf = document.querySelector('.works_page_as_menu__to_self')
                 const toSelfBack = document.querySelector('.to_self_back')
 
@@ -699,16 +709,6 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter() {
-                loop.videoLayerLoop.kill()
-                loop.videoIDLayerLoop.kill()
-
-                scroller.kill()
-
-                window.removeEventListener('scroll', scrollSnap)
-                window.removeEventListener('keydown', keyScroll)
-
-                document.removeEventListener('mousemove', parallax)
-                
                 const show = document.querySelector('.page_transition_content__show_info')
                 const hide = document.querySelector('.mobi_toggle_state_content__hide_info')
 
