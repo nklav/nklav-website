@@ -149,6 +149,7 @@ const pageTransitionComponents = document.querySelectorAll('.ui_page_transition_
 
 const contentHeading = document.querySelector('.page_transition_content__heading')
 const contentDescription = document.querySelector('.page_transition_content__description')
+
 const contentShareLabel = document.querySelector('.page_transition_content__share_label')
 const contentSocialIcons = document.querySelectorAll('.page_transition_content__icon')
 
@@ -312,12 +313,16 @@ class Looper {
         return sequenceLoop
     }
 
+    vector(selector) {
+        return gsap.utils.toArray(selector)
+    }
+
     get spacer() {
         return this.items.length
     }
 }
 
-class Scroller extends Looper {
+class ScrollLoop extends Looper {
     constructor(config) {
         super()
 
@@ -326,12 +331,13 @@ class Scroller extends Looper {
         this.scrollSnapping = config.scrollSnapping
         this.keyScrolling = config.keyScrolling
         this.parallax = config.parallaxElement
+
+        this.controller = new AbortController
     }
 
     scrollLooper() {
         const parameters = {
             LooperInstance: this.instances[0].loop(),
-            instances: this.instances,
             pinner: this.pinner,
             spacer: this.instances[0].spacer
         }
@@ -343,11 +349,11 @@ class Scroller extends Looper {
 
         const scrub = gsap.to(playhead, {
             offset: 0,
-            onUpdate() {
+            onUpdate: () => {
                 parameters.LooperInstance.time(timeLoop(playhead.offset))
 
-                for (let i = 1; i < parameters.instances.length; i++) {
-                    const instance = parameters.instances[i].loop()
+                for (let i = 1; i < this.instances.length; i++) {
+                    const instance = this.instances[i].loop()
                     instance.time(timeLoop(playhead.offset))
                 }
             },
@@ -358,17 +364,15 @@ class Scroller extends Looper {
 
         const scroller = ScrollTrigger.create({
             start: 0,
-            onUpdate(self) {
+            onUpdate: self => {
                 const scrollSelf = self.scroll()
 
-                if (scrollSelf > self.end - 1) {
-                    scrollMeters.wrap(1, 1)
-                } else if (scrollSelf < 1 && self.direction < 0) {
-                    scrollMeters.wrap(-1, self.end - 1)
-                } else {
-                    scrub.vars.offset = (iteration + self.progress) * parameters.LooperInstance.duration()
-                    scrub.invalidate().restart()
-                }
+                if (scrollSelf > self.end - 1) scrollMeters.scrollCircle(1, 1)
+                
+                if (scrollSelf < 1 && self.direction < 0) scrollMeters.scrollCircle(-1, self.end - 1)
+
+                scrub.vars.offset = (iteration + self.progress) * parameters.LooperInstance.duration()
+                scrub.invalidate().restart()
             },
             end: '+=3000',
             pin: parameters.pinner
@@ -376,7 +380,7 @@ class Scroller extends Looper {
 
         const scrollMeters = {
             scrollProgress: progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end),
-            wrap: (iterationDelta, scrollPoint) => {
+            scrollCircle: (iterationDelta, scrollPoint) => {
                 iteration += iterationDelta
                 scroller.scroll(scrollPoint)
                 scroller.update()
@@ -390,9 +394,7 @@ class Scroller extends Looper {
             const progress = (time - parameters.LooperInstance.duration() * iteration) / parameters.LooperInstance.duration()
             const scroll = scrollMeters.scrollProgress(progress)
 
-            if (progress >= 1 || progress < 0) {
-                scrollMeters.wrap(Math.floor(progress), scroll)
-            }
+            if (progress >= 1 || progress < 0) scrollMeters.scrollCircle(Math.floor(progress), scroll)
 
             scroller.scroll(scroll)
         }
@@ -401,18 +403,13 @@ class Scroller extends Looper {
             let timer = null
     
             const scrollSnap = () => {
-                if (timer != null) {
-                    clearTimeout(timer)
-                }
+                if (timer != null) clearTimeout(timer)
     
-                timer = setTimeout(() => {
-                    scrollPointOffset(scrub.vars.offset)
-                }, 200)
+                timer = setTimeout(() => scrollPointOffset(scrub.vars.offset), 200)
             }
     
             window.addEventListener('scroll', scrollSnap, {
-                capture: false,
-                signal: controller.signal
+                signal: this.controller.signal
             })
         }
 
@@ -424,22 +421,15 @@ class Scroller extends Looper {
                     'ArrowDown'
                 ]
                 
-                if (keyCodes.indexOf(e.code) > -1) {
-                    e.preventDefault()
-                }
+                if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
                 
-                if (e.code == 'ArrowDown') {
-                    scrollPointOffset(scrub.vars.offset + 1 / parameters.spacer)
-                }
+                if (e.code == 'ArrowDown') scrollPointOffset(scrub.vars.offset + 1 / parameters.spacer)
                 
-                if (e.code == 'ArrowUp') {
-                    scrollPointOffset(scrub.vars.offset - 1 / parameters.spacer)
-                }
+                if (e.code == 'ArrowUp') scrollPointOffset(scrub.vars.offset - 1 / parameters.spacer)
             }
     
             window.addEventListener('keydown', keyScroll, {
-                capture: false,
-                signal: controller.signal
+                signal: this.controller.signal
             })
         }
 
@@ -452,8 +442,8 @@ class Scroller extends Looper {
                 })
             }
 
-            document.addEventListener('mousemove', parallax, {
-                signal: controller.signal
+            window.addEventListener('mousemove', parallax, {
+                signal: this.controller.signal
             })
         }
     }
@@ -463,6 +453,22 @@ class Scroller extends Looper {
             animation: animation,
             scrub: 1
         })
+    }
+
+    accessFrame(callback) {
+        gsap.ticker.add(callback)
+    }
+
+    destroy() {
+        const instances = ScrollTrigger.getAll()
+        instances.forEach(instance => instance.disable())
+    }
+
+    refresh() {
+        const instances = ScrollTrigger.getAll()
+        instances.forEach(instance => instance.enable())
+
+        ScrollTrigger.refresh(true)
     }
 }
 
@@ -524,60 +530,6 @@ const videoIDAnimation = id => {
     return tl
 }
 
-const videos = gsap.utils.toArray('.scroll_layers__video')
-const videoID = gsap.utils.toArray('.scroll_layers__video_id')
-
-const pinner = document.querySelector('.scroll_layers')
-
-const controller = new AbortController()
-
-const videoLooper = new Looper(videos, videoAnimation)
-const videoIDLooper = new Looper(videoID, videoIDAnimation)
-
-const scrollLoop = new Scroller({
-    instances: [videoLooper, videoIDLooper],
-    pinner: pinner,
-    scrollSnapping: true,
-    keyScrolling: true,
-    parallaxElement: videoID
-})
-
-scrollLoop.scrollLooper()
-
-const scrollIndicatorAnimation = gsap.to(scrollIndicator, {
-    rotation: 360
-})
-
-scrollLoop.scrollSync(scrollIndicatorAnimation)
-
-const videoElements = document.getElementsByClassName('scroll_layers__video')
-const videoArray = [ ...videoElements ]
-
-const scrollIndexNumber = document.querySelector('.scroll_index__number')
-const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
-
-const updateElementState = () => {
-    for (let i = 0; i < videoArray.length; i++) {
-        const video = videoArray[i]
-        const videoStyles = video.getAttribute('style')
-
-        const videoData = video.dataset.index
-        const videoDataValues = [ ...videoData ]
-
-        if (videoDataValues.length > -1 && videoStyles.includes('z-index: -100')) {
-            video.play()
-            scrollIndexNumber.innerHTML = videoData
-            scrollIndicatorIndex.innerHTML = videoData
-        }
-
-        if (!videoStyles.includes('z-index: -100')) {
-            video.pause()
-        }
-    }
-}
-
-gsap.ticker.add(updateElementState)
-
 barba.init({
     debug: true,
     schema: {
@@ -587,12 +539,68 @@ barba.init({
     },
     views: [
         {
+            namespace: 'home',
+            beforeEnter({next}) {
+                const videos = Looper.prototype.vector('.scroll_layers__video')
+                const videoID = Looper.prototype.vector('.scroll_layers__video_id')
+
+                const pinner = next.container.querySelector('.scroll_layers')
+                
+                const videoLooper = new Looper(videos, videoAnimation)
+                const videoIDLooper = new Looper(videoID, videoIDAnimation)
+                
+                const scrollLoop = new ScrollLoop({
+                    instances: [videoLooper, videoIDLooper],
+                    pinner: pinner,
+                    scrollSnapping: true,
+                    keyScrolling: true,
+                    parallaxElement: videoID
+                })
+                
+                const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
+
+                const videoElements = document.getElementsByClassName('scroll_layers__video')
+                const videoArray = [ ...videoElements ]
+
+                const scrollIndexNumber = document.querySelector('.scroll_index__number')
+                const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
+
+                const updateElementState = () => {
+                    for (let i = 0; i < videoArray.length; i++) {
+                        const video = videoArray[i]
+                        const videoStyles = video.getAttribute('style')
+
+                        const videoData = video.dataset.index
+
+                        if (videoStyles.includes('z-index: -100') && video.paused) {
+                            video.play()
+
+                            scrollIndexNumber.innerHTML = videoData
+                            scrollIndicatorIndex.innerHTML = videoData
+                        }
+
+                        if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause()
+                    }
+                }
+                
+                scrollLoop.scrollLooper()
+                
+                scrollLoop.scrollSync(scrollIndicatorAnimation)
+
+                scrollLoop.accessFrame(updateElementState)
+                
+                scrollLoop.refresh()
+            }
+        },
+        {
             namespace: 'menu',
             beforeEnter() {
+                ScrollLoop.prototype.destroy()
+
                 const toSelf = document.querySelector('.works_page_as_menu__to_self')
                 const toSelfBack = document.querySelector('.to_self_back')
 
-                const scrollToGL = () => {
+                const scrollToVideos = () => {
                     const tl = gsap.timeline()
 
                     .to(window, {
@@ -606,7 +614,6 @@ barba.init({
 
                     .from('._gl_container', {
                         autoAlpha: 0,
-                        duration: .5,
                         ease: 'slow'
                     }, '-=1')
 
@@ -623,8 +630,8 @@ barba.init({
                     })
                 }
                 
-                toSelf.addEventListener('click', scrollToGL)
-                toSelf.addEventListener('touchend', scrollToGL)
+                toSelf.addEventListener('click', scrollToVideos)
+                toSelf.addEventListener('touchend', scrollToVideos)
                 
                 toSelfBack.addEventListener('click', scrollTop)
                 toSelfBack.addEventListener('touchend', scrollTop)
@@ -714,12 +721,16 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter() {
+                ScrollLoop.prototype.destroy()
+
+                const heading = document.querySelector('.page_transition_content__heading_container')
+
+                const mobileContainer = document.querySelector('.page_transition_content__mobi_container')
+                const mobileContent = document.querySelector('.mobi_toggle_state_content')
+
                 const show = document.querySelector('.page_transition_content__show_info')
                 const hide = document.querySelector('.mobi_toggle_state_content__hide_info')
 
-                const heading = document.querySelector('.page_transition_content__heading_container')
-                const mobileContainer = document.querySelector('.page_transition_content__mobi_container')
-                const mobileContent = document.querySelector('.mobi_toggle_state_content')
                 const mobileUIFragments = document.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
                 const mobileSocialIcons = document.querySelectorAll('.mobi_toggle_state_content .page_transition_content__icon')
 
@@ -787,9 +798,7 @@ barba.init({
                 const monitorWindow = () => {
                     let width = window.innerWidth
 
-                    if (width >= 1024) {
-                        showInfo.restart().pause()
-                    }
+                    if (width >= 1024) showInfo.restart().pause()
                 }
 
                 gsap.ticker.add(monitorWindow)
@@ -799,26 +808,16 @@ barba.init({
     transitions: [
         {
             async once({next}) {
-                if (next.namespace == 'home') {
-                    await homeOnceAnimation(next.container)
-                }
+                if (next.namespace == 'home') await homeOnceAnimation(next.container)
 
-                if (next.namespace == 'menu') {
-                    await menuOnceAnimation(next.container)
-                }
+                if (next.namespace == 'menu') await menuOnceAnimation(next.container)
 
-                if (next.namespace == 'content') {
-                    await contentOnceAnimation()
-                }
+                if (next.namespace == 'content') await contentOnceAnimation()
             },
             afterOnce({next}) {
-                if (next.namespace == 'home' || 'content') {
-                    menuInteraction(menuOpen, menuOpenUIFragments)
-                }
+                if (next.namespace == 'home' || 'content') menuInteraction(menuOpen, menuOpenUIFragments)
 
-                if (next.namespace == 'menu') {
-                    menuInteraction(menuClose, menuCloseUIFragments)
-                }
+                if (next.namespace == 'menu') menuInteraction(menuClose, menuCloseUIFragments)
             }
         }
     ]
