@@ -444,7 +444,7 @@ br {
     margin: 5px 0 20px 0;
 }
 
-#_c {
+#c {
     position: fixed;
     top: 0;
     left: 0;
@@ -454,31 +454,31 @@ br {
     height: 100vh;
 }
 
-._gl_container {
+.gl_container {
     margin: 500px 0 100px 0;
 }
 
-._gl {
+.gl {
     display: grid;
     grid-template-columns: 180px;
     justify-content: center;
     gap: 100px 0;
 }
 
-._gl__to_this {
+.gl__to_this {
     display: block;
 }
 
-._gl__plane {
+.gl__plane {
     width: 180px;
     height: 101.25px;
 }
 
-._gl__plane video {
+.gl__plane video {
     display: none;
 }
 
-._gl__id {
+.gl__id {
     display: inline-block;
 
     margin: 20px 0 0 10px;
@@ -487,7 +487,7 @@ br {
     font-stretch: 112.5%;
 }
 
-._gl__id::after {
+.gl__id::after {
     content: '';
 
     display: block;
@@ -502,7 +502,7 @@ br {
     transition: transform .3s;
 }
 
-._gl__to_this:hover ._gl__id::after {
+.gl__to_this:hover .gl__id::after {
     transform: scaleX(1);
 }
 
@@ -839,11 +839,11 @@ main > div > video + div {
         line-height: 75px;
     }
 
-    ._gl {
+    .gl {
         grid-template-columns: 240px;
     }
 
-    ._gl__plane {
+    .gl__plane {
         width: 240px;
         height: 135px;
     }
@@ -865,11 +865,11 @@ main > div > video + div {
 }
 
 @media (min-width: 576px) {
-    ._gl {
+    .gl {
         grid-template-columns: 320px;
     }
 
-    ._gl__plane {
+    .gl__plane {
         width: 320px;
         height: 180px;
     }
@@ -958,16 +958,16 @@ main > div > video + div {
         margin: 10px 0 20px 0;
     }
 
-    ._gl {
+    .gl {
         grid-template-columns: repeat(2, 240px);
         gap: 100px 50px;
     }
 
-    ._gl__in:nth-child(even) {
+    .gl__in:nth-child(even) {
         margin: 67.5px 0 0 0;
     }
 
-    ._gl__plane {
+    .gl__plane {
         width: 240px;
         height: 135px;
     }
@@ -1014,25 +1014,25 @@ main > div > video + div {
         margin: 0;
     }
 
-    ._gl_container {
+    .gl_container {
         margin: 500px 0 150px 0;
     }
 
-    ._gl {
+    .gl {
         grid-template-columns: repeat(2, 320px);
         gap: 150px 50px;
     }
 
-    ._gl__in:nth-child(even) {
+    .gl__in:nth-child(even) {
         margin: 90px 0 0 0;
     }
 
-    ._gl__plane {
+    .gl__plane {
         width: 320px;
         height: 180px;
     }
 
-    ._gl__id {
+    .gl__id {
         margin: 40px 0 0 20px;
 
         font-size: 3.6rem;
@@ -1105,7 +1105,7 @@ main > div > video + div {
         width: 200px;
     }
 
-    ._gl {
+    .gl {
         gap: 150px 100px;
     }
 
@@ -1124,20 +1124,20 @@ main > div > video + div {
         font-size: 9.6rem;
     }
 
-    ._gl_container {
+    .gl_container {
         margin: 500px 0 250px;
     }
 
-    ._gl {
+    .gl {
         grid-template-columns: repeat(2, 480px);
         gap: 150px;
     }
 
-    ._gl__in:nth-child(even) {
+    .gl__in:nth-child(even) {
         margin: 135px 0 0 0;
     }
 
-    ._gl__plane {
+    .gl__plane {
         width: 480px;
         height: 270px;
     }
@@ -1157,19 +1157,19 @@ main > div > video + div {
         font-size: 12.2rem;
     }
 
-    ._gl_container {
+    .gl_container {
         margin: 500px 0 300px 0;
     }
 
-    ._gl {
+    .gl {
         grid-template-columns: repeat(2, 640px);
     }
 
-    ._gl__in:nth-child(even) {
+    .gl__in:nth-child(even) {
         margin: 180px 0 0 0;
     }
 
-    ._gl__plane {
+    .gl__plane {
         width: 640px;
         height: 360px;
     }
