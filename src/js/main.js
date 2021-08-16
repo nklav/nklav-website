@@ -4,6 +4,40 @@ import Plyr from 'plyr'
 import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
+class EventRegent {
+    constructor(type, callback) {
+        this.type = type[0]
+        this.customType = type[1]
+        this.callback = callback[0]
+        this.callback1 = callback[1]
+
+        this.syntheticEvent = new Event(this.customType)
+
+        if (window.type && window.customType && window.method && window.method1) {
+            window.removeEventListener(window.type, window.method)
+            window.removeEventListener(window.customType, window.method1)
+        }
+
+        window.type = this.type
+        window.customType = this.customType
+        window.method = this.register.bind(this)
+        window.method1 = this.register1.bind(this)
+
+        window.addEventListener(window.type, window.method)
+        window.addEventListener(window.customType, window.method1)
+
+        window.dispatchEvent(this.syntheticEvent)
+    }
+
+    register() {
+        this.callback()
+    }
+
+    register1() {
+        window.addEventListener('keydown', this.callback1)
+    }
+}
+
 class Looper {
     constructor(items, animation) {
         this.items = gsap.utils.toArray(items)
@@ -17,11 +51,11 @@ class Looper {
         const start = this.items.length * spacing + .5
         const end = (this.items.length + overlap) * spacing + .5
     
-        const sequence = gsap.timeline({
+        const continuum = gsap.timeline({
             paused: true
         })
     
-        const sequenceLoop = gsap.timeline({
+        const loop = gsap.timeline({
             paused: true,
             repeat: -1,
             onRepeat() {
@@ -37,18 +71,18 @@ class Looper {
             index = i % this.items.length
             time = i * spacing
     
-            sequence.add(this.animation(this.items[index]), time)
+            continuum.add(this.animation(this.items[index]), time)
         }
     
-        sequence.time(start)
+        continuum.time(start)
     
-        sequenceLoop.to(sequence, {
+        loop.to(continuum, {
             time: end,
             duration: end - start,
             ease: 'none'
         })
     
-        .fromTo(sequence, {
+        .fromTo(continuum, {
             time: overlap * spacing + 1
         }, {
             time: start,
@@ -58,14 +92,14 @@ class Looper {
         })
     
         return {
-            timeline: sequenceLoop,
+            timeline: loop,
             unloop: () => {
-                gsap.killTweensOf(sequence)
+                gsap.killTweensOf(continuum)
             }
         }
     }
 
-    get spacer() {
+    get space() {
         return this.items.length
     }
 }
@@ -77,7 +111,8 @@ class ScrollLooper extends Looper {
         this.instances = config.instances
         this.pinner = config.pinner
         this.scrollSnapping = config.scrollSnapping
-        this.keyScrolling = config.keyScrolling
+        this.keyScrolling = config.keyScrolling,
+        this.on = config.on
         
         this.LooperInstance = this.instances[0].loop()
 
@@ -93,7 +128,7 @@ class ScrollLooper extends Looper {
         const parameters = {
             LooperInstance: this.LooperInstance.timeline,
             pinner: this.pinner,
-            spacer: this.instances[0].spacer
+            spacer: this.instances[0].space
         }
 
         let iteration = 0
@@ -173,34 +208,8 @@ class ScrollLooper extends Looper {
         }
 
         if (this.scrollSnapping && this.keyScrolling) {
-            window.addEventListener('scroll', scrollSnap)
-            window.addEventListener('keydown', keyScroll)
-
-            return {
-                silencer: () => {
-                    window.removeEventListener('scroll', scrollSnap)
-                }
-            }
-        }
-
-        if (this.scrollSnapping && !this.keyScrolling) {
-            window.addEventListener('scroll', scrollSnap)
-
-            return {
-                silencer: () => {
-                    window.removeEventListener('scroll', scrollSnap)
-                }
-            }
-        }
-
-        if (!this.scrollSnapping && this.keyScrolling) {
-            window.addEventListener('keydown', keyScroll)
-
-            return {
-                silencer: () => {
-                    window.removeEventListener('keydown', keyScroll)
-                }
-            }
+            const e = new EventRegent(this.on, [scrollSnap, keyScroll])
+            e.register()
         }
     }
 
@@ -215,7 +224,7 @@ class ScrollLooper extends Looper {
         gsap.ticker.add(callback)
     }
 
-    destroy() {
+    selfDestruct() {
         const instances = ScrollTrigger.getAll()
         instances.forEach(instance => instance.disable())
 
@@ -569,7 +578,8 @@ barba.init({
                     instances: [videoLooper, videoIDLooper],
                     pinner: pinner,
                     scrollSnapping: true,
-                    keyScrolling: true
+                    keyScrolling: true,
+                    on: ['scroll', 'custom']
                 })
 
                 const scrollIndicator = next.container.querySelector('.scroll_indicator')
@@ -617,6 +627,27 @@ barba.init({
                 scrollLoop.refresh()
 
                 scrollLoop.scrollSync(scrollIndicatorAnimation)
+            },
+            beforeLeave({current}) {
+                const videos = current.container.querySelectorAll('.scroll_layers__video')
+                const videoID = current.container.querySelectorAll('.scroll_layers__video_id')
+
+                const pinner = current.container.querySelector('.scroll_layers')
+                
+                const videoLooper = new Looper(videos, videoAnimation)
+                const videoIDLooper = new Looper(videoID, videoIDAnimation)
+                
+                const Proxy = new ScrollLooper({
+                    instances: [videoLooper, videoIDLooper],
+                    pinner: pinner,
+                    scrollSnapping: true,
+                    keyScrolling: true,
+                    on: ['load', 'custom']
+                })
+
+                Proxy.scroll()
+
+                Proxy.selfDestruct()
             }
         },
         {
