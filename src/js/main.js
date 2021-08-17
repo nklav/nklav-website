@@ -5,51 +5,56 @@ import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
 class EventRegent {
-    constructor(type, callback) {
-        this.type = type[0]
-        this.customType = type[1]
-        this.callback = callback[0]
-        this.callback1 = callback[1]
+    constructor(signal, receiver) {
+        this.signal_0 = signal[0]
+        this.signal_1 = signal[1]
+        this.signal_2 = signal[2]
+        this.receiver_0 = receiver[0]
+        this.receiver_1 = receiver[1]
 
-        this.syntheticEvent = new Event(this.customType)
+        this.e = new Event(this.signal_1)
 
-        if (window.type && window.customType && window.method && window.method1) {
-            window.removeEventListener(window.type, window.method)
-            window.removeEventListener(window.customType, window.method1)
+        if (window.accessProp_0 && window.accessProp_1 && window.accessMethod_0 && window.accessMethod_1) {
+            window.removeEventListener(window.accessProp_0, window.accessMethod_0)
+            window.removeEventListener(window.accessProp_1, window.accessMethod_1)
         }
 
-        window.type = this.type
-        window.customType = this.customType
-        window.method = this.register.bind(this)
-        window.method1 = this.register1.bind(this)
+        if (window.accessProp_2 && window.accessMethod_2) window.removeEventListener(window.accessProp_2, window.accessMethod_2)
 
-        window.addEventListener(window.type, window.method)
-        window.addEventListener(window.customType, window.method1)
+        window.accessProp_0 = this.signal_0
+        window.accessProp_1 = this.signal_1
+        window.accessProp_2 = this.signal_2
+        window.accessMethod_0 = this.#registry_0.bind(this)
+        window.accessMethod_1 = this.#registry_1.bind(this)
+        window.accessMethod_2 = this.receiver_1
 
-        window.dispatchEvent(this.syntheticEvent)
+        window.addEventListener(window.accessProp_0, window.accessMethod_0)
+        window.addEventListener(window.accessProp_1, window.accessMethod_1)
+
+        window.dispatchEvent(this.e)
     }
 
-    register() {
-        this.callback()
+    #registry_0() {
+        this.receiver_0()
     }
 
-    register1() {
-        window.addEventListener('keydown', this.callback1)
+    #registry_1() {
+        window.addEventListener(window.accessProp_2, window.accessMethod_2)
     }
 }
 
-class Looper {
-    constructor(items, animation) {
-        this.items = gsap.utils.toArray(items)
+class Loop {
+    constructor(elements, animation) {
+        this.elements = gsap.utils.toArray(elements)
         this.animation = animation
     }
     
     loop() {
-        const spacing = 1 / this.items.length
+        const spacing = 1 / this.elements.length
         const overlap = Math.ceil(1 / spacing)
     
-        const start = this.items.length * spacing + .5
-        const end = (this.items.length + overlap) * spacing + .5
+        const start = this.elements.length * spacing + .5
+        const end = (this.elements.length + overlap) * spacing + .5
     
         const continuum = gsap.timeline({
             paused: true
@@ -63,15 +68,15 @@ class Looper {
             }
         })
     
-        const l = this.items.length + overlap * 2
+        const l = this.elements.length + overlap * 2
     
         let i, index, time
     
         for (i = 0; i < l; i++) {
-            index = i % this.items.length
+            index = i % this.elements.length
             time = i * spacing
     
-            continuum.add(this.animation(this.items[index]), time)
+            continuum.add(this.animation(this.elements[index]), time)
         }
     
         continuum.time(start)
@@ -100,21 +105,21 @@ class Looper {
     }
 
     get space() {
-        return this.items.length
+        return this.elements.length
     }
 }
 
-class ScrollLooper extends Looper {
+class ScrollLoop extends Loop {
     constructor(config) {
         super()
         
         this.instances = config.instances
-        this.pinner = config.pinner
+        this.pin = config.pin
         this.scrollSnapping = config.scrollSnapping
         this.keyScrolling = config.keyScrolling,
         this.on = config.on
         
-        this.LooperInstance = this.instances[0].loop()
+        this.instance = this.instances[0].loop()
 
         this.instanceVector = []
 
@@ -126,20 +131,20 @@ class ScrollLooper extends Looper {
 
     scroll() {
         const parameters = {
-            LooperInstance: this.LooperInstance.timeline,
-            pinner: this.pinner,
-            spacer: this.instances[0].space
+            instance: this.instance.timeline,
+            space: this.instances[0].space,
+            pin: this.pin
         }
 
         let iteration = 0
 
         const playhead = {offset: 0}
-        const timeLoop = gsap.utils.wrap(0, parameters.LooperInstance.duration())
+        const timeLoop = gsap.utils.wrap(0, parameters.instance.duration())
 
-        const scrub = gsap.to(playhead, {
+        const directMotion = gsap.to(playhead, {
             offset: 0,
             onUpdate: () => {
-                parameters.LooperInstance.time(timeLoop(playhead.offset))
+                parameters.instance.time(timeLoop(playhead.offset))
 
                 this.instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.offset)))
             },
@@ -157,11 +162,11 @@ class ScrollLooper extends Looper {
                 
                 if (scrollSelf < 1 && self.direction < 0) scrollMeters.scrollCircle(-1, self.end - 1)
 
-                scrub.vars.offset = (iteration + self.progress) * parameters.LooperInstance.duration()
-                scrub.invalidate().restart()
+                directMotion.vars.offset = (iteration + self.progress) * parameters.instance.duration()
+                directMotion.invalidate().restart()
             },
             end: '+=3000',
-            pin: parameters.pinner
+            pin: parameters.pin
         })
 
         const scrollMeters = {
@@ -174,10 +179,10 @@ class ScrollLooper extends Looper {
         }
 
         const scrollPointOffset = offset => {
-            const snap = gsap.utils.snap(1 / parameters.spacer)
+            const snap = gsap.utils.snap(1 / parameters.space)
             const time = snap(offset)
 
-            const progress = (time - parameters.LooperInstance.duration() * iteration) / parameters.LooperInstance.duration()
+            const progress = (time - parameters.instance.duration() * iteration) / parameters.instance.duration()
             const scroll = scrollMeters.scrollProgress(progress)
 
             if (progress >= 1 || progress < 0) scrollMeters.scrollCircle(Math.floor(progress), scroll)
@@ -190,7 +195,7 @@ class ScrollLooper extends Looper {
         const scrollSnap = () => {
             if (timer != null) clearTimeout(timer)
 
-            timer = setTimeout(() => scrollPointOffset(scrub.vars.offset), 200)
+            timer = setTimeout(() => scrollPointOffset(directMotion.vars.offset), 200)
         }
 
         const keyScroll = e => {
@@ -202,14 +207,13 @@ class ScrollLooper extends Looper {
             
             if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
             
-            if (e.code == 'ArrowDown') scrollPointOffset(scrub.vars.offset + 1 / parameters.spacer)
+            if (e.code == 'ArrowDown') scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
             
-            if (e.code == 'ArrowUp') scrollPointOffset(scrub.vars.offset - 1 / parameters.spacer)
+            if (e.code == 'ArrowUp') scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
         }
 
         if (this.scrollSnapping && this.keyScrolling) {
-            const e = new EventRegent(this.on, [scrollSnap, keyScroll])
-            e.register()
+            new EventRegent(this.on, [scrollSnap, keyScroll])
         }
     }
 
@@ -220,15 +224,15 @@ class ScrollLooper extends Looper {
         })
     }
 
-    accessFrame(callback) {
-        gsap.ticker.add(callback)
+    accessFrame(listener) {
+        gsap.ticker.add(listener)
     }
 
     selfDestruct() {
         const instances = ScrollTrigger.getAll()
         instances.forEach(instance => instance.disable())
 
-        this.LooperInstance.unloop()
+        this.instance.unloop()
 
         for (let i = 0; i < this.instanceVector.length; i++) {
             const instance = this.instanceVector[i]
@@ -326,7 +330,7 @@ const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragmen
 
 const scrollIndicator = document.querySelector('.scroll_indicator')
 
-const homeOnceAnimation = container => {
+const homePageOnceAnimation = container => {
     const tl = gsap.timeline()
     
     tl.add(loaderAnimation())
@@ -358,7 +362,7 @@ const homeOnceAnimation = container => {
 
 const listItems = document.querySelectorAll('.works_page_as_menu__list_item')
 
-const menuOnceAnimation = container => {
+const menuPageOnceAnimation = container => {
     const tl = gsap.timeline()
 
     tl.add(loaderAnimation())
@@ -396,7 +400,7 @@ const contentSocialIcons = document.querySelectorAll('.page_transition_content__
 const play = document.querySelectorAll('.page_transition_content__play')
 const info = document.querySelector('.page_transition_content__show_info')
 
-const contentOnceAnimation = () => {
+const contentPageOnceAnimation = () => {
     const tl = gsap.timeline()
 
     tl.add(loaderAnimation())
@@ -455,7 +459,7 @@ const contentOnceAnimation = () => {
     return tl
 }
 
-const menuFragmentsAnimation = menuStateFragments => {
+const menuAnimation = menuStateFragments => {
     const tl = gsap.timeline({
         repeat: -1,
         repeatDelay: 6,
@@ -488,7 +492,7 @@ const menuFragmentsAnimation = menuStateFragments => {
 }
 
 const menuInteraction = (menuState, menuStateFragments) => {
-    const menuAnimationGetter = menuFragmentsAnimation(menuStateFragments)
+    const menuAnimationGetter = menuAnimation(menuStateFragments)
 
     const menuInteractionAnimation = () => menuAnimationGetter.restart().timeScale(1.5)
     const resetTimeScale = () => menuAnimationGetter.timeScale(1)
@@ -571,15 +575,15 @@ barba.init({
 
                 const pinner = next.container.querySelector('.scroll_layers')
                 
-                const videoLooper = new Looper(videos, videoAnimation)
-                const videoIDLooper = new Looper(videoID, videoIDAnimation)
+                const videoLoop = new Loop(videos, videoAnimation)
+                const videoIDLoop = new Loop(videoID, videoIDAnimation)
                 
-                const scrollLoop = new ScrollLooper({
-                    instances: [videoLooper, videoIDLooper],
-                    pinner: pinner,
+                const scrollLoop = new ScrollLoop({
+                    instances: [videoLoop, videoIDLoop],
+                    pin: pinner,
                     scrollSnapping: true,
                     keyScrolling: true,
-                    on: ['scroll', 'custom']
+                    on: ['scroll', 'custom', 'keydown']
                 })
 
                 const scrollIndicator = next.container.querySelector('.scroll_indicator')
@@ -634,15 +638,15 @@ barba.init({
 
                 const pinner = current.container.querySelector('.scroll_layers')
                 
-                const videoLooper = new Looper(videos, videoAnimation)
-                const videoIDLooper = new Looper(videoID, videoIDAnimation)
+                const videoLoop = new Loop(videos, videoAnimation)
+                const videoIDLoop = new Loop(videoID, videoIDAnimation)
                 
-                const Proxy = new ScrollLooper({
-                    instances: [videoLooper, videoIDLooper],
-                    pinner: pinner,
+                const Proxy = new ScrollLoop({
+                    instances: [videoLoop, videoIDLoop],
+                    pin: pinner,
                     scrollSnapping: true,
                     keyScrolling: true,
-                    on: ['load', 'custom']
+                    on: ['load', 'custom', 'load']
                 })
 
                 Proxy.scroll()
@@ -864,11 +868,11 @@ barba.init({
     transitions: [
         {
             async once({next}) {
-                if (next.namespace == 'home') await homeOnceAnimation(next.container)
+                if (next.namespace == 'home') await homePageOnceAnimation(next.container)
 
-                if (next.namespace == 'menu') await menuOnceAnimation(next.container)
+                if (next.namespace == 'menu') await menuPageOnceAnimation(next.container)
 
-                if (next.namespace == 'content') await contentOnceAnimation()
+                if (next.namespace == 'content') await contentPageOnceAnimation()
             },
             afterOnce({next}) {
                 if (next.namespace == 'home' || 'content') menuInteraction(menuOpen, menuOpenUIFragments)
