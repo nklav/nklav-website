@@ -229,7 +229,7 @@ class ScrollLoop extends Loop {
         }
     }
 
-    scrollSync(animation) {
+    sync(animation) {
         ScrollTrigger.create({
             animation: animation,
             scrub: 1
@@ -259,8 +259,32 @@ class ScrollLoop extends Loop {
 const loader = document.querySelector('.loader')
 const progressBar = document.querySelector('.loader__progress_bar')
 
+const logoHeader = document.querySelector('.to_home')
+const logoFooter = document.querySelector('.works_page_as_menu__to_home')
+
+const menuOpen = document.querySelector('.menu--open')
+const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
+
+const menuClose = document.querySelector('.menu--close')
+const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
+
+const scrollIndicator = document.querySelector('.scroll_indicator')
+
+const listItems = document.querySelectorAll('.works_page_as_menu__list_item')
+
+const pageTransitionComponents = document.querySelectorAll('.ui_page_transition_component')
+
+const contentHeading = document.querySelector('.page_transition_content__heading')
+const contentDescription = document.querySelector('.page_transition_content__description')
+
+const contentShareLabel = document.querySelector('.page_transition_content__share_label')
+const contentSocialIcons = document.querySelectorAll('.page_transition_content__icon')
+
+const play = document.querySelectorAll('.page_transition_content__play')
+const info = document.querySelector('.page_transition_content__show_info')
+
 const loaderAnimation = () => {
-    const tl = gsap.timeline({
+    return gsap.timeline({
         delay: 1
     })
 
@@ -304,44 +328,29 @@ const loaderAnimation = () => {
     .set(loader, {
         display: 'none'
     })
-
-    return tl
 }
 
 const userInterfaceAnimation = (logoPosition, menuStateFragments) => {
-    const tl = gsap.timeline()
-
-    tl.from(logoPosition, {
-        opacity: 0
-    })
+    return gsap.timeline()
 
     .set(menuStateFragments, {
         transformOrigin: 'left'
-    }, 0)
+    })
+
+    .from(logoPosition, {
+        opacity: 0
+    })
 
     .to(menuStateFragments, {
         scaleX: 1,
         stagger: .3
     }, 0)
-
-    return tl
 }
 
-const logoHeader = document.querySelector('.to_home')
-const logoFooter = document.querySelector('.works_page_as_menu__to_home')
-
-const menuOpen = document.querySelector('.menu--open')
-const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
-
-const menuClose = document.querySelector('.menu--close')
-const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
-
-const scrollIndicator = document.querySelector('.scroll_indicator')
-
 const homePageOnceAnimation = container => {
-    const tl = gsap.timeline()
+    return gsap.timeline()
     
-    tl.add(loaderAnimation())
+    .add(loaderAnimation())
 
     .set(logoHeader, {
         display: 'block',
@@ -364,16 +373,12 @@ const homePageOnceAnimation = container => {
         rotation: 360,
         duration: 1
     }, '-=1')
-
-    return tl
 }
 
-const listItems = document.querySelectorAll('.works_page_as_menu__list_item')
-
 const menuPageOnceAnimation = container => {
-    const tl = gsap.timeline()
+    return gsap.timeline()
 
-    tl.add(loaderAnimation())
+    .add(loaderAnimation())
 
     .set(menuClose, {
         display: 'block',
@@ -390,70 +395,64 @@ const menuPageOnceAnimation = container => {
     .from(listItems, {
         xPercent: 100,
         duration: .8,
-        stagger: .1,
-        ease: 'power1.out'
+        stagger: .1
     }, '-=1')
-
-    return tl
 }
 
-const pageTransitionComponents = document.querySelectorAll('.ui_page_transition_component')
-
-const contentHeading = document.querySelector('.page_transition_content__heading')
-const contentDescription = document.querySelector('.page_transition_content__description')
-
-const contentShareLabel = document.querySelector('.page_transition_content__share_label')
-const contentSocialIcons = document.querySelectorAll('.page_transition_content__icon')
-
-const play = document.querySelectorAll('.page_transition_content__play')
-const info = document.querySelector('.page_transition_content__show_info')
-
 const contentPageOnceAnimation = () => {
-    const tl = gsap.timeline()
+    return gsap.timeline()
 
-    tl.add(loaderAnimation())
-
-    .set(logoHeader, {
-        display: 'block',
-        pointerEvents: 'auto'
-    })
-
-    .set(menuOpen, {
-        display: 'block',
-        pointerEvents: 'auto'
-    })
-
+    .add(loaderAnimation())
+    
     .to(pageTransitionComponents, {
         scaleY: 0,
         duration: 4,
         ease: 'slow'
-    })
+    }, '+=.5')
+
+    .set(logoHeader, {
+        display: 'block',
+        pointerEvents: 'auto'
+    }, '-=1.5')
+
+    .set(menuOpen, {
+        display: 'block',
+        pointerEvents: 'auto'
+    }, '-=1.5')
 
     .add(userInterfaceAnimation(logoHeader, menuOpenUIFragments), '-=1.5')
 
     .from(contentHeading, {
-        xPercent: -100
+        xPercent: -100,
+        duration: .8,
+        ease: 'power2.out'
     }, '-=1.5')
 
     .from(contentDescription, {
-        yPercent: -100
+        yPercent: -100,
+        duration: .8,
+        ease: 'power2.out'
     }, '-=1.5')
     
     .from(contentShareLabel, {
-        yPercent: 100
+        yPercent: 100,
+        duration: .8,
+        ease: 'power2.out'
     }, '-=1.5')
     
     .from(contentSocialIcons, {
         scale: 0,
         ease: 'back',
+        duration: .8,
         stagger: .2
-    }, '-=1')
+    }, '-=1.3')
     
     .from(play, {
         scale: 0,
+        duration: .8,
         ease: 'back',
         clearProps: 'scale'
-    }, '-=1')
+    }, '-=1.3')
 
     .set(play, {
         transition: 'transform .5s cubic-bezier(0.175, 0.885, 0.32, 2)'
@@ -461,20 +460,19 @@ const contentPageOnceAnimation = () => {
 
     .from(info, {
         autoAlpha: 0,
+        duration: .8,
         ease: 'none'
-    }, '-=1')
-
-    return tl
+    }, '-=1.3')
 }
 
 const menuAnimation = menuStateFragments => {
-    const tl = gsap.timeline({
+    return gsap.timeline({
         repeat: -1,
         repeatDelay: 6,
         delay: 6
     })
 
-    tl.set(menuStateFragments, {
+    .set(menuStateFragments, {
         transformOrigin: 'right'
     })
 
@@ -495,22 +493,23 @@ const menuAnimation = menuStateFragments => {
         ease: 'power2.out',
         stagger: .2
     })
-
-    return tl
 }
 
 const menuInteraction = (menuState, menuStateFragments) => {
     const menuAnimationGetter = menuAnimation(menuStateFragments)
 
-    const menuInteractionAnimation = () => menuAnimationGetter.restart().timeScale(1.5)
+    const menuInteractionAnimation = () => menuAnimationGetter.restart().timeScale(1.3)
     const resetTimeScale = () => menuAnimationGetter.timeScale(1)
 
     menuState.addEventListener('mouseenter', menuInteractionAnimation)
     menuState.addEventListener('mouseleave', resetTimeScale)
+
+    menuState.addEventListener('touchstart', menuInteractionAnimation)
+    menuState.addEventListener('touchend', resetTimeScale)
 }
 
 const videoAnimation = video => {
-    const tl = gsap.timeline()
+    return gsap.timeline()
 
     .fromTo(video, {
         scale: .8,
@@ -525,24 +524,22 @@ const videoAnimation = video => {
     })
 
     .fromTo(video, {
-        yPercent: 300,
+        yPercent: 450,
         rotationX: '-100px'
     }, {
-        yPercent: -300,
+        yPercent: -450,
         rotationX: '100px',
         duration: 1,
         ease: 'none',
         reversed: true,
         immediateRender: false
     }, 0)
-
-    return tl
 }
 
-const videoIDAnimation = id => {
-    const tl = gsap.timeline()
+const titleAnimation = title => {
+    return gsap.timeline()
 
-    tl.fromTo(id, {
+    .fromTo(title, {
         scale: 1
     }, {
         scale: 1,
@@ -552,19 +549,17 @@ const videoIDAnimation = id => {
         immediateRender: false
     })
 
-    .fromTo(id, {
-        yPercent: 300,
-        clipPath: 'inset(-500% -100% 500% -100%)'
+    .fromTo(title, {
+        yPercent: 450,
+        clipPath: 'inset(-700% -100% 700% -100%)'
     }, {
-        yPercent: -300,
-        clipPath: 'inset(500% -100% -500% -100%)',
+        yPercent: -450,
+        clipPath: 'inset(700% -100% -700% -100%)',
         duration: 1,
         ease: 'none',
         reversed: true,
         immediateRender: false
     }, 0)
-
-    return tl
 }
 
 barba.init({
@@ -579,22 +574,22 @@ barba.init({
             namespace: 'home',
             beforeEnter({next}) {
                 const videos = next.container.querySelectorAll('.scroll_layers__video')
-                const videoID = next.container.querySelectorAll('.scroll_layers__video_id')
+                const titles = next.container.querySelectorAll('.scroll_layers__video_id')
 
                 const pinner = next.container.querySelector('.scroll_layers')
                 
+                const scrollIndicator = next.container.querySelector('.scroll_indicator')
+
                 const videoLoop = new Loop(videos, videoAnimation)
-                const videoIDLoop = new Loop(videoID, videoIDAnimation)
+                const titleLoop = new Loop(titles, titleAnimation)
                 
                 const scrollLoop = new ScrollLoop({
-                    instances: [videoLoop, videoIDLoop],
+                    instances: [videoLoop, titleLoop],
                     pin: pinner,
                     scrollSnapping: true,
                     keyScrolling: true,
                     on: ['scroll', 'custom', 'keydown']
                 })
-
-                const scrollIndicator = next.container.querySelector('.scroll_indicator')
                 
                 const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
 
@@ -604,7 +599,7 @@ barba.init({
                 const scrollIndexNumber = next.container.querySelector('.scroll_index__number')
                 const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index')
 
-                const updateElementState = () => {
+                const updateState = () => {
                     for (let i = 0; i < videoArray.length; i++) {
                         const video = videoArray[i]
                         const videoStyles = video.getAttribute('style')
@@ -623,7 +618,7 @@ barba.init({
                 }
 
                 const parallax = e => {
-                    gsap.to(videoID, {
+                    gsap.to(titles, {
                         x: e.clientX / 20 * -1,
                         y: e.clientY / 20 * -1,
                         duration: 1
@@ -633,39 +628,34 @@ barba.init({
                 next.container.addEventListener('mousemove', parallax)
                 
                 scrollLoop.scroll()
-                
-                new AccessFrame(updateElementState)
-                
                 scrollLoop.refresh()
+                scrollLoop.sync(scrollIndicatorAnimation)
 
-                scrollLoop.scrollSync(scrollIndicatorAnimation)
+                new AccessFrame(updateState)
             },
             beforeLeave({current}) {
                 const videos = current.container.querySelectorAll('.scroll_layers__video')
-                const videoID = current.container.querySelectorAll('.scroll_layers__video_id')
+                const titles = current.container.querySelectorAll('.scroll_layers__video_id')
 
                 const pinner = current.container.querySelector('.scroll_layers')
                 
                 const videoLoop = new Loop(videos, videoAnimation)
-                const videoIDLoop = new Loop(videoID, videoIDAnimation)
+                const titleLoop = new Loop(titles, titleAnimation)
                 
                 const Proxy = new ScrollLoop({
-                    instances: [videoLoop, videoIDLoop],
+                    instances: [videoLoop, titleLoop],
                     pin: pinner,
                     scrollSnapping: true,
                     keyScrolling: true,
                     on: ['load', 'custom', 'load']
                 })
 
-                const silencer = () => {
-                    return
-                }
+                const silencer = () => {return}
 
                 Proxy.scroll()
+                Proxy.selfDestruct()
 
                 new AccessFrame(silencer)
-
-                Proxy.selfDestruct()
             }
         },
         {
@@ -677,7 +667,7 @@ barba.init({
                 const gl = next.container.querySelector('.gl_container')
 
                 const scrollToVideos = () => {
-                    const tl = gsap.timeline()
+                    return gsap.timeline()
 
                     .to(window, {
                         scrollTo: {
@@ -690,10 +680,8 @@ barba.init({
 
                     .from(gl, {
                         autoAlpha: 0,
-                        ease: 'slow'
+                        ease: 'none'
                     }, '-=1')
-
-                    return tl
                 }
 
                 const scrollTop = () => {
@@ -753,7 +741,8 @@ barba.init({
 
                 const init = new Curtains({
                     container: 'c',
-                    autoRender: false
+                    autoRender: false,
+                    pixelRatio: Math.min(1.5, window.devicePixelRatio)
                 })
 
                 new AccessFrame(init.render.bind(init))
@@ -761,10 +750,10 @@ barba.init({
                 const planeElements = next.container.getElementsByClassName('gl__plane')
 
                 const config = {
-                    vertexShader: vertexShader,
-                    fragmentShader: fragmentShader,
-                    widthSegments: 30,
-                    heightSegments: 30,
+                    vertexShader,
+                    fragmentShader,
+                    widthSegments: 20,
+                    heightSegments: 20,
                     uniforms: {
                         time: {
                             name: 'uTime',
@@ -779,8 +768,9 @@ barba.init({
                 const renderPlanes = index => {
                     const plane = planes[index]
 
-                    plane.onRender(() => {
+                    plane.onReady(() => {
                         plane.playVideos()
+                    }).onRender(() => {
                         plane.uniforms.time.value++
                     })
                 }
@@ -794,9 +784,7 @@ barba.init({
                 }
             },
             beforeLeave() {
-                const silencer = () => {
-                    return
-                }
+                const silencer = () => {return}
 
                 new AccessFrame(silencer)
             }
@@ -809,22 +797,24 @@ barba.init({
                 const mobileContainer = next.container.querySelector('.page_transition_content__mobi_container')
                 const mobileContent = next.container.querySelector('.mobi_toggle_state_content')
 
-                const show = next.container.querySelector('.page_transition_content__show_info')
-                const hide = next.container.querySelector('.mobi_toggle_state_content__hide_info')
-
                 const mobileUIFragments = next.container.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
                 const mobileSocialIcons = next.container.querySelectorAll('.mobi_toggle_state_content .page_transition_content__icon')
+
+                const show = next.container.querySelector('.page_transition_content__show_info')
+                const hide = next.container.querySelector('.mobi_toggle_state_content__hide_info')
 
                 const showInfo = gsap.timeline({
                     paused: true
                 })
 
-                showInfo.to(heading, {
-                    opacity: 0
+                .to(heading, {
+                    opacity: 0,
+                    ease: 'none'
                 })
 
                 .to(mobileContainer, {
-                    opacity: 0
+                    opacity: 0,
+                    ease: 'none'
                 }, '-=.5')
 
                 .set(heading, {
@@ -845,20 +835,22 @@ barba.init({
                 .fromTo(mobileContent, {
                     opacity: 0
                 }, {
-                    opacity: 1
-                })
+                    opacity: 1,
+                    ease: 'none'
+                }, '+=.3')
 
                 .to(mobileUIFragments, {
-                    scaleX: '100%',
+                    scaleX: 1,
                     duration: .3,
                     stagger: .2
                 })
 
                 .from(mobileSocialIcons, {
                     scale: 0,
+                    duration: .8,
                     ease: 'back',
-                    stagger: .3
-                }, '-=.5')
+                    stagger: .2
+                }, '-=.3')
 
                 show.addEventListener('click', () => {
                     showInfo.play()
@@ -876,18 +868,16 @@ barba.init({
                     showInfo.reverse()
                 })
 
-                const monitorWindow = () => {
+                const monitor = () => {
                     let width = window.innerWidth
 
                     if (width >= 1024) showInfo.restart().pause()
                 }
 
-                new AccessFrame(monitorWindow)
+                new AccessFrame(monitor)
             },
             beforeLeave() {
-                const silencer = () => {
-                    return
-                }
+                const silencer = () => {return}
 
                 new AccessFrame(silencer)
             }

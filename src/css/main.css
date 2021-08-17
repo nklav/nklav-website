@@ -120,6 +120,8 @@ br {
     padding: 25px 0 0 25px;
     
     transform: translateX(-50%);
+
+    pointer-events: none;
 }
 
 .to_home__logo,
@@ -147,6 +149,12 @@ br {
     pointer-events: none;
 }
 
+.menu--open {
+    display: none;
+
+    pointer-events: none;
+}
+
 .menu--open__ui_fragment {
     display: block;
 
@@ -160,7 +168,11 @@ br {
 }
 
 .menu--close {
+    display: none;
+
     padding: 0 0 0 25px;
+
+    pointer-events: none;
 }
 
 .menu--close__container {
@@ -236,7 +248,7 @@ br {
 }
 
 .scroll_indicator {
-    border: 2px solid hsla(0, 100%, 100%, 10%);
+    border: 2px solid hsla(0, 100%, 100%, 20%);
     border-top: 2px solid var(--primary-ui-color);
     border-radius: 50%;
 }
@@ -318,7 +330,7 @@ br {
 .scroll_index {
     position: fixed;
     left: 50%;
-    bottom: 50px;
+    bottom: 60px;
     z-index: 2;
 
     display: none;
@@ -374,7 +386,7 @@ br {
 
 .works_page_as_menu__list_item a span {
     color: hsla(0, 0%, 0%, 0%);
-    -webkit-text-stroke: 1px hsl(0, 0%, 20%);
+    -webkit-text-stroke: 1px hsl(0, 0%, 30%);
 }
 
 .works_page_as_menu__to_self {
@@ -408,13 +420,13 @@ br {
     color: var(--primary-ui-color);
     -webkit-text-stroke: 1px var(--primary-ui-color);
 
-    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    clip-path: inset(0 0 0 0);
 
     transition: clip-path .3s ease;
 }
 
 .works_page_as_menu__list_item a:hover span::after {
-    clip-path: polygon(0% 0%, 60% 0%, 30% 100%, 0% 100%);
+    clip-path: inset(0 0 0 100%);
 }
 
 .works_page_as_menu__footer {
@@ -518,7 +530,7 @@ br {
     text-transform: uppercase;
 
     color: hsla(0, 0%, 0%, 0%);
-    -webkit-text-stroke: 1px hsl(0, 0%, 20%);
+    -webkit-text-stroke: 1px hsl(0, 0%, 30%);
 
     transform: translateX(-50%);
 
@@ -739,7 +751,7 @@ main > div > video + div {
 }
 
 .page_transition_content__show_info {
-    height: 25px;
+    height: 50px;
     padding: 0;
     border: none;
 
@@ -750,6 +762,25 @@ main > div > video + div {
     background: none;
 
     cursor: pointer;
+}
+
+.page_transition_content__show_info::after {
+    content: '';
+
+    display: block;
+
+    width: 100%;
+    height: 1px;
+
+    background: var(--primary-ui-color);
+
+    transform: scaleX(0);
+
+    transition: transform .3s;
+}
+
+.page_transition_content__show_info:hover::after {
+    transform: scaleX(1);
 }
 
 .mobi_toggle_state_content {
