@@ -4,6 +4,18 @@ import Plyr from 'plyr'
 import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
+class AccessFrame {
+    constructor(listener) {
+        this.listener = listener
+
+        if (window.accessFrame) gsap.ticker.remove(window.accessFrame)
+
+        window.accessFrame = this.listener
+
+        gsap.ticker.add(window.accessFrame)
+    }
+}
+
 class EventRegent {
     constructor(signal, receiver) {
         this.signal_0 = signal[0]
@@ -222,10 +234,6 @@ class ScrollLoop extends Loop {
             animation: animation,
             scrub: 1
         })
-    }
-
-    accessFrame(listener) {
-        gsap.ticker.add(listener)
     }
 
     selfDestruct() {
@@ -626,7 +634,7 @@ barba.init({
                 
                 scrollLoop.scroll()
                 
-                scrollLoop.accessFrame(updateElementState)
+                new AccessFrame(updateElementState)
                 
                 scrollLoop.refresh()
 
@@ -649,7 +657,13 @@ barba.init({
                     on: ['load', 'custom', 'load']
                 })
 
+                const silencer = () => {
+                    return
+                }
+
                 Proxy.scroll()
+
+                new AccessFrame(silencer)
 
                 Proxy.selfDestruct()
             }
@@ -742,7 +756,7 @@ barba.init({
                     autoRender: false
                 })
 
-                gsap.ticker.add(init.render.bind(init))
+                new AccessFrame(init.render.bind(init))
 
                 const planeElements = next.container.getElementsByClassName('gl__plane')
 
@@ -778,6 +792,13 @@ barba.init({
 
                     renderPlanes(i)
                 }
+            },
+            beforeLeave() {
+                const silencer = () => {
+                    return
+                }
+
+                new AccessFrame(silencer)
             }
         },
         {
@@ -861,7 +882,14 @@ barba.init({
                     if (width >= 1024) showInfo.restart().pause()
                 }
 
-                gsap.ticker.add(monitorWindow)
+                new AccessFrame(monitorWindow)
+            },
+            beforeLeave() {
+                const silencer = () => {
+                    return
+                }
+
+                new AccessFrame(silencer)
             }
         }
     ],
