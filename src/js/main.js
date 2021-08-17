@@ -574,7 +574,7 @@ barba.init({
             namespace: 'home',
             beforeEnter({next}) {
                 const videos = next.container.querySelectorAll('.scroll_layers__video')
-                const titles = next.container.querySelectorAll('.scroll_layers__video_id')
+                const titles = next.container.querySelectorAll('.scroll_layers__project_title')
 
                 const pinner = next.container.querySelector('.scroll_layers')
                 
@@ -635,7 +635,7 @@ barba.init({
             },
             beforeLeave({current}) {
                 const videos = current.container.querySelectorAll('.scroll_layers__video')
-                const titles = current.container.querySelectorAll('.scroll_layers__video_id')
+                const titles = current.container.querySelectorAll('.scroll_layers__project_title')
 
                 const pinner = current.container.querySelector('.scroll_layers')
                 
