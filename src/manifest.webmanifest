@@ -1,10 +1,9 @@
 {
     "name": "nklav",
     "start_url": "https://nklav.com",
-    "display": "fullscreen",
+    "display": "standalone",
     "theme_color": "#000",
     "background_color": "#000",
-    "scope": "https://nklav.com",
     "icons": [
         {
             "src": "./assets/images/icons/icon-192x192.png",

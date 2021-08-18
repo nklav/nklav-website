@@ -122,8 +122,6 @@ br {
     padding: 25px 0 0 25px;
     
     transform: translateX(-50%);
-
-    pointer-events: none;
 }
 
 .to_home__logo,
@@ -151,12 +149,6 @@ br {
     pointer-events: none;
 }
 
-.menu--open {
-    display: none;
-
-    pointer-events: none;
-}
-
 .menu--open__ui_fragment {
     display: block;
 
@@ -165,16 +157,10 @@ br {
     margin: 10px 0;
     
     background: var(--primary-ui-color);
-
-    transform: scaleX(0);
 }
 
 .menu--close {
-    display: none;
-
     padding: 0 0 0 25px;
-
-    pointer-events: none;
 }
 
 .menu--close__container {
@@ -204,8 +190,6 @@ br {
     height: 100%;
     
     background: var(--primary-ui-color);
-
-    transform: scaleX(0);
 }
 
 .menu--close__container:nth-child(1) .menu--close__ui_fragment {
@@ -239,14 +223,14 @@ br {
 .scroll_indicator,
 .scroll_indicator_index {
     position: fixed;
-    bottom: 20vh;
-    right: 40px;
+    bottom: 30vh;
+    right: 10px;
     z-index: 2;
-    
-    display: none;
     
     width: 50px;
     height: 50px;
+
+    visibility: hidden;
 }
 
 .scroll_indicator {
@@ -262,6 +246,10 @@ br {
     line-height: 50px;
 
     user-select: none;
+}
+
+.scroll_layers {
+    visibility: hidden;
 }
 
 .scroll_layers,
@@ -342,6 +330,8 @@ br {
     letter-spacing: 10px;
 
     transform: translateX(-50%);
+
+    visibility: hidden;
 
     user-select: none;
 }
@@ -660,7 +650,8 @@ main > div > video + div {
     justify-content: space-between;
 }
 
-.page_transition_content__info {
+.page_transition_content__info,
+.mobi_toggle_state_content__info {
     flex: 1;
 }
 
@@ -677,13 +668,16 @@ main > div > video + div {
     background: var(--primary-ui-color);
 
     cursor: pointer;
+
+    pointer-events: none;
 }
 
 .page_transition_content__play:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
 }
 
-.page_transition_content__description {
+.page_transition_content__description,
+.mobi_toggle_state_content__description {
     display: inline-block;
 
     width: 250px;
@@ -696,14 +690,16 @@ main > div > video + div {
     transform-origin: top;
 }
 
-.page_transition_content__social {
+.page_transition_content__social,
+.mobi_toggle_state_content__social {
     display: flex;
     align-items: center;
 
     margin: 125px 0 0 0;
 }
 
-.page_transition_content__sns {
+.page_transition_content__sns,
+.mobi_toggle_state_content__sns {
     display: inline-block;
 
     width: 30px;
@@ -711,23 +707,29 @@ main > div > video + div {
     margin: 0 15px 0 0;
 
     transition: transform .3s ease;
+
+    pointer-events: none;
 }
 
-.page_transition_content__sns:nth-child(3) {
+.page_transition_content__sns:nth-child(3),
+.mobi_toggle_state_content__sns:nth-child(3) {
     margin: 0 18px 0 0;
 
     transform: translateY(2px);
 }
 
-.page_transition_content__sns:nth-child(4) {
+.page_transition_content__sns:nth-child(4),
+.mobi_toggle_state_content__sns:nth-child(4) {
     transform: translateY(1px);
 }
 
-.page_transition_content__sns:hover {
+.page_transition_content__sns:hover,
+.mobi_toggle_state_content__sns:hover {
     transform: translateY(-4px);
 }
 
-.page_transition_content__share_label {
+.page_transition_content__share_label,
+.mobi_toggle_state_content__share_label {
     display: inline-block;
 
     margin: 0 12px 0 0;
@@ -737,7 +739,8 @@ main > div > video + div {
     transform-origin: bottom;
 }
 
-.page_transition_content__icon {
+.page_transition_content__icon,
+.mobi_toggle_state_content__icon {
     width: 30px;
     height: 30px;
 
@@ -753,6 +756,7 @@ main > div > video + div {
 }
 
 .page_transition_content__show_info {
+    width: 50px;
     height: 50px;
     padding: 0;
     border: none;
@@ -771,8 +775,9 @@ main > div > video + div {
 
     display: block;
 
-    width: 100%;
+    width: 30.4167px;
     height: 1px;
+    margin: 0 auto;
 
     background: var(--primary-ui-color);
 
@@ -787,8 +792,6 @@ main > div > video + div {
 
 .mobi_toggle_state_content {
     display: none;
-
-    pointer-events: none;
 }
 
 .mobi_toggle_state_content__container {
@@ -842,18 +845,19 @@ main > div > video + div {
     transform-origin: right;
 }
 
-.mobi_toggle_state_content .page_transition_content__description {
+.mobi_toggle_state_content__description {
     margin: 30px 0 0 0;
 }
 
-.mobi_toggle_state_content .page_transition_content__social {
+.mobi_toggle_state_content__social {
     margin: 75px 0 0 0;
 }
 
 @media (min-width: 320px) {
     .scroll_indicator,
     .scroll_indicator_index {
-        display: block;
+        bottom: 20vh;
+        right: 50px;
     }
 }
 
@@ -927,7 +931,6 @@ main > div > video + div {
     .scroll_indicator {
         top: 50px;
         bottom: unset;
-        right: 50px;
 
         width: 100px;
         height: 100px;
