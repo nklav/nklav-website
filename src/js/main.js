@@ -1,6 +1,5 @@
 import barba from '@barba/core'
 import Plyr from 'plyr'
-
 import bundle, { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
@@ -46,13 +45,8 @@ class EventRegent {
         window.dispatchEvent(this.e)
     }
 
-    #registry_0() {
-        this.receiver_0()
-    }
-
-    #registry_1() {
-        window.addEventListener(window.accessProp_2, window.accessMethod_2)
-    }
+    #registry_0() {this.receiver_0()}
+    #registry_1() {window.addEventListener(window.accessProp_2, window.accessMethod_2)}
 }
 
 class Loop {
@@ -64,20 +58,16 @@ class Loop {
     loop() {
         const spacing = 1 / this.elements.length
         const overlap = Math.ceil(1 / spacing)
-    
+
         const start = this.elements.length * spacing + .5
         const end = (this.elements.length + overlap) * spacing + .5
     
-        const continuum = gsap.timeline({
-            paused: true
-        })
+        const continuum = gsap.timeline({paused: true})
     
         const loop = gsap.timeline({
             paused: true,
             repeat: -1,
-            onRepeat() {
-                this._time === this._dur && (this._tTime += this._dur - .01)
-            }
+            onRepeat() {this._time === this._dur && (this._tTime += this._dur - .01)}
         })
     
         const l = this.elements.length + overlap * 2
@@ -99,9 +89,7 @@ class Loop {
             ease: 'none'
         })
     
-        .fromTo(continuum, {
-            time: overlap * spacing + 1
-        }, {
+        .fromTo(continuum, {time: overlap * spacing + 1}, {
             time: start,
             duration: start - (overlap * spacing + 1),
             ease: 'none',
@@ -110,15 +98,11 @@ class Loop {
     
         return {
             timeline: loop,
-            unloop: () => {
-                gsap.killTweensOf(continuum)
-            }
+            unloop: () => {gsap.killTweensOf(continuum)}
         }
     }
 
-    get space() {
-        return this.elements.length
-    }
+    get space() {return this.elements.length}
 }
 
 class ScrollLoop extends Loop {
@@ -157,7 +141,6 @@ class ScrollLoop extends Loop {
             offset: 0,
             onUpdate: () => {
                 parameters.instance.time(timeLoop(playhead.offset))
-
                 this.instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.offset)))
             },
             duration: 1,
@@ -171,7 +154,6 @@ class ScrollLoop extends Loop {
                 const scrollSelf = self.scroll()
 
                 if (scrollSelf > self.end - 1) scrollMeters.scrollCircle(1, 1)
-                
                 if (scrollSelf < 1 && self.direction < 0) scrollMeters.scrollCircle(-1, self.end - 1)
 
                 directMotion.vars.offset = (iteration + self.progress) * parameters.instance.duration()
@@ -202,29 +184,29 @@ class ScrollLoop extends Loop {
             scroller.scroll(scroll)
         }
 
-        let timer = null
+        if (this.scrollSnapping && this.keyScrolling && this.on) {
+            let timer = null
+    
+            const scrollSnap = () => {
+                if (timer != null) clearTimeout(timer)
+                timer = setTimeout(() => scrollPointOffset(directMotion.vars.offset), 200)
+            }
+    
+            const keyScroll = e => {
+                const keyCodes = [
+                    'Space',
+                    'ArrowUp',
+                    'ArrowDown'
+                ]
+                
+                if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
 
-        const scrollSnap = () => {
-            if (timer != null) clearTimeout(timer)
-
-            timer = setTimeout(() => scrollPointOffset(directMotion.vars.offset), 200)
+                if (e.code == 'ArrowDown') scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
+                if (e.code == 'ArrowUp') scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
+            }
+    
+            new EventRegent(this.on, [scrollSnap, keyScroll])
         }
-
-        const keyScroll = e => {
-            const keyCodes = [
-                'Space',
-                'ArrowUp',
-                'ArrowDown'
-            ]
-            
-            if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
-            
-            if (e.code == 'ArrowDown') scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
-            
-            if (e.code == 'ArrowUp') scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
-        }
-
-        if (this.scrollSnapping && this.keyScrolling) new EventRegent(this.on, [scrollSnap, keyScroll])
     }
 
     sync(animation) {
@@ -266,8 +248,10 @@ const menuClose = document.querySelector('.menu--close')
 const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
 
 const scrollLayers = document.querySelector('.scroll_layers')
+
 const scrollIndicator = document.querySelector('.scroll_indicator')
 const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
+
 const scrollIndex = document.querySelector('.scroll_index')
 
 const listItems = document.querySelectorAll('.works_page_as_menu__list_item')
@@ -319,9 +303,7 @@ const loaderAnimation = () => {
         delay: .3
     })
 
-    .set(loader, {
-        display: 'none'
-    })
+    .set(loader, {display: 'none'})
 }
 
 const homeOnce = container => {
@@ -485,10 +467,10 @@ const videoAnimation = video => {
 
     .fromTo(video, {
         yPercent: 450,
-        rotationX: '-100px'
+        rotationX: -100
     }, {
         yPercent: -450,
-        rotationX: '100px',
+        rotationX: 100,
         duration: 1,
         ease: 'none',
         reversed: true,
@@ -499,9 +481,7 @@ const videoAnimation = video => {
 const titleAnimation = title => {
     return gsap.timeline()
 
-    .fromTo(title, {
-        scale: 1
-    }, {
+    .fromTo(title, {scale: 1}, {
         scale: 1,
         ease: 'power1.in',
         repeat: 1,
@@ -529,9 +509,7 @@ const menuAnimation = menuStateFragments => {
         delay: 6
     })
 
-    .set(menuStateFragments, {
-        transformOrigin: 'right'
-    })
+    .set(menuStateFragments, {transformOrigin: 'right'})
 
     .to(menuStateFragments, {
         scaleX: 0,
@@ -540,9 +518,7 @@ const menuAnimation = menuStateFragments => {
         stagger: .2
     })
     
-    .set(menuStateFragments, {
-        transformOrigin: 'left'
-    })
+    .set(menuStateFragments, {transformOrigin: 'left'})
     
     .to(menuStateFragments, {
         scaleX: 1,
@@ -565,8 +541,48 @@ const menuInteraction = (menuState, menuStateFragments) => {
     menuState.addEventListener('touchend', resetTimeScale)
 }
 
+const silencer = () => {return}
+
+const vertexShader = `
+    precision mediump float;
+
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    varying vec3 vVertexPosition;
+    varying vec2 vTextureCoord;
+
+    uniform float uTime;
+
+    void main() {
+        vec3 vertexPosition = aVertexPosition;
+
+        vertexPosition.z = sin(vertexPosition.x * 3.141592 + uTime * 0.0375) * 0.02;
+
+        gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
+
+        vTextureCoord = aTextureCoord;
+        vVertexPosition = vertexPosition;
+    }
+`
+
+const fragmentShader = `
+    precision mediump float;
+
+    varying vec3 vVertexPosition;
+    varying vec2 vTextureCoord;
+
+    uniform sampler2D uSampler0;
+
+    void main() {
+        gl_FragColor = texture2D(uSampler0, vTextureCoord);
+    }
+`
+
 barba.init({
-    debug: true,
     schema: {
         prefix: 'data-page',
         wrapper: 'container',
@@ -579,7 +595,7 @@ barba.init({
                 const videos = next.container.querySelectorAll('.scroll_layers__video')
                 const titles = next.container.querySelectorAll('.scroll_layers__project_title')
 
-                const pinner = next.container.querySelector('.scroll_layers')
+                const scrollLayers = next.container.querySelector('.scroll_layers')
                 
                 const scrollIndicator = next.container.querySelector('.scroll_indicator')
 
@@ -588,7 +604,7 @@ barba.init({
                 
                 const scrollLoop = new ScrollLoop({
                     instances: [videoLoop, titleLoop],
-                    pin: pinner,
+                    pin: scrollLayers,
                     scrollSnapping: true,
                     keyScrolling: true,
                     on: ['scroll', 'custom', 'keydown']
@@ -619,16 +635,6 @@ barba.init({
                         if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause()
                     }
                 }
-
-                const parallax = e => {
-                    gsap.to(titles, {
-                        x: e.clientX / 20 * -1,
-                        y: e.clientY / 20 * -1,
-                        duration: 1
-                    })
-                }
-
-                next.container.addEventListener('mousemove', parallax)
                 
                 scrollLoop.scroll()
                 scrollLoop.refresh()
@@ -640,20 +646,18 @@ barba.init({
                 const videos = current.container.querySelectorAll('.scroll_layers__video')
                 const titles = current.container.querySelectorAll('.scroll_layers__project_title')
 
-                const pinner = current.container.querySelector('.scroll_layers')
+                const scrollLayers = current.container.querySelector('.scroll_layers')
                 
                 const videoLoop = new Loop(videos, videoAnimation)
                 const titleLoop = new Loop(titles, titleAnimation)
                 
                 const Proxy = new ScrollLoop({
                     instances: [videoLoop, titleLoop],
-                    pin: pinner,
+                    pin: scrollLayers,
                     scrollSnapping: true,
                     keyScrolling: true,
                     on: ['load', 'custom', 'load']
                 })
-
-                const silencer = () => {return}
 
                 Proxy.scroll()
                 Proxy.selfDestruct()
@@ -680,9 +684,7 @@ barba.init({
 
                 const scrollTop = () => {
                     gsap.to(window, {
-                        scrollTo: {
-                            y: '#top'
-                        },
+                        scrollTo: {y: '#top'},
                         duration: 1,
                         ease: 'power4.inOut'
                     })
@@ -693,45 +695,6 @@ barba.init({
                 
                 toSelfBack.addEventListener('click', scrollTop)
                 toSelfBack.addEventListener('touchend', scrollTop)
-                
-                const vertexShader = `
-                    precision mediump float;
-
-                    attribute vec3 aVertexPosition;
-                    attribute vec2 aTextureCoord;
-
-                    uniform mat4 uMVMatrix;
-                    uniform mat4 uPMatrix;
-
-                    varying vec3 vVertexPosition;
-                    varying vec2 vTextureCoord;
-
-                    uniform float uTime;
-
-                    void main() {
-                        vec3 vertexPosition = aVertexPosition;
-
-                        vertexPosition.z = sin(vertexPosition.x * 3.141592 + uTime * 0.0375) * 0.02;
-
-                        gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
-
-                        vTextureCoord = aTextureCoord;
-                        vVertexPosition = vertexPosition;
-                    }
-                `
-
-                const fragmentShader = `
-                    precision mediump float;
-
-                    varying vec3 vVertexPosition;
-                    varying vec2 vTextureCoord;
-
-                    uniform sampler2D uSampler0;
-
-                    void main() {
-                        gl_FragColor = texture2D(uSampler0, vTextureCoord);
-                    }
-                `
 
                 const init = new Curtains({
                     container: 'c',
@@ -761,27 +724,17 @@ barba.init({
 
                 const renderPlanes = index => {
                     const plane = planes[index]
-
-                    plane.onReady(() => {
-                        plane.playVideos()
-                    }).onRender(() => {
-                        plane.uniforms.time.value++
-                    })
+                    plane.onReady(() => {plane.playVideos()}).onRender(() => {plane.uniforms.time.value++})
                 }
 
                 for (let i = 0; i < planeElements.length; i++) {
                     const plane = new Plane(init, planeElements[i], config)
-
                     planes.push(plane)
 
                     renderPlanes(i)
                 }
             },
-            beforeLeave() {
-                const silencer = () => {return}
-
-                new AccessFrame(silencer)
-            }
+            beforeLeave() {new AccessFrame(silencer)}
         },
         {
             namespace: 'content',
@@ -815,9 +768,7 @@ barba.init({
 
                 .set(mobileContent, {display: 'block'})
 
-                .fromTo(mobileContent, {
-                    opacity: 0
-                }, {
+                .fromTo(mobileContent, {opacity: 0}, {
                     opacity: 1,
                     ease: 'none',
                     delay: .3
@@ -838,49 +789,31 @@ barba.init({
 
                 .set('.mobi_toggle_state_content__sns', {pointerEvents: 'auto'})
 
-                show.addEventListener('click', () => {
-                    showInfo.play()
-                })
+                show.addEventListener('click', () => {showInfo.play()})
+                show.addEventListener('touchend', () => {showInfo.play()})
 
-                show.addEventListener('touchend', () => {
-                    showInfo.play()
-                })
-
-                hide.addEventListener('click', () => {
-                    showInfo.reverse()
-                })
-
-                hide.addEventListener('touchend', () => {
-                    showInfo.reverse()
-                })
+                hide.addEventListener('click', () => {showInfo.reverse()})
+                hide.addEventListener('touchend', () => {showInfo.reverse()})
 
                 const monitor = () => {
                     let width = window.innerWidth
-
                     if (width >= 1024) showInfo.restart().pause()
                 }
 
                 new AccessFrame(monitor)
             },
-            beforeLeave() {
-                const silencer = () => {return}
-
-                new AccessFrame(silencer)
-            }
+            beforeLeave() {new AccessFrame(silencer)}
         }
     ],
     transitions: [
         {
             async once({next}) {
                 if (next.namespace == 'home') await homeOnce(next.container)
-
                 if (next.namespace == 'menu') await menuOnce(next.container)
-
                 if (next.namespace == 'content') await contentOnce()
             },
             afterOnce({next}) {
                 if (next.namespace == 'home' || 'content') menuInteraction(menuOpen, menuOpenUIFragments)
-
                 if (next.namespace == 'menu') menuInteraction(menuClose, menuCloseUIFragments)
             }
         }
