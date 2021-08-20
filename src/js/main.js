@@ -255,18 +255,18 @@ const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
 
 const scrollIndex = document.querySelector('.scroll_index')
 
-const listItems = document.querySelectorAll('.works_page_as_menu__list_item')
+const listItems = document.querySelectorAll('.menu_page__list_item')
 
 const pageTransitionComponents = document.querySelectorAll('.ui_page_transition_component')
 
-const heading = document.querySelector('.page_transition_content__heading')
-const description = document.querySelector('.page_transition_content__description')
+const heading = document.querySelector('.page_content__heading')
+const description = document.querySelector('.page_content__description')
 
-const shareLabel = document.querySelector('.page_transition_content__share_label')
-const socialIcons = document.querySelectorAll('.page_transition_content__icon')
+const shareLabel = document.querySelector('.page_content__share_label')
+const socialIcons = document.querySelectorAll('.page_content__icon')
 
-const play = document.querySelectorAll('.page_transition_content__play')
-const info = document.querySelector('.page_transition_content__show_info')
+const play = document.querySelectorAll('.page_content__play')
+const info = document.querySelector('.page_content__show_info')
 
 const loaderAnimation = () => {
     return gsap.timeline({delay: 1})
@@ -440,7 +440,7 @@ const contentOnce = page => {
         clearProps: 'scale'
     }, '<')
     
-    .set('.page_transition_content__sns', {pointerEvents: 'auto'})
+    .set('.page_content__sns', {pointerEvents: 'auto'})
 
     .set(play, {
         pointerEvents: 'auto',
@@ -470,10 +470,10 @@ const pageContentAnimation = element => {
     })
 
     .fromTo(element, {
-        yPercent: 450,
+        yPercent: 500,
         rotationX: -100
     }, {
-        yPercent: -450,
+        yPercent: -500,
         rotationX: 100,
         duration: 1,
         ease: 'none',
@@ -633,7 +633,7 @@ barba.init({
         {
             namespace: 'menu',
             beforeEnter({next}) {
-                const toSelf = next.container.querySelector('.works_page_as_menu__to_self')
+                const toSelf = next.container.querySelector('.menu_page__to_self')
                 const toSelfBack = next.container.querySelector('.to_self_back')
 
                 const scrollTo = () => {
@@ -704,16 +704,16 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter({next}) {
-                const heading = next.container.querySelector('.page_transition_content__heading_container')
+                const heading = next.container.querySelector('.page_content__heading_container')
 
-                const mobileContainer = next.container.querySelector('.page_transition_content__mobi_container')
-                const mobileContent = next.container.querySelector('.mobi_toggle_state_content')
+                const mobileContainer = next.container.querySelector('.page_content__mobi_container')
+                const mobileContent = next.container.querySelector('.mobile_content')
 
-                const mobileUIFragments = next.container.querySelectorAll('.mobi_toggle_state_content__ui_fragment')
-                const mobileSocialIcons = next.container.querySelectorAll('.mobi_toggle_state_content__icon')
+                const mobileUIFragments = next.container.querySelectorAll('.mobile_content__ui_fragment')
+                const mobileSocialIcons = next.container.querySelectorAll('.mobile_content__icon')
 
-                const show = next.container.querySelector('.page_transition_content__show_info')
-                const hide = next.container.querySelector('.mobi_toggle_state_content__hide_info')
+                const show = next.container.querySelector('.page_content__show_info')
+                const hide = next.container.querySelector('.mobile_content__hide_info')
 
                 const showInfo = gsap.timeline({paused: true})
 
@@ -751,7 +751,7 @@ barba.init({
                     stagger: .2
                 }, '>-.3')
 
-                .set('.mobi_toggle_state_content__sns', {pointerEvents: 'auto'})
+                .set('.mobile_content__sns', {pointerEvents: 'auto'})
 
                 show.addEventListener('click', () => {showInfo.play()})
                 show.addEventListener('touchend', () => {showInfo.play()})
