@@ -230,7 +230,7 @@ br {user-select: none;}
 }
 
 .scroll_layers__page_title,
-.scroll_layers__page_title > a {
+.scroll_layers__page_title a {
     position: absolute;
     display: flex;
     justify-content: center;
@@ -246,10 +246,11 @@ br {user-select: none;}
     line-height: 100%;
 }
 
-.scroll_layers__page_title > a {
+.scroll_layers__page_title a {
     width: inherit;
     height: 30vw;
     white-space: nowrap;
+    pointer-events: none;
 }
 
 .scroll_index {

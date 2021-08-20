@@ -248,6 +248,8 @@ const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragmen
 
 const scrollLayers = document.querySelector('.scroll_layers')
 
+const pageTitles = document.querySelectorAll('.scroll_layers__page_title a')
+
 const scrollIndicator = document.querySelector('.scroll_indicator')
 const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
 
@@ -344,6 +346,8 @@ const homeOnce = page => {
         rotation: 360,
         duration: 1
     }, '<')
+
+    .set(pageTitles, {pointerEvents: 'auto'})
 }
 
 const menuOnce = page => {
@@ -373,7 +377,9 @@ const menuOnce = page => {
     }, '<')
 }
 
-const contentOnce = () => {
+const contentOnce = page => {
+    const video = page.querySelector('video')
+
     return gsap.timeline()
 
     .set(logo, {display: 'block'})
@@ -386,7 +392,8 @@ const contentOnce = () => {
     .to(pageTransitionComponents, {
         scaleY: 0,
         duration: 4,
-        ease: 'slow'
+        ease: 'slow',
+        onStart: () => {video.play()}
     }, '>.5')
 
     .from(logo, {
@@ -767,7 +774,7 @@ barba.init({
             once({next}) {
                 if (next.namespace == 'home') homeOnce(next.container)
                 if (next.namespace == 'menu') menuOnce(next.container)
-                if (next.namespace == 'content') contentOnce()
+                if (next.namespace == 'content') contentOnce(next.container)
             }
         }
     ]
