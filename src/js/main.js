@@ -66,7 +66,7 @@ class Loop {
         const loop = gsap.timeline({
             paused: true,
             repeat: -1,
-            onRepeat() {this._time === this._dur && (this._tTime += this._dur - .01)}
+            onRepeat() {this._time == this._dur && (this._tTime += this._dur - .01)}
         })
     
         const l = this.elements.length + overlap * 2
@@ -474,7 +474,10 @@ const homeLeave = page => {
 
     .set(logo, {display: 'none'})
 
-    .set(menuOpen, {display: 'none'})
+    .set(menuOpen, {
+        display: 'none',
+        pointerEvents: 'none'
+    })
 
     .to(page, {
         autoAlpha: 0,
@@ -509,6 +512,92 @@ const menuEnter = page => {
         autoAlpha: 0,
         ease: 'none'
     }, '<')
+}
+
+const contentEnter = page => {
+    const video = page.querySelector('video')
+
+    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
+
+    const heading = page.querySelector('.page_content__heading')
+    const description = page.querySelector('.page_content__description')
+
+    const shareLabel = page.querySelector('.page_content__share_label')
+    const socialIcons = page.querySelectorAll('.page_content__icon')
+
+    const play = page.querySelectorAll('.page_content__play')
+    const info = page.querySelector('.page_content__show_info')
+
+    return gsap.timeline({delay: 1})
+
+    .set(logo, {display: 'block'})
+
+    .set(menuOpen, {display: 'block'})
+    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+    
+    .to(pageTransitionComponents, {
+        scaleY: 0,
+        duration: 4,
+        ease: 'slow',
+        onStart: () => {video.play()}
+    })
+
+    .to(logo, {
+        autoAlpha: 1,
+        ease: 'none'
+    }, '>-1.5')
+    
+    .to(menuOpenUIFragments, {
+        scaleX: 1,
+        stagger: .2
+    }, '<')
+
+    .set(menuOpen, {pointerEvents: 'auto'})
+
+    .from(heading, {
+        xPercent: -100,
+        duration: 1,
+        ease: 'power2.out'
+    }, '>-1.5')
+
+    .from(description, {
+        yPercent: -100,
+        duration: 1,
+        ease: 'power2.out'
+    }, '<')
+    
+    .from(shareLabel, {
+        yPercent: 100,
+        duration: .8,
+        ease: 'power2.out'
+    }, '<')
+    
+    .from(socialIcons, {
+        scale: 0,
+        ease: 'back',
+        duration: .8,
+        stagger: .2
+    }, '>-.2')
+    
+    .from(play, {
+        scale: 0,
+        duration: .8,
+        ease: 'back',
+        clearProps: 'scale'
+    }, '<')
+    
+    .set('.page_content__sns', {pointerEvents: 'auto'})
+
+    .set(play, {
+        pointerEvents: 'auto',
+        transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'
+    })
+
+    .from(info, {
+        autoAlpha: 0,
+        duration: .8,
+        ease: 'none'
+    }, '>-1.5')
 }
 
 const pageContentAnimation = element => {
@@ -839,10 +928,17 @@ barba.init({
         },
         {
             name: 'home-to-menu',
-            from: {namespace: ['home']},
-            to: {namespace: ['menu']},
+            from: {namespace: 'home'},
+            to: {namespace: 'menu'},
             async leave({current}) {await homeLeave(current.container)},
             enter({next}) {menuEnter(next.container)}
+        },
+        {
+            name: 'home-to-content',
+            from: {namespace: 'home'},
+            to: {namespace: 'content'},
+            async leave({current}) {await homeLeave(current.container)},
+            enter({next}) {contentEnter(next.container)}
         }
     ]
 })
