@@ -486,6 +486,71 @@ const homeLeave = page => {
     }, '>-.5')
 }
 
+const menuLeave = page => {
+    return gsap.timeline()
+
+    .to(menuCloseUIFragments, {
+        scaleX: 0,
+        stagger: .2
+    })
+
+    .set(menuClose, {
+        display: 'none',
+        pointerEvents: 'none'
+    })
+
+    .to(page, {
+        autoAlpha: 0,
+        duration: .8,
+        ease: 'none'
+    }, 0)
+}
+
+const homeEnter = page => {
+    const scrollLayers = page.querySelector('.scroll_layers')
+
+    const pageTitles = page.querySelectorAll('.scroll_layers__page_title a')
+
+    const scrollIndicator = page.querySelector('.scroll_indicator')
+    const scrollIndicatorIndex = page.querySelector('.scroll_indicator_index')
+
+    const scrollIndex = page.querySelector('.scroll_index')
+
+    return gsap.timeline()
+
+    .set(logo, {display: 'block'})
+
+    .set(menuOpen, {display: 'block'})
+    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+
+    .set(scrollLayers, {visibility: 'visible'})
+
+    .set(scrollIndicator, {visibility: 'visible'})
+    .set(scrollIndicatorIndex, {visibility: 'visible'})
+
+    .set(scrollIndex, {visibility: 'visible'})
+
+    .to(logo, {
+        autoAlpha: 1,
+        ease: 'none'
+    })
+
+    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+        scaleX: 1,
+        stagger: .2
+    }, '<')
+
+    .set(menuOpen, {pointerEvents: 'auto'})
+
+    .from(page, {
+        autoAlpha: 0,
+        duration: .8,
+        ease: 'none'
+    }, '>-.5')
+
+    .set(pageTitles, {pointerEvents: 'auto'})
+}
+
 const menuEnter = page => {
     const listItems = page.querySelectorAll('.menu_page__list_item')
 
@@ -495,8 +560,8 @@ const menuEnter = page => {
 
     .set(menuClose, {display: 'block'})
 
-    .from(menuCloseUIFragments, {
-        scaleX: 0,
+    .fromTo(menuCloseUIFragments, {scaleX: 0}, {
+        scaleX: 1,
         stagger: .2
     })
 
@@ -694,7 +759,7 @@ const fragmentShader = `
 `
 
 barba.hooks.afterLeave(() => {window.scrollTo(0, 0)})
-barba.hooks.enter(({current}) => {menuClose.setAttribute('href', `${current.url.href}`)})
+barba.hooks.enter(({current}) => {menuClose.setAttribute('href', current.url.href)})
 
 barba.init({
     schema: {
@@ -939,6 +1004,13 @@ barba.init({
             to: {namespace: 'content'},
             async leave({current}) {await homeLeave(current.container)},
             enter({next}) {contentEnter(next.container)}
+        },
+        {
+            name: 'menu-to-home',
+            from: {namespace: 'menu'},
+            to: {namespace: 'home'},
+            async leave({current}) {await menuLeave(current.container)},
+            enter({next}) {homeEnter(next.container)}
         }
     ]
 })
