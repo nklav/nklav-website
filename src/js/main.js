@@ -362,7 +362,10 @@ const menuOnce = page => {
         stagger: .2
     }, '>.5')
 
-    .set(menuClose, {pointerEvents: 'auto'})
+    .set(menuClose, {
+        pointerEvents: 'auto',
+        onComplete: () => {menuClose.setAttribute('href', '/')}
+    })
 
     .from(page, {
         autoAlpha: 0,
@@ -452,6 +455,60 @@ const contentOnce = page => {
         duration: .8,
         ease: 'none'
     }, '>-1.5')
+}
+
+const homeLeave = page => {
+    return gsap.timeline()
+
+    .set(menuOpenUIFragments, {transformOrigin: 'right'})
+
+    .to(logo, {
+        autoAlpha: 0,
+        ease: 'none'
+    })
+
+    .to(menuOpenUIFragments, {
+        scaleX: 0,
+        stagger: .2
+    }, '<')
+
+    .set(logo, {display: 'none'})
+
+    .set(menuOpen, {display: 'none'})
+
+    .to(page, {
+        autoAlpha: 0,
+        duration: .8,
+        ease: 'none'
+    }, '>-.5')
+}
+
+const menuEnter = page => {
+    const listItems = page.querySelectorAll('.menu_page__list_item')
+
+    const footer = page.querySelector('.menu_page__footer')
+
+    return gsap.timeline()
+
+    .set(menuClose, {display: 'block'})
+
+    .from(menuCloseUIFragments, {
+        scaleX: 0,
+        stagger: .2
+    })
+
+    .set(menuClose, {pointerEvents: 'auto'})
+
+    .from(listItems, {
+        xPercent: 100,
+        duration: .8,
+        stagger: .1
+    }, '>-.5')
+
+    .from(footer, {
+        autoAlpha: 0,
+        ease: 'none'
+    }, '<')
 }
 
 const pageContentAnimation = element => {
@@ -547,6 +604,9 @@ const fragmentShader = `
     }
 `
 
+barba.hooks.afterLeave(() => {window.scrollTo(0, 0)})
+barba.hooks.enter(({current}) => {menuClose.setAttribute('href', `${current.url.href}`)})
+
 barba.init({
     schema: {
         prefix: 'data-page',
@@ -607,7 +667,7 @@ barba.init({
 
                 new AccessFrame(updateState)
             },
-            beforeLeave({current}) {
+            afterLeave({current}) {
                 const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
                 const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title')
 
@@ -776,6 +836,13 @@ barba.init({
                 if (next.namespace == 'menu') menuOnce(next.container)
                 if (next.namespace == 'content') contentOnce(next.container)
             }
+        },
+        {
+            name: 'home-to-menu',
+            from: {namespace: ['home']},
+            to: {namespace: ['menu']},
+            async leave({current}) {await homeLeave(current.container)},
+            enter({next}) {menuEnter(next.container)}
         }
     ]
 })
