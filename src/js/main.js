@@ -315,12 +315,7 @@ const homeOnce = page => {
     .set(menuOpen, {display: 'block'})
     .set(menuOpenUIFragments, {transformOrigin: 'left'})
 
-    .set(scrollLayers, {visibility: 'visible'})
-
-    .set(scrollIndicator, {visibility: 'visible'})
-    .set(scrollIndicatorIndex, {visibility: 'visible'})
-
-    .set(scrollIndex, {visibility: 'visible'})
+    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollIndex], {visibility: 'visible'})
 
     .add(loaderAnimation())
 
@@ -458,9 +453,13 @@ const contentOnce = page => {
 }
 
 const homeLeave = page => {
+    const pageTitles = page.querySelectorAll('.scroll_layers__page_title a')
+
     return gsap.timeline()
 
     .set(menuOpenUIFragments, {transformOrigin: 'right'})
+
+    .set(pageTitles, {pointerEvents: 'none'})
 
     .fromTo(logo, {autoAlpha: 1}, {
         autoAlpha: 0,
@@ -505,6 +504,169 @@ const menuLeave = page => {
     }, 0)
 }
 
+const contentToHomeLeave = page => {
+    const video = page.querySelector('video')
+
+    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
+
+    const heading = page.querySelector('.page_content__heading')
+    const description = page.querySelector('.page_content__description')
+
+    const shareLabel = page.querySelector('.page_content__share_label')
+    const socialIcons = page.querySelectorAll('.page_content__icon')
+
+    const play = page.querySelectorAll('.page_content__play')
+    const info = page.querySelector('.page_content__show_info')
+
+    return gsap.timeline()
+
+    .set(logo, {pointerEvents: 'none'})
+
+    .set(menuOpen, {pointerEvents: 'none'})
+
+    .set('.page_content__sns', {pointerEvents: 'none'})
+
+    .set(play, {
+        pointerEvents: 'none',
+        transition: 'none'
+    })
+
+    .to(socialIcons, {
+        scale: 0,
+        duration: .8,
+        stagger: .2,
+        ease: 'back.in',
+        reversed: true
+    })
+    
+    .to(play, {
+        scale: 0,
+        duration: .8,
+        ease: 'back.in'
+    }, '<')
+
+    .to(info, {
+        autoAlpha: 0,
+        duration: .8,
+        ease: 'none'
+    }, '<')
+
+    .to(shareLabel, {
+        yPercent: 100,
+        duration: .8
+    })
+
+    .to(heading, {
+        xPercent: -100,
+        duration: .8
+    }, '<')
+
+    .to(description, {
+        yPercent: -100,
+        duration: .8
+    }, '<')
+
+    .to(pageTransitionComponents, {
+        scaleY: 1,
+        duration: .8,
+        ease: 'power1.inOut',
+        onComplete: () => {
+            video.pause()
+            video.currentTime = 0
+        }
+    })
+
+    .set(page, {}, '+=.5')
+}
+
+const contentToMenuLeave = page => {
+    const video = page.querySelector('video')
+
+    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
+
+    const heading = page.querySelector('.page_content__heading')
+    const description = page.querySelector('.page_content__description')
+
+    const shareLabel = page.querySelector('.page_content__share_label')
+    const socialIcons = page.querySelectorAll('.page_content__icon')
+
+    const play = page.querySelectorAll('.page_content__play')
+    const info = page.querySelector('.page_content__show_info')
+
+    return gsap.timeline()
+
+    .set(menuOpenUIFragments, {transformOrigin: 'right'})
+
+    .set('.page_content__sns', {pointerEvents: 'none'})
+
+    .set(play, {
+        pointerEvents: 'none',
+        transition: 'none'
+    })
+
+    .fromTo(logo, {autoAlpha: 1}, {
+        autoAlpha: 0,
+        ease: 'none'
+    })
+
+    .fromTo(menuOpenUIFragments, {scaleX: 1}, {
+        scaleX: 0,
+        stagger: .2
+    }, '<')
+
+    .set(logo, {display: 'none'})
+
+    .set(menuOpen, {
+        display: 'none',
+        pointerEvents: 'none'
+    })
+
+    .to(socialIcons, {
+        scale: 0,
+        duration: .8,
+        stagger: .2,
+        ease: 'back.in',
+        reversed: true
+    }, '>-.5')
+    
+    .to(play, {
+        scale: 0,
+        duration: .8,
+        ease: 'back.in'
+    }, '<')
+
+    .to(info, {
+        autoAlpha: 0,
+        duration: .8,
+        ease: 'none'
+    }, '<')
+
+    .to(shareLabel, {
+        yPercent: 100,
+        duration: .8
+    })
+
+    .to(heading, {
+        xPercent: -100,
+        duration: .8
+    }, '<')
+
+    .to(description, {
+        yPercent: -100,
+        duration: .8
+    }, '<')
+
+    .to(pageTransitionComponents, {
+        scaleY: 1,
+        duration: .8,
+        ease: 'power1.inOut',
+        onComplete: () => {
+            video.pause()
+            video.currentTime = 0
+        }
+    })
+}
+
 const homeEnter = page => {
     const scrollLayers = page.querySelector('.scroll_layers')
 
@@ -522,12 +684,7 @@ const homeEnter = page => {
     .set(menuOpen, {display: 'block'})
     .set(menuOpenUIFragments, {transformOrigin: 'left'})
 
-    .set(scrollLayers, {visibility: 'visible'})
-
-    .set(scrollIndicator, {visibility: 'visible'})
-    .set(scrollIndicatorIndex, {visibility: 'visible'})
-
-    .set(scrollIndex, {visibility: 'visible'})
+    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollIndex], {visibility: 'visible'})
 
     .fromTo(logo, {autoAlpha: 0}, {
         autoAlpha: 1,
@@ -546,6 +703,34 @@ const homeEnter = page => {
         duration: .8,
         ease: 'none'
     }, '>-.5')
+
+    .set(pageTitles, {pointerEvents: 'auto'})
+}
+
+const homeFromContentEnter = page => {
+    const scrollLayers = page.querySelector('.scroll_layers')
+
+    const pageTitles = page.querySelectorAll('.scroll_layers__page_title a')
+
+    const scrollIndicator = page.querySelector('.scroll_indicator')
+    const scrollIndicatorIndex = page.querySelector('.scroll_indicator_index')
+
+    const scrollIndex = page.querySelector('.scroll_index')
+
+    return gsap.timeline()
+
+    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollIndex], {visibility: 'visible'})
+    
+    .from(page, {
+        autoAlpha: 0,
+        duration: .8,
+        ease: 'none'
+    })
+
+    .set(logo, {pointerEvents: 'auto'})
+
+    .set(menuOpen, {pointerEvents: 'auto'})
+    .set(menuOpenUIFragments, {transformOrigin: 'left'})
 
     .set(pageTitles, {pointerEvents: 'auto'})
 }
@@ -592,7 +777,7 @@ const contentEnter = page => {
     const play = page.querySelectorAll('.page_content__play')
     const info = page.querySelector('.page_content__show_info')
 
-    return gsap.timeline({delay: 1})
+    return gsap.timeline({delay: .5})
 
     .set(logo, {display: 'block'})
 
@@ -1007,6 +1192,20 @@ barba.init({
                 if (next.namespace == 'home') homeEnter(next.container)
                 if (next.namespace == 'content') contentEnter(next.container)
             }
+        },
+        {
+            name: 'content-to-home',
+            from: {namespace: 'content'},
+            to: {namespace: 'home'},
+            async leave({current}) {await contentToHomeLeave(current.container)},
+            enter({next}) {homeFromContentEnter(next.container)}
+        },
+        {
+            name: 'content-to-menu',
+            from: {namespace: 'content'},
+            to: {namespace: 'menu'},
+            async leave({current}) {await contentToMenuLeave(current.container)},
+            enter({next}) {menuEnter(next.container)}
         }
     ]
 })
