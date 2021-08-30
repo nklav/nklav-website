@@ -217,7 +217,7 @@ class ScrollLoop extends Loop {
 
     selfDestruct() {
         const instances = ScrollTrigger.getAll()
-        instances.forEach(instance => instance.disable())
+        instances.forEach(instance => instance.kill())
 
         this.instance.unloop()
 
@@ -227,12 +227,7 @@ class ScrollLoop extends Loop {
         }
     }
 
-    refresh() {
-        const instances = ScrollTrigger.getAll()
-        instances.forEach(instance => instance.enable())
-
-        ScrollTrigger.refresh(true)
-    }
+    refresh() {ScrollTrigger.refresh(true)}
 }
 
 const loader = document.querySelector('.loader')
@@ -373,6 +368,8 @@ const menuOnce = page => {
         duration: .8,
         stagger: .1
     }, '<')
+
+    .set(listItems, {pointerEvents: 'auto'})
 }
 
 const contentOnce = page => {
@@ -486,9 +483,13 @@ const homeLeave = page => {
 }
 
 const menuLeave = page => {
+    const listItems = page.querySelectorAll('.menu_page__list_item')
+
     return gsap.timeline()
 
     .set(menuClose, {pointerEvents: 'none'})
+
+    .set(listItems, {pointerEvents: 'none'})
 
     .fromTo(menuCloseUIFragments, {scaleX: 1}, {
         scaleX: 0,
@@ -761,6 +762,8 @@ const menuEnter = page => {
         autoAlpha: 0,
         ease: 'none'
     }, '<')
+
+    .set(listItems, {pointerEvents: 'auto'})
 }
 
 const contentEnter = page => {

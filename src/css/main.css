@@ -297,6 +297,7 @@ br {user-select: none;}
     text-transform: uppercase;
     line-height: 100%;
     user-select: none;
+    pointer-events: none;
 }
 
 .menu_page__list_item a span {
@@ -805,6 +806,13 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
 }
 
 @media (min-width: 1280px) {
+    .scroll_indicator,
+    .scroll_indicator_index {
+        right: 50px;
+        width: 100px;
+        height: 100px;
+    }
+
     .scroll_layers__page_content {
         width: 800px;
         height: 450px;
