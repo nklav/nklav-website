@@ -991,32 +991,22 @@ barba.init({
             }
         },
         {
-            name: 'home-to-menu',
+            name: 'home-to-menu-or-content',
             from: {namespace: 'home'},
-            to: {namespace: 'menu'},
             async leave({current}) {await homeLeave(current.container)},
-            enter({next}) {menuEnter(next.container)}
+            enter({next}) {
+                if (next.namespace == 'menu') menuEnter(next.container)
+                if (next.namespace == 'content') contentEnter(next.container)
+            }
         },
         {
-            name: 'home-to-content',
-            from: {namespace: 'home'},
-            to: {namespace: 'content'},
-            async leave({current}) {await homeLeave(current.container)},
-            enter({next}) {contentEnter(next.container)}
-        },
-        {
-            name: 'menu-to-home',
+            name: 'menu-to-home-or-content',
             from: {namespace: 'menu'},
-            to: {namespace: 'home'},
             async leave({current}) {await menuLeave(current.container)},
-            enter({next}) {homeEnter(next.container)}
-        },
-        {
-            name: 'menu-to-content',
-            from: {namespace: 'menu'},
-            to: {namespace: 'content'},
-            async leave({current}) {await menuLeave(current.container)},
-            enter({next}) {contentEnter(next.container)}
+            enter({next}) {
+                if (next.namespace == 'home') homeEnter(next.container)
+                if (next.namespace == 'content') contentEnter(next.container)
+            }
         }
     ]
 })
