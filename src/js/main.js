@@ -34,8 +34,8 @@ class EventRegent {
         window.accessProp_0 = this.signal_0
         window.accessProp_1 = this.signal_1
         window.accessProp_2 = this.signal_2
-        window.accessMethod_0 = this.#registry_0.bind(this)
-        window.accessMethod_1 = this.#registry_1.bind(this)
+        window.accessMethod_0 = this.registry_0.bind(this)
+        window.accessMethod_1 = this.registry_1.bind(this)
         window.accessMethod_2 = this.receiver_1
 
         window.addEventListener(window.accessProp_0, window.accessMethod_0)
@@ -44,8 +44,8 @@ class EventRegent {
         window.dispatchEvent(this.e)
     }
 
-    #registry_0() {this.receiver_0()}
-    #registry_1() {window.addEventListener(window.accessProp_2, window.accessMethod_2)}
+    registry_0() {this.receiver_0()}
+    registry_1() {window.addEventListener(window.accessProp_2, window.accessMethod_2)}
 }
 
 class Loop {
