@@ -726,7 +726,7 @@ const homeFromContentEnter = page => {
         autoAlpha: 0,
         duration: .8,
         ease: 'none'
-    })
+    }, '+=.2')
 
     .set(logo, {pointerEvents: 'auto'})
 
