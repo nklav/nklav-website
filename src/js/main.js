@@ -1011,6 +1011,13 @@ barba.init({
             to: {namespace: 'home'},
             async leave({current}) {await menuLeave(current.container)},
             enter({next}) {homeEnter(next.container)}
+        },
+        {
+            name: 'menu-to-content',
+            from: {namespace: 'menu'},
+            to: {namespace: 'content'},
+            async leave({current}) {await menuLeave(current.container)},
+            enter({next}) {contentEnter(next.container)}
         }
     ]
 })
