@@ -1,6 +1,6 @@
 import barba from '@barba/core'
 import Plyr from 'plyr'
-import bundle, { Curtains, Plane } from './bundle'
+import bundle, {Curtains, Plane} from './bundle'
 import main from '../css/main'
 
 class AccessFrame {
@@ -324,13 +324,13 @@ const homeOnce = page => {
 
     .add(loaderAnimation())
 
-    .from(logo, {
-        autoAlpha: 0,
+    .fromTo(logo, {autoAlpha: 0}, {
+        autoAlpha: 1,
         ease: 'none'
     }, '>.5')
 
-    .from(menuOpenUIFragments, {
-        scaleX: 0,
+    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+        scaleX: 1,
         stagger: .2
     }, '<')
 
@@ -357,8 +357,8 @@ const menuOnce = page => {
 
     .add(loaderAnimation())
 
-    .from(menuCloseUIFragments, {
-        scaleX: 0,
+    .fromTo(menuCloseUIFragments, {scaleX: 0}, {
+        scaleX: 1,
         stagger: .2
     }, '>.5')
 
@@ -399,13 +399,13 @@ const contentOnce = page => {
         onStart: () => {video.play()}
     }, '>.5')
 
-    .from(logo, {
-        autoAlpha: 0,
+    .fromTo(logo, {autoAlpha: 0}, {
+        autoAlpha: 1,
         ease: 'none'
     }, '>-1.5')
     
-    .from(menuOpenUIFragments, {
-        scaleX: 0,
+    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+        scaleX: 1,
         stagger: .2
     }, '<')
     
@@ -462,12 +462,12 @@ const homeLeave = page => {
 
     .set(menuOpenUIFragments, {transformOrigin: 'right'})
 
-    .to(logo, {
+    .fromTo(logo, {autoAlpha: 1}, {
         autoAlpha: 0,
         ease: 'none'
     })
 
-    .to(menuOpenUIFragments, {
+    .fromTo(menuOpenUIFragments, {scaleX: 1}, {
         scaleX: 0,
         stagger: .2
     }, '<')
@@ -489,15 +489,14 @@ const homeLeave = page => {
 const menuLeave = page => {
     return gsap.timeline()
 
-    .to(menuCloseUIFragments, {
+    .set(menuClose, {pointerEvents: 'none'})
+
+    .fromTo(menuCloseUIFragments, {scaleX: 1}, {
         scaleX: 0,
         stagger: .2
     })
 
-    .set(menuClose, {
-        display: 'none',
-        pointerEvents: 'none'
-    })
+    .set(menuClose, {display: 'none'})
 
     .to(page, {
         autoAlpha: 0,
@@ -530,7 +529,7 @@ const homeEnter = page => {
 
     .set(scrollIndex, {visibility: 'visible'})
 
-    .to(logo, {
+    .fromTo(logo, {autoAlpha: 0}, {
         autoAlpha: 1,
         ease: 'none'
     })
@@ -607,12 +606,12 @@ const contentEnter = page => {
         onStart: () => {video.play()}
     })
 
-    .to(logo, {
+    .fromTo(logo, {autoAlpha: 0}, {
         autoAlpha: 1,
         ease: 'none'
     }, '>-1.5')
     
-    .to(menuOpenUIFragments, {
+    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     }, '<')
