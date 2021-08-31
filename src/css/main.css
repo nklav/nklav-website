@@ -62,6 +62,8 @@ a {
 
 br {user-select: none;}
 
+.no_scroll {overflow: hidden;}
+
 .loader {
     position: fixed;
     top: 50%;

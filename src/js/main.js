@@ -97,7 +97,7 @@ class Loop {
     
         return {
             timeline: loop,
-            unloop: () => {gsap.killTweensOf(continuum)}
+            unloop: () => gsap.killTweensOf(continuum)
         }
     }
 
@@ -305,7 +305,10 @@ const loaderAnimation = () => {
 }
 
 const homeOnce = page => {
-    return gsap.timeline()
+    return gsap.timeline({
+        onStart: () => document.body.classList.add('no_scroll'),
+        onComplete: () => document.body.classList.remove('no_scroll')
+    })
 
     .set(logo, {display: 'block'})
 
@@ -343,7 +346,10 @@ const homeOnce = page => {
 }
 
 const menuOnce = page => {
-    return gsap.timeline()
+    return gsap.timeline({
+        onStart: () => document.body.classList.add('no_scroll'),
+        onComplete: () => document.body.classList.remove('no_scroll')
+    })
 
     .set(menuClose, {display: 'block'})
 
@@ -390,7 +396,7 @@ const contentOnce = page => {
         scaleY: 0,
         duration: 4,
         ease: 'slow',
-        onStart: () => {video.play()}
+        onStart: () => video.play()
     }, '>.5')
 
     .fromTo(logo, {autoAlpha: 0}, {
@@ -797,7 +803,7 @@ const contentEnter = page => {
         scaleY: 0,
         duration: 4,
         ease: 'slow',
-        onStart: () => {video.play()}
+        onStart: () => video.play()
     })
 
     .fromTo(logo, {autoAlpha: 0}, {
@@ -951,8 +957,10 @@ const fragmentShader = `
     }
 `
 
-barba.hooks.afterLeave(() => {window.scrollTo(0, 0)})
-barba.hooks.enter(({current}) => {menuClose.setAttribute('href', current.url.href)})
+if (history.scrollRestoration) history.scrollRestoration = 'manual'
+
+barba.hooks.afterLeave(() => window.scrollTo(0, 0))
+barba.hooks.enter(({current}) => menuClose.setAttribute('href', current.url.href))
 
 barba.init({
     schema: {
@@ -989,7 +997,7 @@ barba.init({
                 scrollLoop.sync(scrollIndicatorAnimation)
 
                 const videoElements = next.container.getElementsByClassName('scroll_layers__page_content')
-                const buffer = [ ...videoElements ]
+                const buffer = [...videoElements]
 
                 const scrollIndexNumber = next.container.querySelector('.scroll_index__number')
                 const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index')
@@ -1045,43 +1053,13 @@ barba.init({
         {
             namespace: 'menu',
             beforeEnter({next}) {
-                const toSelf = next.container.querySelector('.menu_page__to_self')
-                const toSelfBack = next.container.querySelector('.to_self_back')
-
-                const scrollTo = () => {
-                    gsap.to(window, {
-                        scrollTo: {
-                            y: '#gl_scroll',
-                            offsetY: 300
-                        },
-                        duration: 2,
-                        ease: 'power4.inOut'
-                    })
-                }
-
-                const scrollTop = () => {
-                    gsap.to(window, {
-                        scrollTo: {y: '#top'},
-                        duration: 1,
-                        ease: 'power4.inOut'
-                    })
-                }
-                
-                toSelf.addEventListener('click', scrollTo)
-                toSelf.addEventListener('touchend', scrollTo)
-                
-                toSelfBack.addEventListener('click', scrollTop)
-                toSelfBack.addEventListener('touchend', scrollTop)
-
                 const init = new Curtains({
                     container: 'c',
                     autoRender: false,
                     pixelRatio: Math.min(1.5, window.devicePixelRatio)
                 })
-
+                
                 new AccessFrame(init.render.bind(init))
-
-                const planeElements = next.container.getElementsByClassName('gl__plane')
 
                 const config = {
                     vertexShader,
@@ -1097,19 +1075,38 @@ barba.init({
                     }
                 }
 
-                const planes = []
+                const planeElements = next.container.getElementsByClassName('gl__plane')
 
-                const render = index => {
-                    const plane = planes[index]
-                    plane.onReady(() => {plane.playVideos()}).onRender(() => {plane.uniforms.time.value++})
-                }
+                const vector = []
 
                 for (let i = 0; i < planeElements.length; i++) {
                     const plane = new Plane(init, planeElements[i], config)
-                    planes.push(plane)
-
-                    render(i)
+                    vector.push(plane)
                 }
+
+                vector.forEach(plane => plane.onReady(() => plane.playVideos()).onRender(() => plane.uniforms.time.value++))
+                
+                const toSelf = next.container.querySelector('.menu_page__to_self')
+                const toSelfBack = next.container.querySelector('.to_self_back')
+                
+                toSelf.addEventListener('click', () => {
+                    gsap.to(window, {
+                        scrollTo: {
+                            y: '#gl_scroll',
+                            offsetY: 300
+                        },
+                        duration: 2,
+                        ease: 'power4.inOut'
+                    })
+                })
+
+                toSelfBack.addEventListener('click', () => {
+                    gsap.to(window, {
+                        scrollTo: {y: '#top'},
+                        duration: 1,
+                        ease: 'power4.inOut'
+                    })
+                })
             },
             afterLeave() {new AccessFrame(silencer)}
         },
@@ -1165,11 +1162,8 @@ barba.init({
 
                 .set('.mobile_content__sns', {pointerEvents: 'auto'})
 
-                show.addEventListener('click', () => {showInfo.play()})
-                show.addEventListener('touchend', () => {showInfo.play()})
-
-                hide.addEventListener('click', () => {showInfo.reverse()})
-                hide.addEventListener('touchend', () => {showInfo.reverse()})
+                show.addEventListener('click', () => showInfo.play())
+                hide.addEventListener('click', () => showInfo.reverse())
 
                 const monitor = () => {
                     let width = window.innerWidth
