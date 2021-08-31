@@ -248,6 +248,8 @@ const pageTitles = document.querySelectorAll('.scroll_layers__page_title a')
 const scrollIndicator = document.querySelector('.scroll_indicator')
 const scrollIndicatorIndex = document.querySelector('.scroll_indicator_index')
 
+const scrollHint = document.querySelector('.scroll_hint')
+
 const scrollIndex = document.querySelector('.scroll_index')
 
 const listItems = document.querySelectorAll('.menu_page__list_item')
@@ -310,7 +312,7 @@ const homeOnce = page => {
     .set(menuOpen, {display: 'block'})
     .set(menuOpenUIFragments, {transformOrigin: 'left'})
 
-    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollIndex], {visibility: 'visible'})
+    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollHint, scrollIndex], {visibility: 'visible'})
 
     .add(loaderAnimation())
 
@@ -555,7 +557,7 @@ const contentToHomeLeave = page => {
     .to(shareLabel, {
         yPercent: 100,
         duration: .8
-    })
+    }, '>-.6')
 
     .to(heading, {
         xPercent: -100,
@@ -645,7 +647,7 @@ const contentToMenuLeave = page => {
     .to(shareLabel, {
         yPercent: 100,
         duration: .8
-    })
+    }, '>-.6')
 
     .to(heading, {
         xPercent: -100,
@@ -676,6 +678,8 @@ const homeEnter = page => {
     const scrollIndicator = page.querySelector('.scroll_indicator')
     const scrollIndicatorIndex = page.querySelector('.scroll_indicator_index')
 
+    const scrollHint = page.querySelector('.scroll_hint')
+
     const scrollIndex = page.querySelector('.scroll_index')
 
     return gsap.timeline()
@@ -685,7 +689,7 @@ const homeEnter = page => {
     .set(menuOpen, {display: 'block'})
     .set(menuOpenUIFragments, {transformOrigin: 'left'})
 
-    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollIndex], {visibility: 'visible'})
+    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollHint, scrollIndex], {visibility: 'visible'})
 
     .fromTo(logo, {autoAlpha: 0}, {
         autoAlpha: 1,
@@ -716,11 +720,13 @@ const homeFromContentEnter = page => {
     const scrollIndicator = page.querySelector('.scroll_indicator')
     const scrollIndicatorIndex = page.querySelector('.scroll_indicator_index')
 
+    const scrollHint = page.querySelector('.scroll_hint')
+
     const scrollIndex = page.querySelector('.scroll_index')
 
     return gsap.timeline()
 
-    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollIndex], {visibility: 'visible'})
+    .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollHint, scrollIndex], {visibility: 'visible'})
     
     .from(page, {
         autoAlpha: 0,
@@ -977,6 +983,10 @@ barba.init({
                 })
                 
                 const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
+                
+                scrollLoop.scroll()
+                scrollLoop.refresh()
+                scrollLoop.sync(scrollIndicatorAnimation)
 
                 const videoElements = next.container.getElementsByClassName('scroll_layers__page_content')
                 const buffer = [ ...videoElements ]
@@ -1001,12 +1011,13 @@ barba.init({
                         if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause()
                     }
                 }
-                
-                scrollLoop.scroll()
-                scrollLoop.refresh()
-                scrollLoop.sync(scrollIndicatorAnimation)
 
-                new AccessFrame(updateState)
+                const state = () => {
+                    const style = next.container.getAttribute('style')
+                    if (style.includes('opacity: 1')) updateState()
+                }
+
+                new AccessFrame(state)
             },
             afterLeave({current}) {
                 const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
@@ -1088,7 +1099,7 @@ barba.init({
 
                 const planes = []
 
-                const renderPlanes = index => {
+                const render = index => {
                     const plane = planes[index]
                     plane.onReady(() => {plane.playVideos()}).onRender(() => {plane.uniforms.time.value++})
                 }
@@ -1097,10 +1108,10 @@ barba.init({
                     const plane = new Plane(init, planeElements[i], config)
                     planes.push(plane)
 
-                    renderPlanes(i)
+                    render(i)
                 }
             },
-            beforeLeave() {new AccessFrame(silencer)}
+            afterLeave() {new AccessFrame(silencer)}
         },
         {
             namespace: 'content',
@@ -1167,7 +1178,7 @@ barba.init({
 
                 new AccessFrame(monitor)
             },
-            beforeLeave() {new AccessFrame(silencer)}
+            afterLeave() {new AccessFrame(silencer)}
         }
     ],
     transitions: [
