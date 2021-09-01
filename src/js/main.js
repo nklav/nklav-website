@@ -498,7 +498,7 @@ const menuLeave = page => {
     }, 0)
 }
 
-const contentToHomeLeave = page => {
+const contentLeaveToHome = page => {
     const video = page.querySelector('video')
 
     const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
@@ -524,7 +524,7 @@ const contentToHomeLeave = page => {
     .set(page, {}, '+=.5')
 }
 
-const contentToMenuLeave = page => {
+const contentLeaveToMenu = page => {
     const video = page.querySelector('video')
 
     const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
@@ -601,7 +601,7 @@ const homeEnter = page => {
     .set([menuOpen, pageTitles], {pointerEvents: 'auto'})
 }
 
-const homeFromContentEnter = page => {
+const homeEnterFromContent = page => {
     const scrollLayers = page.querySelector('.scroll_layers')
 
     const pageTitles = page.querySelectorAll('.scroll_layers__page_title a')
@@ -742,7 +742,7 @@ const contentEnter = page => {
     }, '>-1.5')
 }
 
-const contentFromMenuCloseEnter = page => {
+const contentEnterFromMenuClose = page => {
     const video = page.querySelector('video')
 
     const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
@@ -1116,22 +1116,22 @@ barba.init({
             async leave({current}) {await menuLeave(current.container)},
             enter({next, trigger}) {
                 if (next.namespace == 'home') homeEnter(next.container)
-                if (next.namespace == 'content' && trigger == menuClose) contentFromMenuCloseEnter(next.container)
-                if (next.namespace == 'content' && !(trigger == menuClose)) contentEnter(next.container)
+                if (next.namespace == 'content' && trigger == menuClose) contentEnterFromMenuClose(next.container)
+                if (next.namespace == 'content' && trigger != menuClose) contentEnter(next.container)
             }
         },
         {
             name: 'content-to-home',
             from: {namespace: 'content'},
             to: {namespace: 'home'},
-            async leave({current}) {await contentToHomeLeave(current.container)},
-            enter({next}) {homeFromContentEnter(next.container)}
+            async leave({current}) {await contentLeaveToHome(current.container)},
+            enter({next}) {homeEnterFromContent(next.container)}
         },
         {
             name: 'content-to-menu',
             from: {namespace: 'content'},
             to: {namespace: 'menu'},
-            async leave({current}) {await contentToMenuLeave(current.container)},
+            async leave({current}) {await contentLeaveToMenu(current.container)},
             enter({next}) {menuEnter(next.container)}
         }
     ]
