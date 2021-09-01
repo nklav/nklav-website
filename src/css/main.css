@@ -135,7 +135,7 @@ br {user-select: none;}
     cursor: pointer;
 }
 
-.menu--close__container {
+.menu--close__in {
     position: relative;
     top: 47.5%;
     display: block;
@@ -143,8 +143,8 @@ br {user-select: none;}
     height: 2px;
 }
 
-.menu--close__container:nth-child(1) {transform: translateY(50%) rotate(45deg);}
-.menu--close__container:nth-child(2) {transform: translateY(-50%) rotate(-45deg);}
+.menu--close__in:nth-child(1) {transform: translateY(50%) rotate(45deg);}
+.menu--close__in:nth-child(2) {transform: translateY(-50%) rotate(-45deg);}
 
 .menu--close__ui_fragment {
     position: absolute;
@@ -154,8 +154,8 @@ br {user-select: none;}
     background: var(--primary-ui-color);
 }
 
-.menu--close__container:nth-child(1) .menu--close__ui_fragment {transform-origin: left;}
-.menu--close__container:nth-child(2) .menu--close__ui_fragment {transform-origin: right;}
+.menu--close__in:nth-child(1) .menu--close__ui_fragment {transform-origin: left;}
+.menu--close__in:nth-child(2) .menu--close__ui_fragment {transform-origin: right;}
 
 .gradient {
     position: fixed;
@@ -723,7 +723,7 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
         transform: translate(0, -50%);
     }
     
-    .menu--close__container {top: 46.5%;}
+    .menu--close__in {top: 46.5%;}
 
     .scroll_hint {font-size: 4.8rem;}
     
