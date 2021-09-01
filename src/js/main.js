@@ -55,11 +55,11 @@ class Loop {
     }
     
     loop() {
-        const spacing = 1 / this.elements.length
-        const overlap = Math.ceil(1 / spacing)
+        const space = 1 / this.elements.length
+        const overlap = Math.ceil(1 / space)
 
-        const start = this.elements.length * spacing + .5
-        const end = (this.elements.length + overlap) * spacing + .5
+        const start = this.elements.length * space + .5
+        const end = (this.elements.length + overlap) * space + .5
     
         const continuum = gsap.timeline({paused: true})
     
@@ -75,7 +75,7 @@ class Loop {
     
         for (i = 0; i < l; i++) {
             index = i % this.elements.length
-            time = i * spacing
+            time = i * space
     
             continuum.add(this.animation(this.elements[index]), time)
         }
@@ -88,9 +88,9 @@ class Loop {
             ease: 'none'
         })
     
-        .fromTo(continuum, {time: overlap * spacing + 1}, {
+        .fromTo(continuum, {time: overlap * space + 1}, {
             time: start,
-            duration: start - (overlap * spacing + 1),
+            duration: start - (overlap * space + 1),
             ease: 'none',
             immediateRender: false
         })
@@ -111,7 +111,7 @@ class ScrollLoop extends Loop {
         this.instances = config.instances
         this.pin = config.pin
         this.scrollSnapping = config.scrollSnapping
-        this.keyScrolling = config.keyScrolling,
+        this.keyScrolling = config.keyScrolling
         this.on = config.on
         
         this.instance = this.instances[0].loop()
