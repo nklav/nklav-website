@@ -574,7 +574,10 @@ const homeEnter = page => {
 
     const scrollIndex = page.querySelector('.scroll_index')
 
-    return gsap.timeline({onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}})
+    return gsap.timeline({
+        delay: .3,
+        onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}
+    })
 
     .set([logo, menuOpen], {display: 'block'})
 
@@ -1117,7 +1120,8 @@ barba.init({
             enter({next, trigger}) {
                 if (next.namespace == 'home') homeEnter(next.container)
                 if (next.namespace == 'content' && trigger == menuClose) contentEnterFromMenuClose(next.container)
-                if (next.namespace == 'content' && trigger != menuClose) contentEnter(next.container)
+                if (next.namespace == 'content' && trigger == 'back') contentEnterFromMenuClose(next.container)
+                if (next.namespace == 'content' && trigger != menuClose && trigger != 'back') contentEnter(next.container)
             }
         },
         {
