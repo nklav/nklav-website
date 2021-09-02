@@ -113,20 +113,18 @@ class ScrollLoop extends Loop {
         this.scrollSnapping = config.scrollSnapping
         this.keyScrolling = config.keyScrolling
         this.on = config.on
-        
-        this.instance = this.instances[0].loop()
 
         this.instanceVector = []
 
-        for (let i = 1; i < this.instances.length; i++) {
+        for (let i = 0; i < this.instances.length; i++) {
             const instance = this.instances[i].loop()
-            this.instanceVector.unshift(instance)
+            this.instanceVector.push(instance)
         }
     }
 
     scroll() {
         const parameters = {
-            instance: this.instance.timeline,
+            instance: this.instanceVector[0].timeline,
             space: this.instances[0].space,
             pin: this.pin
         }
@@ -138,10 +136,7 @@ class ScrollLoop extends Loop {
 
         const directMotion = gsap.to(playhead, {
             offset: 0,
-            onUpdate: () => {
-                parameters.instance.time(timeLoop(playhead.offset))
-                this.instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.offset)))
-            },
+            onUpdate: () => this.instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.offset))),
             duration: 1,
             ease: 'slow',
             paused: true
@@ -192,14 +187,10 @@ class ScrollLoop extends Loop {
             }
     
             const keyScroll = e => {
-                const keyCodes = [
-                    'Space',
-                    'ArrowUp',
-                    'ArrowDown'
-                ]
-                
-                if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
+                const keyCodes = ['Space', 'ArrowUp', 'ArrowDown']
 
+                if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
+                
                 if (e.code == 'ArrowDown') scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
                 if (e.code == 'ArrowUp') scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
             }
@@ -218,8 +209,6 @@ class ScrollLoop extends Loop {
     selfDestruct() {
         const instances = ScrollTrigger.getAll()
         instances.forEach(instance => instance.kill())
-
-        this.instance.unloop()
 
         for (let i = 0; i < this.instanceVector.length; i++) {
             const instance = this.instanceVector[i]
