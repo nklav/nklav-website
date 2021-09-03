@@ -125,8 +125,7 @@ class ScrollLoop extends Loop {
     scroll() {
         const parameters = {
             instance: this.instanceVector[0].timeline,
-            space: this.instances[0].space,
-            pin: this.pin
+            space: this.instances[0].space
         }
 
         let iteration = 0
@@ -154,7 +153,7 @@ class ScrollLoop extends Loop {
                 directMotion.invalidate().restart()
             },
             end: '+=3000',
-            pin: parameters.pin
+            pin: this.pin
         })
 
         const scrollMeters = {
@@ -425,15 +424,15 @@ const contentOnce = page => {
         clearProps: 'scale'
     }, '<')
     
-    .set(['.page_content__sns', play], {pointerEvents: 'auto'})
-
-    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
-
     .from(info, {
         autoAlpha: 0,
         duration: .8,
         ease: 'none'
-    }, '>-1.5')
+    }, '<')
+
+    .set(['.page_content__sns', play], {pointerEvents: 'auto'})
+
+    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
 }
 
 const homeLeave = page => {
@@ -723,15 +722,15 @@ const contentEnter = page => {
         clearProps: 'scale'
     }, '<')
     
-    .set(['.page_content__sns', play], {pointerEvents: 'auto'})
-
-    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
-
     .from(info, {
         autoAlpha: 0,
         duration: .8,
         ease: 'none'
-    }, '>-1.5')
+    }, '<')
+
+    .set(['.page_content__sns', play], {pointerEvents: 'auto'})
+
+    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
 }
 
 const contentEnterFromMenuClose = page => {
