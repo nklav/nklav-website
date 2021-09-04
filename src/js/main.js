@@ -190,8 +190,17 @@ class ScrollLoop extends Loop {
 
                 if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
                 
-                if (e.code == 'ArrowDown') scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
-                if (e.code == 'ArrowUp') scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
+                if (e.code == 'ArrowDown') {
+                    scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
+                    scrollHint.innerHTML = 'down'
+                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                }
+
+                if (e.code == 'ArrowUp') {
+                    scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
+                    scrollHint.innerHTML = 'up'
+                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                }
             }
     
             new EventRegent(this._on, [scrollSnap, keyScroll])
@@ -223,11 +232,11 @@ const progressBar = document.querySelector('.loader__progress_bar')
 
 const logo = document.querySelector('.to_home')
 
-const menuOpen = document.querySelector('.menu--open')
-const menuOpenUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
+const openMenu = document.querySelector('.menu--open')
+const openMenuUIFragments = document.querySelectorAll('.menu--open__ui_fragment')
 
-const menuClose = document.querySelector('.menu--close')
-const menuCloseUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
+const closeMenu = document.querySelector('.menu--close')
+const closeMenuUIFragments = document.querySelectorAll('.menu--close__ui_fragment')
 
 const scrollLayers = document.querySelector('.scroll_layers')
 
@@ -298,9 +307,9 @@ const homeOnce = page => {
         onComplete: () => document.body.classList.remove('no_scroll')
     })
 
-    .set([logo, menuOpen], {display: 'block'})
+    .set([logo, openMenu], {display: 'block'})
 
-    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+    .set(openMenuUIFragments, {transformOrigin: 'left'})
 
     .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollHint, scrollIndex], {visibility: 'visible'})
 
@@ -311,7 +320,7 @@ const homeOnce = page => {
         ease: 'none'
     }, '>.5')
 
-    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+    .fromTo(openMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     }, '<')
@@ -327,24 +336,24 @@ const homeOnce = page => {
         duration: 1
     }, '<')
 
-    .set([menuOpen, pageTitles], {pointerEvents: 'auto'})
+    .set([openMenu, pageTitles], {pointerEvents: 'auto'})
 }
 
 const menuOnce = page => {
     return gsap.timeline({onStart: () => document.body.classList.add('no_scroll')})
 
-    .set(menuClose, {display: 'block'})
+    .set(closeMenu, {display: 'block'})
 
     .add(loaderAnimation())
 
-    .fromTo(menuCloseUIFragments, {scaleX: 0}, {
+    .fromTo(closeMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     }, '>.5')
 
-    .set(menuClose, {
+    .set(closeMenu, {
         pointerEvents: 'auto',
-        onComplete: () => menuClose.setAttribute('href', '/')
+        onComplete: () => closeMenu.setAttribute('href', '/')
     })
 
     .from(page, {
@@ -367,9 +376,9 @@ const contentOnce = page => {
 
     return gsap.timeline()
 
-    .set([logo, menuOpen], {display: 'block'})
+    .set([logo, openMenu], {display: 'block'})
 
-    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+    .set(openMenuUIFragments, {transformOrigin: 'left'})
 
     .add(loaderAnimation())
     
@@ -385,12 +394,12 @@ const contentOnce = page => {
         ease: 'none'
     }, '>-1.5')
     
-    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+    .fromTo(openMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     }, '<')
     
-    .set(menuOpen, {pointerEvents: 'auto'})
+    .set(openMenu, {pointerEvents: 'auto'})
 
     .from(heading, {
         xPercent: -100,
@@ -440,7 +449,7 @@ const homeLeave = page => {
 
     return gsap.timeline()
 
-    .set(menuOpenUIFragments, {transformOrigin: 'right'})
+    .set(openMenuUIFragments, {transformOrigin: 'right'})
 
     .set(pageTitles, {pointerEvents: 'none'})
 
@@ -449,14 +458,14 @@ const homeLeave = page => {
         ease: 'none'
     })
 
-    .fromTo(menuOpenUIFragments, {scaleX: 1}, {
+    .fromTo(openMenuUIFragments, {scaleX: 1}, {
         scaleX: 0,
         stagger: .2
     }, '<')
 
-    .set([logo, menuOpen], {display: 'none'})
+    .set([logo, openMenu], {display: 'none'})
 
-    .set(menuOpen, {pointerEvents: 'none'})
+    .set(openMenu, {pointerEvents: 'none'})
 
     .to(page, {
         autoAlpha: 0,
@@ -470,14 +479,14 @@ const menuLeave = page => {
 
     return gsap.timeline()
 
-    .set([menuClose, listItems], {pointerEvents: 'none'})
+    .set([closeMenu, listItems], {pointerEvents: 'none'})
 
-    .fromTo(menuCloseUIFragments, {scaleX: 1}, {
+    .fromTo(closeMenuUIFragments, {scaleX: 1}, {
         scaleX: 0,
         stagger: .2
     })
 
-    .set(menuClose, {display: 'none'})
+    .set(closeMenu, {display: 'none'})
 
     .to(page, {
         autoAlpha: 0,
@@ -495,7 +504,7 @@ const contentLeaveToHome = page => {
 
     return gsap.timeline()
 
-    .set([logo, menuOpen, '.page_content__sns', play], {pointerEvents: 'none'})
+    .set([logo, openMenu, '.page_content__sns', play], {pointerEvents: 'none'})
 
     .set(play, {transition: 'none'})
 
@@ -521,9 +530,9 @@ const contentLeaveToMenu = page => {
 
     return gsap.timeline()
 
-    .set([menuOpen, '.page_content__sns', play], {pointerEvents: 'none'})
+    .set([openMenu, '.page_content__sns', play], {pointerEvents: 'none'})
 
-    .set(menuOpenUIFragments, {transformOrigin: 'right'})
+    .set(openMenuUIFragments, {transformOrigin: 'right'})
 
     .set(play, {transition: 'none'})
 
@@ -532,12 +541,12 @@ const contentLeaveToMenu = page => {
         ease: 'none'
     })
 
-    .fromTo(menuOpenUIFragments, {scaleX: 1}, {
+    .fromTo(openMenuUIFragments, {scaleX: 1}, {
         scaleX: 0,
         stagger: .2
     }, '<')
 
-    .set([logo, menuOpen], {display: 'none'})
+    .set([logo, openMenu], {display: 'none'})
 
     .to(pageTransitionComponents, {
         scaleY: 1,
@@ -567,9 +576,9 @@ const homeEnter = page => {
         onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}
     })
 
-    .set([logo, menuOpen], {display: 'block'})
+    .set([logo, openMenu], {display: 'block'})
 
-    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+    .set(openMenuUIFragments, {transformOrigin: 'left'})
 
     .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollHint, scrollIndex], {visibility: 'visible'})
 
@@ -578,7 +587,7 @@ const homeEnter = page => {
         ease: 'none'
     })
 
-    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+    .fromTo(openMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     }, '<')
@@ -589,7 +598,7 @@ const homeEnter = page => {
         ease: 'none'
     }, '<')
 
-    .set([menuOpen, pageTitles], {pointerEvents: 'auto'})
+    .set([openMenu, pageTitles], {pointerEvents: 'auto'})
 }
 
 const homeEnterFromContent = page => {
@@ -614,9 +623,9 @@ const homeEnterFromContent = page => {
         ease: 'none'
     }, '+=.2')
 
-    .set([logo, menuOpen, pageTitles], {pointerEvents: 'auto'})
+    .set([logo, openMenu, pageTitles], {pointerEvents: 'auto'})
 
-    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+    .set(openMenuUIFragments, {transformOrigin: 'left'})
 }
 
 const menuEnter = page => {
@@ -626,9 +635,9 @@ const menuEnter = page => {
 
     return gsap.timeline({onStart: () => document.body.classList.add('no_scroll')})
 
-    .set(menuClose, {display: 'block'})
+    .set(closeMenu, {display: 'block'})
 
-    .fromTo(menuCloseUIFragments, {scaleX: 0}, {
+    .fromTo(closeMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     })
@@ -645,7 +654,7 @@ const menuEnter = page => {
         ease: 'none'
     }, '<')
 
-    .set([menuClose, listItems], {pointerEvents: 'auto'})
+    .set([closeMenu, listItems], {pointerEvents: 'auto'})
 }
 
 const contentEnter = page => {
@@ -667,9 +676,9 @@ const contentEnter = page => {
         onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}
     })
 
-    .set([logo, menuOpen], {display: 'block'})
+    .set([logo, openMenu], {display: 'block'})
 
-    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+    .set(openMenuUIFragments, {transformOrigin: 'left'})
     
     .to(pageTransitionComponents, {
         scaleY: 0,
@@ -683,12 +692,12 @@ const contentEnter = page => {
         ease: 'none'
     }, '>-1.5')
     
-    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+    .fromTo(openMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     }, '<')
 
-    .set(menuOpen, {pointerEvents: 'auto'})
+    .set(openMenu, {pointerEvents: 'auto'})
 
     .from(heading, {
         xPercent: -100,
@@ -733,7 +742,7 @@ const contentEnter = page => {
     .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
 }
 
-const contentEnterFromMenuClose = page => {
+const contentEnterFromcloseMenu = page => {
     const video = page.querySelector('video')
 
     const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
@@ -745,9 +754,9 @@ const contentEnterFromMenuClose = page => {
         onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}
     })
 
-    .set([logo, menuOpen], {display: 'block'})
+    .set([logo, openMenu], {display: 'block'})
 
-    .set(menuOpenUIFragments, {transformOrigin: 'left'})
+    .set(openMenuUIFragments, {transformOrigin: 'left'})
     
     .to(pageTransitionComponents, {
         scaleY: 0,
@@ -761,12 +770,12 @@ const contentEnterFromMenuClose = page => {
         ease: 'none'
     }, '>-.3')
     
-    .fromTo(menuOpenUIFragments, {scaleX: 0}, {
+    .fromTo(openMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
         stagger: .2
     }, '<')
 
-    .set([menuOpen, '.page_content__sns', play], {pointerEvents: 'auto'})
+    .set([openMenu, '.page_content__sns', play], {pointerEvents: 'auto'})
 
     .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
 }
@@ -786,7 +795,6 @@ const pageContentAnimation = element => {
         yPercent: -500,
         duration: 1,
         ease: 'none',
-        reversed: true,
         immediateRender: false
     }, 0)
 }
@@ -810,7 +818,6 @@ const pageTitleAnimation = element => {
         clipPath: 'inset(800% -100% -800% -100%)',
         duration: 1,
         ease: 'none',
-        reversed: true,
         immediateRender: false
     }, 0)
 }
@@ -859,7 +866,7 @@ const fragmentShader = `
 if (history.scrollRestoration) history.scrollRestoration = 'manual'
 
 barba.hooks.afterLeave(() => window.scrollTo(0, 0))
-barba.hooks.enter(({current}) => menuClose.setAttribute('href', current.url.href))
+barba.hooks.enter(({current}) => closeMenu.setAttribute('href', current.url.href))
 
 barba.init({
     schema: {
@@ -1100,9 +1107,9 @@ barba.init({
             async leave({current}) {await menuLeave(current.container)},
             enter({next, trigger}) {
                 if (next.namespace == 'home') homeEnter(next.container)
-                if (next.namespace == 'content' && trigger == menuClose) contentEnterFromMenuClose(next.container)
-                if (next.namespace == 'content' && trigger == 'back') contentEnterFromMenuClose(next.container)
-                if (next.namespace == 'content' && trigger != menuClose && trigger != 'back') contentEnter(next.container)
+                if (next.namespace == 'content' && trigger == closeMenu) contentEnterFromcloseMenu(next.container)
+                if (next.namespace == 'content' && trigger == 'back') contentEnterFromcloseMenu(next.container)
+                if (next.namespace == 'content' && trigger != closeMenu && trigger != 'back') contentEnter(next.container)
             }
         },
         {
