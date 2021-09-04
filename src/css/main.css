@@ -231,7 +231,7 @@ br {user-select: none;}
     align-items: center;
 }
 
-.scroll_layers__page_content_layer {perspective: 3000px;}
+.scroll_layers__page_content_layer {perspective: 1px;}
 
 .scroll_layers__page_content {
     position: absolute;

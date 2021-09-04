@@ -774,11 +774,7 @@ const contentEnterFromMenuClose = page => {
 const pageContentAnimation = element => {
     return gsap.timeline()
 
-    .fromTo(element, {
-        scale: .8,
-        zIndex: -200
-    }, {
-        scale: 1,
+    .fromTo(element, {zIndex: -200}, {
         zIndex: -100,
         ease: 'power1.in',
         repeat: 1,
@@ -786,12 +782,8 @@ const pageContentAnimation = element => {
         immediateRender: false
     })
 
-    .fromTo(element, {
-        yPercent: 500,
-        rotationX: -100
-    }, {
+    .fromTo(element, {yPercent: 500}, {
         yPercent: -500,
-        rotationX: 100,
         duration: 1,
         ease: 'none',
         reversed: true,
@@ -811,10 +803,10 @@ const pageTitleAnimation = element => {
     })
 
     .fromTo(element, {
-        yPercent: 450,
+        yPercent: 500,
         clipPath: 'inset(-800% -100% 800% -100%)'
     }, {
-        yPercent: -450,
+        yPercent: -500,
         clipPath: 'inset(800% -100% -800% -100%)',
         duration: 1,
         ease: 'none',
