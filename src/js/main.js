@@ -5,24 +5,24 @@ import main from '../css/main'
 
 class AccessFrame {
     constructor(listener) {
-        this.listener = listener
+        this._listener = listener
 
         if (window.accessFrame) gsap.ticker.remove(window.accessFrame)
 
-        window.accessFrame = this.listener
+        window.accessFrame = this._listener
         gsap.ticker.add(window.accessFrame)
     }
 }
 
 class EventRegent {
     constructor(signal, receiver) {
-        this.signal_0 = signal[0]
-        this.signal_1 = signal[1]
-        this.signal_2 = signal[2]
-        this.receiver_0 = receiver[0]
-        this.receiver_1 = receiver[1]
+        this._signal_0 = signal[0]
+        this._signal_1 = signal[1]
+        this._signal_2 = signal[2]
+        this._receiver_0 = receiver[0]
+        this._receiver_1 = receiver[1]
 
-        this.e = new Event(this.signal_1)
+        this._e = new Event(this._signal_1)
 
         if (window.accessProp_0 && window.accessProp_1 && window.accessMethod_0 && window.accessMethod_1) {
             window.removeEventListener(window.accessProp_0, window.accessMethod_0)
@@ -31,35 +31,35 @@ class EventRegent {
 
         if (window.accessProp_2 && window.accessMethod_2) window.removeEventListener(window.accessProp_2, window.accessMethod_2)
 
-        window.accessProp_0 = this.signal_0
-        window.accessProp_1 = this.signal_1
-        window.accessProp_2 = this.signal_2
+        window.accessProp_0 = this._signal_0
+        window.accessProp_1 = this._signal_1
+        window.accessProp_2 = this._signal_2
         window.accessMethod_0 = this._registry_0.bind(this)
         window.accessMethod_1 = this._registry_1.bind(this)
-        window.accessMethod_2 = this.receiver_1
+        window.accessMethod_2 = this._receiver_1
 
         window.addEventListener(window.accessProp_0, window.accessMethod_0)
         window.addEventListener(window.accessProp_1, window.accessMethod_1)
 
-        window.dispatchEvent(this.e)
+        window.dispatchEvent(this._e)
     }
 
-    _registry_0() {this.receiver_0()}
+    _registry_0() {this._receiver_0()}
     _registry_1() {window.addEventListener(window.accessProp_2, window.accessMethod_2)}
 }
 
 class Loop {
     constructor(elements, animation) {
-        this.elements = gsap.utils.toArray(elements)
-        this.animation = animation
+        this._elements = gsap.utils.toArray(elements)
+        this._animation = animation
     }
     
     _loop() {
-        const space = 1 / this.elements.length
+        const space = 1 / this._elements.length
         const overlap = Math.ceil(1 / space)
 
-        const start = this.elements.length * space + .5
-        const end = (this.elements.length + overlap) * space + .5
+        const start = this._elements.length * space + .5
+        const end = (this._elements.length + overlap) * space + .5
     
         const continuum = gsap.timeline({paused: true})
     
@@ -69,15 +69,15 @@ class Loop {
             onRepeat() {this._time == this._dur && (this._tTime += this._dur - .01)}
         })
     
-        const l = this.elements.length + overlap * 2
+        const l = this._elements.length + overlap * 2
     
         let i, index, time
     
         for (i = 0; i < l; i++) {
-            index = i % this.elements.length
+            index = i % this._elements.length
             time = i * space
     
-            continuum.add(this.animation(this.elements[index]), time)
+            continuum.add(this._animation(this._elements[index]), time)
         }
     
         continuum.time(start)
@@ -96,36 +96,36 @@ class Loop {
         })
     
         return {
-            _timeline: loop,
-            _unloop: () => gsap.killTweensOf(continuum)
+            timeline: loop,
+            unloop: () => gsap.killTweensOf(continuum)
         }
     }
 
-    get _space() {return this.elements.length}
+    get _space() {return this._elements.length}
 }
 
 class ScrollLoop extends Loop {
     constructor(config) {
         super()
         
-        this.instances = config.instances
-        this.pin = config.pin
-        this.scrollSnapping = config.scrollSnapping
-        this.keyScrolling = config.keyScrolling
-        this.on = config.on
+        this._instances = config.instances
+        this._pin = config.pin
+        this._scrollSnapping = config.scrollSnapping
+        this._keyScrolling = config.keyScrolling
+        this._on = config.on
 
-        this.instanceVector = []
+        this._instanceVector = []
 
-        for (let i = 0; i < this.instances.length; i++) {
-            const instance = this.instances[i]._loop()
-            this.instanceVector.push(instance)
+        for (let i = 0; i < this._instances.length; i++) {
+            const instance = this._instances[i]._loop()
+            this._instanceVector.push(instance)
         }
     }
 
     scroll() {
         const parameters = {
-            instance: this.instanceVector[0]._timeline,
-            space: this.instances[0]._space
+            instance: this._instanceVector[0].timeline,
+            space: this._instances[0]._space
         }
 
         let iteration = 0
@@ -135,7 +135,7 @@ class ScrollLoop extends Loop {
 
         const directMotion = gsap.to(playhead, {
             offset: 0,
-            onUpdate: () => this.instanceVector.forEach(instance => instance._timeline.time(timeLoop(playhead.offset))),
+            onUpdate: () => this._instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.offset))),
             duration: 1,
             ease: 'slow',
             paused: true
@@ -153,7 +153,7 @@ class ScrollLoop extends Loop {
                 directMotion.invalidate().restart()
             },
             end: '+=3000',
-            pin: this.pin
+            pin: this._pin
         })
 
         const scrollMeters = {
@@ -177,7 +177,7 @@ class ScrollLoop extends Loop {
             scroller.scroll(scroll)
         }
 
-        if (this.scrollSnapping && this.keyScrolling && this.on) {
+        if (this._scrollSnapping && this._keyScrolling && this._on) {
             let timer = null
     
             const scrollSnap = () => {
@@ -194,7 +194,7 @@ class ScrollLoop extends Loop {
                 if (e.code == 'ArrowUp') scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
             }
     
-            new EventRegent(this.on, [scrollSnap, keyScroll])
+            new EventRegent(this._on, [scrollSnap, keyScroll])
         }
     }
 
@@ -209,9 +209,9 @@ class ScrollLoop extends Loop {
         const instances = ScrollTrigger.getAll()
         instances.forEach(instance => instance.kill())
 
-        for (let i = 0; i < this.instanceVector.length; i++) {
-            const instance = this.instanceVector[i]
-            instance._unloop()
+        for (let i = 0; i < this._instanceVector.length; i++) {
+            const instance = this._instanceVector[i]
+            instance.unloop()
         }
     }
 
@@ -563,7 +563,7 @@ const homeEnter = page => {
     const scrollIndex = page.querySelector('.scroll_index')
 
     return gsap.timeline({
-        delay: .3,
+        delay: .5,
         onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}
     })
 
