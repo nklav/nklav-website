@@ -177,7 +177,7 @@ class ScrollLoop extends Loop {
             scroller.scroll(scroll)
         }
 
-        if (this._scrollSnapping && this._keyScrolling && this._on) {
+        if (this._scrollSnapping && this._keyScrolling) {
             let timer = null
     
             const scrollSnap = () => {
@@ -742,7 +742,7 @@ const contentEnter = page => {
     .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
 }
 
-const contentEnterFromcloseMenu = page => {
+const contentEnterFromMenu = page => {
     const video = page.querySelector('video')
 
     const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
@@ -1107,8 +1107,8 @@ barba.init({
             async leave({current}) {await menuLeave(current.container)},
             enter({next, trigger}) {
                 if (next.namespace == 'home') homeEnter(next.container)
-                if (next.namespace == 'content' && trigger == closeMenu) contentEnterFromcloseMenu(next.container)
-                if (next.namespace == 'content' && trigger == 'back') contentEnterFromcloseMenu(next.container)
+                if (next.namespace == 'content' && trigger == closeMenu) contentEnterFromMenu(next.container)
+                if (next.namespace == 'content' && trigger == 'back') contentEnterFromMenu(next.container)
                 if (next.namespace == 'content' && trigger != closeMenu && trigger != 'back') contentEnter(next.container)
             }
         },
