@@ -105,7 +105,7 @@ class Loop {
 }
 
 class ScrollLoop extends Loop {
-    constructor(config) {
+    constructor(config, data) {
         super()
         
         this._instances = config.instances
@@ -113,6 +113,7 @@ class ScrollLoop extends Loop {
         this._scrollSnapping = config.scrollSnapping
         this._keyScrolling = config.keyScrolling
         this._on = config.on
+        this._data = data
 
         this._instanceVector = []
 
@@ -192,13 +193,13 @@ class ScrollLoop extends Loop {
                 
                 if (e.code == 'ArrowDown') {
                     scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
-                    scrollHint.innerHTML = 'down'
+                    this._data.innerHTML = 'down'
                     setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
                 }
 
                 if (e.code == 'ArrowUp') {
                     scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
-                    scrollHint.innerHTML = 'up'
+                    this._data.innerHTML = 'up'
                     setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
                 }
             }
@@ -886,6 +887,8 @@ barba.init({
                 
                 const scrollIndicator = next.container.querySelector('.scroll_indicator')
 
+                const scrollHint = next.container.querySelector('.scroll_hint')
+
                 const contentLoop = new Loop(pageContent, pageContentAnimation)
                 const titleLoop = new Loop(pageTitles, pageTitleAnimation)
                 
@@ -895,7 +898,7 @@ barba.init({
                     scrollSnapping: true,
                     keyScrolling: true,
                     on: ['scroll', 'custom', 'keydown']
-                })
+                }, scrollHint)
                 
                 const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
                 
