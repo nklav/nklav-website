@@ -34,8 +34,8 @@ class EventRegent {
         window.accessProp_0 = this.signal_0
         window.accessProp_1 = this.signal_1
         window.accessProp_2 = this.signal_2
-        window.accessMethod_0 = this.registry_0.bind(this)
-        window.accessMethod_1 = this.registry_1.bind(this)
+        window.accessMethod_0 = this._registry_0.bind(this)
+        window.accessMethod_1 = this._registry_1.bind(this)
         window.accessMethod_2 = this.receiver_1
 
         window.addEventListener(window.accessProp_0, window.accessMethod_0)
@@ -44,8 +44,8 @@ class EventRegent {
         window.dispatchEvent(this.e)
     }
 
-    registry_0() {this.receiver_0()}
-    registry_1() {window.addEventListener(window.accessProp_2, window.accessMethod_2)}
+    _registry_0() {this.receiver_0()}
+    _registry_1() {window.addEventListener(window.accessProp_2, window.accessMethod_2)}
 }
 
 class Loop {
@@ -54,7 +54,7 @@ class Loop {
         this.animation = animation
     }
     
-    loop() {
+    _loop() {
         const space = 1 / this.elements.length
         const overlap = Math.ceil(1 / space)
 
@@ -96,12 +96,12 @@ class Loop {
         })
     
         return {
-            timeline: loop,
-            unloop: () => gsap.killTweensOf(continuum)
+            _timeline: loop,
+            _unloop: () => gsap.killTweensOf(continuum)
         }
     }
 
-    get space() {return this.elements.length}
+    get _space() {return this.elements.length}
 }
 
 class ScrollLoop extends Loop {
@@ -117,15 +117,15 @@ class ScrollLoop extends Loop {
         this.instanceVector = []
 
         for (let i = 0; i < this.instances.length; i++) {
-            const instance = this.instances[i].loop()
+            const instance = this.instances[i]._loop()
             this.instanceVector.push(instance)
         }
     }
 
     scroll() {
         const parameters = {
-            instance: this.instanceVector[0].timeline,
-            space: this.instances[0].space
+            instance: this.instanceVector[0]._timeline,
+            space: this.instances[0]._space
         }
 
         let iteration = 0
@@ -135,7 +135,7 @@ class ScrollLoop extends Loop {
 
         const directMotion = gsap.to(playhead, {
             offset: 0,
-            onUpdate: () => this.instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.offset))),
+            onUpdate: () => this.instanceVector.forEach(instance => instance._timeline.time(timeLoop(playhead.offset))),
             duration: 1,
             ease: 'slow',
             paused: true
@@ -211,7 +211,7 @@ class ScrollLoop extends Loop {
 
         for (let i = 0; i < this.instanceVector.length; i++) {
             const instance = this.instanceVector[i]
-            instance.unloop()
+            instance._unloop()
         }
     }
 
@@ -871,9 +871,10 @@ barba.hooks.enter(({current}) => menuClose.setAttribute('href', current.url.href
 
 barba.init({
     schema: {
-        prefix: 'data-page',
-        wrapper: 'container',
-        container: 'transition'
+        prefix: 'data-app',
+        wrapper: 'page',
+        container: 'state',
+        namespace: 'push'
     },
     views: [
         {
