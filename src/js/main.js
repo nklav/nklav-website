@@ -105,7 +105,7 @@ class Loop {
 }
 
 class ScrollLoop extends Loop {
-    constructor(config, data) {
+    constructor(config) {
         super()
         
         this._instances = config.instances
