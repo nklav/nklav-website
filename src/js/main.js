@@ -3,17 +3,6 @@ import Plyr from 'plyr'
 import bundle, {Curtains, Plane} from './bundle'
 import main from '../css/main'
 
-class AccessFrame {
-    constructor(listener) {
-        this._listener = listener
-
-        if (window.accessFrame) gsap.ticker.remove(window.accessFrame)
-
-        window.accessFrame = this._listener
-        gsap.ticker.add(window.accessFrame)
-    }
-}
-
 class EventRegent {
     constructor(signal, receiver) {
         this._signal_0 = signal[0]
@@ -823,6 +812,12 @@ const pageTitleAnimation = element => {
     }, 0)
 }
 
+const accessFrame = listener => {
+    if (window.accessFrame) gsap.ticker.remove(window.accessFrame)
+    window.accessFrame = listener
+    gsap.ticker.add(window.accessFrame)
+}
+
 const silencer = () => {return}
 
 const vertexShader = `
@@ -936,7 +931,7 @@ barba.init({
                     if (style.includes('opacity: 1')) updateState()
                 }
 
-                new AccessFrame(state)
+                accessFrame(state)
             },
             afterLeave({current}) {
                 const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
@@ -961,7 +956,7 @@ barba.init({
                 Proxy.scroll()
                 Proxy.selfDestruct()
 
-                new AccessFrame(silencer)
+                accessFrame(silencer)
             }
         },
         {
@@ -973,7 +968,7 @@ barba.init({
                     pixelRatio: Math.min(1.5, window.devicePixelRatio)
                 })
                 
-                new AccessFrame(init.render.bind(init))
+                accessFrame(init.render.bind(init))
 
                 const config = {
                     vertexShader,
@@ -1025,7 +1020,7 @@ barba.init({
                     })
                 })
             },
-            afterLeave() {new AccessFrame(silencer)}
+            afterLeave() {accessFrame(silencer)}
         },
         {
             namespace: 'content',
@@ -1086,9 +1081,9 @@ barba.init({
                     if (width >= 1024) showInfo.restart().pause()
                 }
 
-                new AccessFrame(monitor)
+                accessFrame(monitor)
             },
-            afterLeave() {new AccessFrame(silencer)}
+            afterLeave() {accessFrame(silencer)}
         }
     ],
     transitions: [
