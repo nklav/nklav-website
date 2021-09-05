@@ -1004,7 +1004,7 @@ barba.init({
                 toSelf.addEventListener('click', () => {
                     gsap.to(window, {
                         scrollTo: {
-                            y: '#gl_scroll',
+                            y: '.gl',
                             offsetY: 300
                         },
                         duration: 2,
@@ -1014,7 +1014,7 @@ barba.init({
 
                 toSelfBack.addEventListener('click', () => {
                     gsap.to(window, {
-                        scrollTo: {y: '#top'},
+                        scrollTo: {y: '.menu_page_container'},
                         duration: 1,
                         ease: 'power4.inOut'
                     })
