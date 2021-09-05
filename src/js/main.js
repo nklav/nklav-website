@@ -113,7 +113,7 @@ class ScrollLoop extends Loop {
         this._scrollSnapping = config.scrollSnapping
         this._keyScrolling = config.keyScrolling
         this._on = config.on
-        this._data = data
+        this._data = config.data
 
         this._instanceVector = []
 
@@ -194,13 +194,13 @@ class ScrollLoop extends Loop {
                 if (e.code == 'ArrowDown') {
                     scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
                     this._data.innerHTML = 'down'
-                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                    setTimeout(() => this._data.innerHTML = 'scroll', 1000)
                 }
 
                 if (e.code == 'ArrowUp') {
                     scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
                     this._data.innerHTML = 'up'
-                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                    setTimeout(() => this._data.innerHTML = 'scroll', 1000)
                 }
             }
     
@@ -897,8 +897,9 @@ barba.init({
                     pin: scrollLayers,
                     scrollSnapping: true,
                     keyScrolling: true,
-                    on: ['scroll', 'custom', 'keydown']
-                }, scrollHint)
+                    on: ['scroll', 'custom', 'keydown'],
+                    data: scrollHint
+                })
                 
                 const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
                 
@@ -942,6 +943,8 @@ barba.init({
                 const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title')
 
                 const scrollLayers = current.container.querySelector('.scroll_layers')
+
+                const scrollHint = current.container.querySelector('.scroll_hint')
                 
                 const contentLoop = new Loop(pageContent, pageContentAnimation)
                 const titleLoop = new Loop(pageTitles, pageTitleAnimation)
@@ -951,7 +954,8 @@ barba.init({
                     pin: scrollLayers,
                     scrollSnapping: true,
                     keyScrolling: true,
-                    on: ['load', 'custom', 'load']
+                    on: ['load', 'custom', 'load'],
+                    data: scrollHint
                 })
 
                 Proxy.scroll()
