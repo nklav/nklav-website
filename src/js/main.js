@@ -1,6 +1,6 @@
 import barba from '@barba/core'
 import Plyr from 'plyr'
-import bundle, {Curtains, Plane} from './bundle'
+import { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
 class EventRegent {
@@ -50,34 +50,32 @@ class Loop {
         const start = this._elements.length * space + .5
         const end = (this._elements.length + overlap) * space + .5
     
-        const continuum = gsap.timeline({paused: true})
+        const spaceTime = gsap.timeline({paused: true})
     
         const loop = gsap.timeline({
-            paused: true,
             repeat: -1,
+            paused: true,
             onRepeat() {this._time == this._dur && (this._tTime += this._dur - .01)}
         })
     
         const l = this._elements.length + overlap * 2
     
-        let i, index, time
+        for (let i = 0; i < l; i++) {
+            let index = i % this._elements.length
+            let time = i * space
     
-        for (i = 0; i < l; i++) {
-            index = i % this._elements.length
-            time = i * space
-    
-            continuum.add(this._animation(this._elements[index]), time)
+            spaceTime.add(this._animation(this._elements[index]), time)
         }
     
-        continuum.time(start)
+        spaceTime.time(start)
     
-        loop.to(continuum, {
+        loop.to(spaceTime, {
             time: end,
             duration: end - start,
             ease: 'none'
         })
     
-        .fromTo(continuum, {time: overlap * space + 1}, {
+        .fromTo(spaceTime, {time: overlap * space + 1}, {
             time: start,
             duration: start - (overlap * space + 1),
             ease: 'none',
@@ -86,7 +84,7 @@ class Loop {
     
         return {
             timeline: loop,
-            unloop: () => gsap.killTweensOf(continuum)
+            destroy: () => loop.kill()
         }
     }
 
@@ -94,7 +92,7 @@ class Loop {
 }
 
 class ScrollLoop extends Loop {
-    constructor(config) {
+    constructor(config, acceleration) {
         super()
         
         this._instances = config.instances
@@ -103,6 +101,7 @@ class ScrollLoop extends Loop {
         this._keyScrolling = config.keyScrolling
         this._on = config.on
         this._data = config.data
+        this._acceleration = acceleration
 
         this._instanceVector = []
 
@@ -120,51 +119,51 @@ class ScrollLoop extends Loop {
 
         let iteration = 0
 
-        const playhead = {offset: 0}
+        const playhead = {delta: 0}
+
         const timeLoop = gsap.utils.wrap(0, parameters.instance.duration())
 
         const directMotion = gsap.to(playhead, {
-            offset: 0,
-            onUpdate: () => this._instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.offset))),
+            delta: 0,
             duration: 1,
             ease: 'slow',
-            paused: true
+            paused: true,
+            onUpdate: () => this._instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.delta))),
         })
 
         const scroller = ScrollTrigger.create({
             start: 0,
+            end: `+=${this._acceleration}`,
+            pin: this._pin,
             onUpdate: self => {
                 const scrollSelf = self.scroll()
 
-                if (scrollSelf > self.end - 1) scrollMeters.scrollCircle(1, 1)
-                if (scrollSelf < 1 && self.direction < 0) scrollMeters.scrollCircle(-1, self.end - 1)
+                if (scrollSelf > self.end - 1) scrollCircle(1, 1)
+                if (scrollSelf < 1 && self.direction < 0) scrollCircle(-1, self.end - 1)
 
-                directMotion.vars.offset = (iteration + self.progress) * parameters.instance.duration()
+                directMotion.vars.delta = (iteration + self.progress) * parameters.instance.duration()
                 directMotion.invalidate().restart()
             },
-            end: '+=3000',
-            pin: this._pin
         })
+        
+        const scrollMeter = measure => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, measure) * scroller.end)
 
-        const scrollMeters = {
-            scrollProgress: progress => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, progress) * scroller.end),
-            scrollCircle: (iterationDelta, scrollPoint) => {
-                iteration += iterationDelta
-                scroller.scroll(scrollPoint)
-                scroller.update()
-            }
+        const scrollCircle = (iterationDelta, scrollPoint) => {
+            iteration += iterationDelta
+            scroller.scroll(scrollPoint)
+            scroller.update()
         }
 
-        const scrollPointOffset = offset => {
+        const scrollDelta = delta => {
             const snap = gsap.utils.snap(1 / parameters.space)
-            const time = snap(offset)
+            const time = snap(delta)
 
-            const progress = (time - parameters.instance.duration() * iteration) / parameters.instance.duration()
-            const scroll = scrollMeters.scrollProgress(progress)
+            const measure = (time - parameters.instance.duration() * iteration) / parameters.instance.duration()
+            const progress = scrollMeter(measure)
 
-            if (progress >= 1 || progress < 0) scrollMeters.scrollCircle(Math.floor(progress), scroll)
+            if (measure >= 1 || measure < 0) scrollCircle(Math.floor(measure), progress)
 
-            scroller.scroll(scroll)
+            scroller.scroll(progress)
         }
 
         if (this._scrollSnapping && this._keyScrolling) {
@@ -172,7 +171,7 @@ class ScrollLoop extends Loop {
     
             const scrollSnap = () => {
                 if (timer != null) clearTimeout(timer)
-                timer = setTimeout(() => scrollPointOffset(directMotion.vars.offset), 200)
+                timer = setTimeout(() => scrollDelta(directMotion.vars.delta), 200)
             }
     
             const keyScroll = e => {
@@ -181,13 +180,13 @@ class ScrollLoop extends Loop {
                 if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
                 
                 if (e.code == 'ArrowDown') {
-                    scrollPointOffset(directMotion.vars.offset + 1 / parameters.space)
+                    scrollDelta(directMotion.vars.delta + 1 / parameters.space)
                     this._data.innerHTML = 'down'
                     setTimeout(() => this._data.innerHTML = 'scroll', 1000)
                 }
 
                 if (e.code == 'ArrowUp') {
-                    scrollPointOffset(directMotion.vars.offset - 1 / parameters.space)
+                    scrollDelta(directMotion.vars.delta - 1 / parameters.space)
                     this._data.innerHTML = 'up'
                     setTimeout(() => this._data.innerHTML = 'scroll', 1000)
                 }
@@ -197,10 +196,14 @@ class ScrollLoop extends Loop {
         }
     }
 
-    sync(animation) {
+    sync(animation, smooth) {
+        let value
+
+        smooth ? value = 1 : value = true
+
         ScrollTrigger.create({
-            animation: animation,
-            scrub: 1
+            animation,
+            scrub: value
         })
     }
 
@@ -208,10 +211,7 @@ class ScrollLoop extends Loop {
         const instances = ScrollTrigger.getAll()
         instances.forEach(instance => instance.kill())
 
-        for (let i = 0; i < this._instanceVector.length; i++) {
-            const instance = this._instanceVector[i]
-            instance.unloop()
-        }
+        this._instanceVector.forEach(instance => instance.destroy())
     }
 
     refresh() {ScrollTrigger.refresh(true)}
@@ -867,9 +867,9 @@ barba.hooks.enter(({current}) => closeMenu.setAttribute('href', current.url.href
 barba.init({
     schema: {
         prefix: 'data-app',
-        wrapper: 'page',
+        wrapper: 'root',
         container: 'state',
-        namespace: 'push'
+        namespace: 'page'
     },
     views: [
         {
@@ -894,13 +894,13 @@ barba.init({
                     keyScrolling: true,
                     on: ['scroll', 'custom', 'keydown'],
                     data: scrollHint
-                })
+                }, 3000)
                 
                 const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
                 
                 scrollLoop.scroll()
                 scrollLoop.refresh()
-                scrollLoop.sync(scrollIndicatorAnimation)
+                scrollLoop.sync(scrollIndicatorAnimation, true)
 
                 const videoElements = next.container.getElementsByClassName('scroll_layers__page_content')
                 const buffer = [...videoElements]
@@ -951,7 +951,7 @@ barba.init({
                     keyScrolling: true,
                     on: ['load', 'custom', 'load'],
                     data: scrollHint
-                })
+                }, 3000)
 
                 Proxy.scroll()
                 Proxy.selfDestruct()
@@ -1069,7 +1069,7 @@ barba.init({
                     duration: .8,
                     ease: 'back',
                     stagger: .2
-                }, '>-.3')
+                }, '<')
 
                 .set('.mobile_content__sns', {pointerEvents: 'auto'})
 
@@ -1130,3 +1130,5 @@ barba.init({
         }
     ]
 })
+
+document.body.removeAttribute('aria-live')
