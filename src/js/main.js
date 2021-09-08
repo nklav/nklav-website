@@ -120,12 +120,12 @@ class ScrollLoop extends Loop {
 
         const timeLoop = gsap.utils.wrap(0, parameters.instance.duration())
 
-        const directMotion = gsap.to(playhead, {
+        const motion = gsap.to(playhead, {
             delta: 0,
             duration: 1,
             ease: 'slow',
             paused: true,
-            onUpdate: () => this._instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.delta))),
+            onUpdate: () => this._instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.delta)))
         })
 
         const scrollbar = ScrollTrigger.create({
@@ -138,12 +138,12 @@ class ScrollLoop extends Loop {
                 if (scrollSelf > self.end - 1) scrollCircle(1, 1)
                 if (scrollSelf < 1 && self.direction < 0) scrollCircle(-1, self.end - 1)
 
-                directMotion.vars.delta = (iteration + self.progress) * parameters.instance.duration()
-                directMotion.invalidate().restart()
-            },
+                motion.vars.delta = (iteration + self.progress) * parameters.instance.duration()
+                motion.invalidate().restart()
+            }
         })
         
-        const scrollMeter = measure => gsap.utils.clamp(1, scrollbar.end - 1, gsap.utils.wrap(0, 1, measure) * scrollbar.end)
+        const scrollMeter = m => gsap.utils.clamp(1, scrollbar.end - 1, gsap.utils.wrap(0, 1, m) * scrollbar.end)
 
         const scrollCircle = (iterationDelta, scrollPoint) => {
             iteration += iterationDelta
@@ -153,14 +153,14 @@ class ScrollLoop extends Loop {
 
         const scrollDelta = delta => {
             const snap = gsap.utils.snap(1 / parameters.space)
-            const time = snap(delta)
+            const t = snap(delta)
 
-            const measure = (time - parameters.instance.duration() * iteration) / parameters.instance.duration()
-            const progress = scrollMeter(measure)
+            const progress = (t - parameters.instance.duration() * iteration) / parameters.instance.duration()
+            const m = scrollMeter(progress)
 
-            if (measure >= 1 || measure < 0) scrollCircle(Math.floor(measure), progress)
+            if (progress >= 1 || progress < 0) scrollCircle(Math.floor(progress), m)
 
-            scrollbar.scroll(progress)
+            scrollbar.scroll(m)
         }
 
         if (this._scrollSnapping && this._keyScrolling) {
@@ -168,7 +168,7 @@ class ScrollLoop extends Loop {
     
             const scrollSnap = () => {
                 if (timer != null) clearTimeout(timer)
-                timer = setTimeout(() => scrollDelta(directMotion.vars.delta), 200)
+                timer = setTimeout(() => scrollDelta(motion.vars.delta), 200)
             }
     
             const keyScroll = e => {
@@ -177,13 +177,13 @@ class ScrollLoop extends Loop {
                 if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
                 
                 if (e.code == 'ArrowDown') {
-                    scrollDelta(directMotion.vars.delta + 1 / parameters.space)
+                    scrollDelta(motion.vars.delta + 1 / parameters.space)
                     this._data.innerHTML = 'down'
                     setTimeout(() => this._data.innerHTML = 'scroll', 1000)
                 }
 
                 if (e.code == 'ArrowUp') {
-                    scrollDelta(directMotion.vars.delta - 1 / parameters.space)
+                    scrollDelta(motion.vars.delta - 1 / parameters.space)
                     this._data.innerHTML = 'up'
                     setTimeout(() => this._data.innerHTML = 'scroll', 1000)
                 }
