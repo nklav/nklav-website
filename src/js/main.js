@@ -13,11 +13,8 @@ class EventRegent {
 
         this._e = new Event(this._signal_1)
 
-        if (window.accessProp_0 && window.accessProp_1 && window.accessMethod_0 && window.accessMethod_1) {
-            window.removeEventListener(window.accessProp_0, window.accessMethod_0)
-            window.removeEventListener(window.accessProp_1, window.accessMethod_1)
-        }
-
+        if (window.accessProp_0 && window.accessMethod_0) window.removeEventListener(window.accessProp_0, window.accessMethod_0)
+        if (window.accessProp_1 && window.accessMethod_1) window.removeEventListener(window.accessProp_1, window.accessMethod_1)
         if (window.accessProp_2 && window.accessMethod_2) window.removeEventListener(window.accessProp_2, window.accessMethod_2)
 
         window.accessProp_0 = this._signal_0
@@ -131,7 +128,7 @@ class ScrollLoop extends Loop {
             onUpdate: () => this._instanceVector.forEach(instance => instance.timeline.time(timeLoop(playhead.delta))),
         })
 
-        const scroller = ScrollTrigger.create({
+        const scrollbar = ScrollTrigger.create({
             start: 0,
             end: `+=${this._acceleration}`,
             pin: this._pin,
@@ -146,12 +143,12 @@ class ScrollLoop extends Loop {
             },
         })
         
-        const scrollMeter = measure => gsap.utils.clamp(1, scroller.end - 1, gsap.utils.wrap(0, 1, measure) * scroller.end)
+        const scrollMeter = measure => gsap.utils.clamp(1, scrollbar.end - 1, gsap.utils.wrap(0, 1, measure) * scrollbar.end)
 
         const scrollCircle = (iterationDelta, scrollPoint) => {
             iteration += iterationDelta
-            scroller.scroll(scrollPoint)
-            scroller.update()
+            scrollbar.scroll(scrollPoint)
+            scrollbar.update()
         }
 
         const scrollDelta = delta => {
@@ -163,7 +160,7 @@ class ScrollLoop extends Loop {
 
             if (measure >= 1 || measure < 0) scrollCircle(Math.floor(measure), progress)
 
-            scroller.scroll(progress)
+            scrollbar.scroll(progress)
         }
 
         if (this._scrollSnapping && this._keyScrolling) {
@@ -200,6 +197,8 @@ class ScrollLoop extends Loop {
         let value
 
         smooth ? value = 1 : value = true
+
+        if (typeof smooth === 'number') value = smooth
 
         ScrollTrigger.create({
             animation,
@@ -252,7 +251,7 @@ const socialIcons = document.querySelectorAll('.page_content__icon')
 const play = document.querySelectorAll('.page_content__play')
 const info = document.querySelector('.page_content__show_info')
 
-const loaderAnimation = () => {
+const loadingAnimation = () => {
     return gsap.timeline({delay: 1})
 
     .set(loader, {display: 'block'})
@@ -303,7 +302,7 @@ const homeOnce = page => {
 
     .set([scrollLayers, scrollIndicator, scrollIndicatorIndex, scrollHint, scrollIndex], {visibility: 'visible'})
 
-    .add(loaderAnimation())
+    .add(loadingAnimation())
 
     .fromTo(logo, {autoAlpha: 0}, {
         autoAlpha: 1,
@@ -334,7 +333,7 @@ const menuOnce = page => {
 
     .set(closeMenu, {display: 'block'})
 
-    .add(loaderAnimation())
+    .add(loadingAnimation())
 
     .fromTo(closeMenuUIFragments, {scaleX: 0}, {
         scaleX: 1,
@@ -370,7 +369,7 @@ const contentOnce = page => {
 
     .set(openMenuUIFragments, {transformOrigin: 'left'})
 
-    .add(loaderAnimation())
+    .add(loadingAnimation())
     
     .to(pageTransitionComponents, {
         scaleY: 0,
@@ -814,6 +813,7 @@ const pageTitleAnimation = element => {
 
 const accessFrame = listener => {
     if (window.accessFrame) gsap.ticker.remove(window.accessFrame)
+
     window.accessFrame = listener
     gsap.ticker.add(window.accessFrame)
 }
