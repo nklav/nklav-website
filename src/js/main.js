@@ -103,6 +103,7 @@ class ScrollLoop extends Loop {
         this._isSPA = config.isSPA
         this._limit = config.speedDial.limit
         this._acceleration = config.speedDial.acceleration
+
         this._on = data.on
         this._node = data.node
 
@@ -128,19 +129,20 @@ class ScrollLoop extends Loop {
     }
 
     scroll() {
-        const parameters = {
-            instance: this._loopedInstances[0].timeline,
-            space: this._instances[0]._space
-        }
+        const scrollContainer = document.querySelector('[data-scroll-loop]')
+
+        const [instance] = this._instances
+        const [loopedInstance] = this._loopedInstances
 
         let iteration = 0
 
         const playhead = {delta: 0}
 
-        const timeLoop = gsap.utils.wrap(0, parameters.instance.duration())
+        const timeLoop = gsap.utils.wrap(0, loopedInstance.timeline.duration())
 
         const setDuration = () => {
-            const duration = Number(document.querySelector('[data-scroll-loop]').dataset.scrollSmoothing)
+            const duration = Number(scrollContainer.dataset.scrollSmoothing)
+
             if (isNaN(duration) || duration === 0) return .5
             if (duration >= .5 && duration <= 2) return duration
         }
@@ -156,14 +158,14 @@ class ScrollLoop extends Loop {
         const scrollbar = ScrollTrigger.create({
             start: 0,
             end: `+=${this._acceleration}`,
-            pin: document.querySelector('[data-scroll-loop]'),
+            pin: scrollContainer,
             onUpdate: self => {
                 const scrollSelf = self.scroll()
 
                 if (scrollSelf > self.end - 1) scrollCircle(1, 1)
                 if (scrollSelf < 1 && self.direction < 0) scrollCircle(-1, self.end - 1)
 
-                motion.vars.delta = (iteration + self.progress) * parameters.instance.duration()
+                motion.vars.delta = (iteration + self.progress) * loopedInstance.timeline.duration()
                 motion.invalidate().restart()
             }
         })
@@ -177,10 +179,10 @@ class ScrollLoop extends Loop {
         }
 
         const scrollDelta = delta => {
-            const snap = gsap.utils.snap(1 / parameters.space)
+            const snap = gsap.utils.snap(1 / instance._space)
             const t = snap(delta)
 
-            const progress = (t - parameters.instance.duration() * iteration) / parameters.instance.duration()
+            const progress = (t - loopedInstance.timeline.duration() * iteration) / loopedInstance.timeline.duration()
             const meter = scrollMeter(progress)
 
             if (progress >= 1 || progress < 0) scrollCircle(Math.floor(progress), meter)
@@ -202,13 +204,13 @@ class ScrollLoop extends Loop {
                 if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
                 
                 if (e.code == 'ArrowDown') {
-                    scrollDelta(motion.vars.delta + 1 / parameters.space)
+                    scrollDelta(motion.vars.delta + 1 / instance._space)
                     this._node.innerHTML = 'down'
                     setTimeout(() => this._node.innerHTML = 'scroll', 1000)
                 }
 
                 if (e.code == 'ArrowUp') {
-                    scrollDelta(motion.vars.delta - 1 / parameters.space)
+                    scrollDelta(motion.vars.delta - 1 / instance._space)
                     this._node.innerHTML = 'up'
                     setTimeout(() => this._node.innerHTML = 'scroll', 1000)
                 }
