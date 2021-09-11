@@ -743,13 +743,15 @@ barba.init({
                     speedDial: {
                         limit: .5,
                         acceleration: 3000
+                    },
+                    regent: {
+                        on: ['load', 'load'],
+                        call: [silencer, silencer]
                     }
                 })
 
                 proxy.scroll()
                 proxy.selfDestruct()
-
-                new Regent(['load', 'load'], [silencer, silencer])
 
                 accessFrame(silencer)
             }

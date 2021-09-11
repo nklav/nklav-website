@@ -146,6 +146,8 @@ export default class ScrollLoop extends Loop {
         if (this._scrollSnapping && this._keyScrolling && this._isSPA) new Regent(['scroll', 'keydown'], [scrollSnap, keyScroll])
         if (this._scrollSnapping && !this._keyScrolling && this._isSPA) new Regent(['scroll'], [scrollSnap])
         if (!this._scrollSnapping && this._keyScrolling && this._isSPA) new Regent(['keydown'], [keyScroll])
+
+        if (this._config.regent) new Regent(this._config.regent.on, this._config.regent.call)
     }
 
     sync(animation, smooth) {
