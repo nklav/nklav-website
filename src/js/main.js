@@ -107,6 +107,7 @@ class ScrollLoop extends Loop {
     constructor(config) {
         super()
 
+        this._config = config
         this._elements = config.elements
         this._animations = config.animations
         this._scrollSnapping = config.scrollSnapping
@@ -114,6 +115,7 @@ class ScrollLoop extends Loop {
         this._isSPA = config.isSPA
         this._limit = config.speedDial.limit
         this._acceleration = config.speedDial.acceleration
+        this._effect = config.speedDial.effect
 
         this._presets = {
             repeat: 1,
@@ -166,17 +168,10 @@ class ScrollLoop extends Loop {
 
         const timeLoop = gsap.utils.wrap(0, loopedInstance.timeline.duration())
 
-        const setDuration = () => {
-            const duration = Number(scrollLoop.dataset.scrollSmoothing)
-
-            if (isNaN(duration) || duration == 0) return .5
-            if (duration >= .5 && duration <= 2) return duration
-        }
-
         const motion = gsap.to(playhead, {
             delta: 0,
-            duration: setDuration(),
-            ease: 'slow',
+            duration: Number(scrollLoop.dataset.scrollSmoothing),
+            ease: this._effect,
             paused: true,
             onUpdate: () => this._loopedInstances.forEach(instance => instance.timeline.time(timeLoop(playhead.delta)))
         })
@@ -220,7 +215,10 @@ class ScrollLoop extends Loop {
 
         const scrollSnap = () => {
             if (timer != null) clearTimeout(timer)
-            timer = setTimeout(() => scrollDelta(motion.vars.delta), 200)
+            timer = setTimeout(() => {
+                scrollDelta(motion.vars.delta)
+                if (this._config.onSnap) this._config.onSnap()
+            }, 200)
         }
 
         const keyScroll = e => {
@@ -230,16 +228,12 @@ class ScrollLoop extends Loop {
             
             if (e.code == 'ArrowDown') {
                 scrollDelta(motion.vars.delta + 1 / instance._space)
-
-                document.querySelector('.scroll_hint').innerHTML = 'down'
-                setTimeout(() => document.querySelector('.scroll_hint').innerHTML = 'scroll', 1000)
+                if (this._config.onKey.down) this._config.onKey.down()
             }
 
             if (e.code == 'ArrowUp') {
                 scrollDelta(motion.vars.delta - 1 / instance._space)
-
-                document.querySelector('.scroll_hint').innerHTML = 'up'
-                setTimeout(() => document.querySelector('.scroll_hint').innerHTML = 'scroll', 1000)
+                if (this._config.onKey.up) this._config.onKey.up()
             }
         }
 
@@ -944,6 +938,18 @@ barba.init({
                 const pageTitles = next.container.querySelectorAll('.scroll_layers__page_title')
                 
                 const scrollIndicator = next.container.querySelector('.scroll_indicator')
+
+                const scrollHint = next.container.querySelector('.scroll_hint')
+
+                const keyDown = () => {
+                    scrollHint.innerHTML = 'down'
+                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                }
+
+                const keyUp = () => {
+                    scrollHint.innerHTML = 'up'
+                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                }
                 
                 const scrollLoop = new ScrollLoop({
                     elements: [pageContent, pageTitles],
@@ -953,7 +959,12 @@ barba.init({
                     isSPA: true,
                     speedDial: {
                         limit: .5,
-                        acceleration: 3000
+                        acceleration: 3000,
+                        effect: 'slow'
+                    },
+                    onKey: {
+                        down: keyDown,
+                        up: keyUp
                     }
                 })
                 
