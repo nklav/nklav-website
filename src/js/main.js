@@ -3,44 +3,56 @@ import Plyr from 'plyr'
 import { Curtains, Plane } from './bundle'
 import main from '../css/main'
 
-class EventRegent {
+class Regent {
     constructor(signal, receiver) {
-        this._signal_0 = signal[0]
-        this._signal_1 = signal[1]
-        this._signal_2 = signal[2]
-        this._receiver_0 = receiver[0]
-        this._receiver_1 = receiver[1]
+        if (signal.length == 2) signal.splice(1, 0, 'custom')
+        if (signal.length == 1 && signal.includes('keydown')) signal.unshift('custom')
 
-        this._e = new Event(this._signal_1)
+        this._on = signal
 
-        if (window.accessProp_0 && window.accessMethod_0) window.removeEventListener(window.accessProp_0, window.accessMethod_0)
-        if (window.accessProp_1 && window.accessMethod_1) window.removeEventListener(window.accessProp_1, window.accessMethod_1)
-        if (window.accessProp_2 && window.accessMethod_2) window.removeEventListener(window.accessProp_2, window.accessMethod_2)
+        if (receiver.length == 2) {
+            this._scrollSnap = receiver[0]
+            this._call = [this._callScrollSnap.bind(this), this._callKeyScroll.bind(this), receiver[1]]
+            this._e = new Event(this._on[1])
+        }
 
-        window.accessProp_0 = this._signal_0
-        window.accessProp_1 = this._signal_1
-        window.accessProp_2 = this._signal_2
-        window.accessMethod_0 = this._registry_0.bind(this)
-        window.accessMethod_1 = this._registry_1.bind(this)
-        window.accessMethod_2 = this._receiver_1
+        if (receiver.length == 1 && signal.includes('keydown')) {
+            this._call = [this._callKeyScroll.bind(this), receiver[0]]
+            this._e = new Event(this._on[0])
+        }
 
-        window.addEventListener(window.accessProp_0, window.accessMethod_0)
-        window.addEventListener(window.accessProp_1, window.accessMethod_1)
+        if (receiver.length == 1 && signal.includes('scroll')) {
+            this._scrollSnap = receiver[0]
+            this._call = [this._callScrollSnap.bind(this)]
+        }
 
-        window.dispatchEvent(this._e)
+        for (let i = 0; i < this._on.length; i++) {
+            if (document[`accessProp_${i}`] && document[`accessMethod_${i}`]) document.removeEventListener(document[`accessProp_${i}`], document[`accessMethod_${i}`])
+
+            document[`accessProp_${i}`] = this._on[i]
+            document[`accessMethod_${i}`] = this._call[i]
+
+            if (this._on.length == 3 && i < 2) document.addEventListener(document[`accessProp_${i}`], document[`accessMethod_${i}`])
+            if (this._on.length == 2 && i < 1) document.addEventListener(document[`accessProp_${i}`], document[`accessMethod_${i}`])
+            if (this._on.length == 1) document.addEventListener(document[`accessProp_${i}`], document[`accessMethod_${i}`])
+        }
+
+        if (this._on.length == 3 || 2) document.dispatchEvent(this._e)
     }
 
-    _registry_0() {this._receiver_0()}
-    _registry_1() {window.addEventListener(window.accessProp_2, window.accessMethod_2)}
+    _callScrollSnap() {if (this._on.length == 3 || 1) this._scrollSnap()}
+
+    _callKeyScroll() {
+        if (this._on.length == 3) document.addEventListener(document.accessProp_2, document.accessMethod_2)
+        if (this._on.length == 2) document.addEventListener(document.accessProp_1, document.accessMethod_1)
+    }
 }
 
 class Loop {
-    constructor(nodes, animation, n) {
+    constructor(nodes, timeline, n) {
         this._nodes = gsap.utils.toArray(nodes)
-        this._animation = animation
+        this._timeline = timeline
         this._n = n
-
-        console.log(this._nodes)
     }
     
     _loop() {
@@ -64,7 +76,7 @@ class Loop {
             let index = i % this._nodes.length
             let time = i * space
     
-            spaceTime.add(this._animation(this._nodes[index]), time)
+            spaceTime.add(this._timeline(this._nodes[index]), time)
         }
     
         spaceTime.time(start)
@@ -92,34 +104,48 @@ class Loop {
 }
 
 class ScrollLoop extends Loop {
-    constructor(config, data) {
+    constructor(config) {
         super()
 
         this._elements = config.elements
         this._animations = config.animations
-        this._easingCurve = config.easingCurve
         this._scrollSnapping = config.scrollSnapping
         this._keyScrolling = config.keyScrolling
         this._isSPA = config.isSPA
         this._limit = config.speedDial.limit
         this._acceleration = config.speedDial.acceleration
 
-        this._on = data.on
-        this._node = data.node
+        this._presets = {
+            repeat: 1,
+            yoyo: true,
+            immediateRender: false
+        }
 
-        this._instances = []
+        this._timelines = []
 
-        if (Array.isArray(this._elements && this._animations)) {
-            for (let i = 0; i < this._elements.length; i++) {
-                const elements = this._elements[i]
-                const animation = this._animations[i]
+        if (Array.isArray(this._animations)) {
+            for (let i = 0; i < this._animations.length; i++) {
+                const {timeline: {enter, across}} = this._animations[i]
     
-                this._instances.push(new Loop(elements, animation, this._limit))
+                const timeline = element => gsap.timeline()
+                .fromTo(element, {...enter.from}, {...enter.to, ...this._presets})
+                .fromTo(element, {...across.from}, {...across.to, ...this._presets.immediateRender}, 0)
+    
+                this._timelines.push(timeline)
             }
         }
 
-        if (!Array.isArray(this._elements && this._animations)) this._instances.push(new Loop(this._elements, this._animations, this._limit))
-
+        this._instances = []
+        
+        if (Array.isArray(this._elements)) {
+            for (let i = 0; i < this._elements.length; i++) {
+                const elements = this._elements[i]
+                const timeline = this._timelines[i]
+                
+                this._instances.push(new Loop(elements, timeline, this._limit))
+            }
+        }
+        
         this._loopedInstances = []
 
         for (let i = 0; i < this._instances.length; i++) {
@@ -129,7 +155,7 @@ class ScrollLoop extends Loop {
     }
 
     scroll() {
-        const scrollContainer = document.querySelector('[data-scroll-loop]')
+        const scrollLoop = document.querySelector('[data-scroll-loop]')
 
         const [instance] = this._instances
         const [loopedInstance] = this._loopedInstances
@@ -141,16 +167,16 @@ class ScrollLoop extends Loop {
         const timeLoop = gsap.utils.wrap(0, loopedInstance.timeline.duration())
 
         const setDuration = () => {
-            const duration = Number(scrollContainer.dataset.scrollSmoothing)
+            const duration = Number(scrollLoop.dataset.scrollSmoothing)
 
-            if (isNaN(duration) || duration === 0) return .5
+            if (isNaN(duration) || duration == 0) return .5
             if (duration >= .5 && duration <= 2) return duration
         }
 
         const motion = gsap.to(playhead, {
             delta: 0,
             duration: setDuration(),
-            ease: this._easingCurve,
+            ease: 'slow',
             paused: true,
             onUpdate: () => this._loopedInstances.forEach(instance => instance.timeline.time(timeLoop(playhead.delta)))
         })
@@ -158,7 +184,7 @@ class ScrollLoop extends Loop {
         const scrollbar = ScrollTrigger.create({
             start: 0,
             end: `+=${this._acceleration}`,
-            pin: scrollContainer,
+            pin: scrollLoop,
             onUpdate: self => {
                 const scrollSelf = self.scroll()
 
@@ -183,41 +209,51 @@ class ScrollLoop extends Loop {
             const t = snap(delta)
 
             const progress = (t - loopedInstance.timeline.duration() * iteration) / loopedInstance.timeline.duration()
-            const meter = scrollMeter(progress)
+            const m = scrollMeter(progress)
 
-            if (progress >= 1 || progress < 0) scrollCircle(Math.floor(progress), meter)
+            if (progress >= 1 || progress < 0) scrollCircle(Math.floor(progress), m)
 
-            scrollbar.scroll(meter)
+            scrollbar.scroll(m)
         }
 
-        if (this._scrollSnapping && this._keyScrolling) {
-            let timer = null
-    
-            const scrollSnap = () => {
-                if (timer != null) clearTimeout(timer)
-                timer = setTimeout(() => scrollDelta(motion.vars.delta), 200)
-            }
-    
-            const keyScroll = e => {
-                const keyCodes = ['Space', 'ArrowUp', 'ArrowDown']
+        let timer = null
 
-                if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
-                
-                if (e.code == 'ArrowDown') {
-                    scrollDelta(motion.vars.delta + 1 / instance._space)
-                    this._node.innerHTML = 'down'
-                    setTimeout(() => this._node.innerHTML = 'scroll', 1000)
-                }
-
-                if (e.code == 'ArrowUp') {
-                    scrollDelta(motion.vars.delta - 1 / instance._space)
-                    this._node.innerHTML = 'up'
-                    setTimeout(() => this._node.innerHTML = 'scroll', 1000)
-                }
-            }
-    
-            new EventRegent(this._on, [scrollSnap, keyScroll])
+        const scrollSnap = () => {
+            if (timer != null) clearTimeout(timer)
+            timer = setTimeout(() => scrollDelta(motion.vars.delta), 200)
         }
+
+        const keyScroll = e => {
+            const keyCodes = ['Space', 'ArrowUp', 'ArrowDown']
+
+            if (keyCodes.indexOf(e.code) > -1) e.preventDefault()
+            
+            if (e.code == 'ArrowDown') {
+                scrollDelta(motion.vars.delta + 1 / instance._space)
+
+                document.querySelector('.scroll_hint').innerHTML = 'down'
+                setTimeout(() => document.querySelector('.scroll_hint').innerHTML = 'scroll', 1000)
+            }
+
+            if (e.code == 'ArrowUp') {
+                scrollDelta(motion.vars.delta - 1 / instance._space)
+
+                document.querySelector('.scroll_hint').innerHTML = 'up'
+                setTimeout(() => document.querySelector('.scroll_hint').innerHTML = 'scroll', 1000)
+            }
+        }
+
+        if (this._scrollSnapping && this._keyScrolling && !this._isSPA) {
+            document.addEventListener('scroll', scrollSnap)
+            document.addEventListener('keydown', keyScroll)
+        }
+
+        if (this._scrollSnapping && !this._keyScrolling && !this._isSPA) document.addEventListener('scroll', scrollSnap)
+        if (!this._scrollSnapping && this._keyScrolling && !this._isSPA) document.addEventListener('keydown', keyScroll)
+
+        if (this._scrollSnapping && this._keyScrolling && this._isSPA) new Regent(['scroll', 'keydown'], [scrollSnap, keyScroll])
+        if (this._scrollSnapping && !this._keyScrolling && this._isSPA) new Regent(['scroll'], [scrollSnap])
+        if (!this._scrollSnapping && this._keyScrolling && this._isSPA) new Regent(['keydown'], [keyScroll])
     }
 
     sync(animation, smooth) {
@@ -225,7 +261,7 @@ class ScrollLoop extends Loop {
 
         smooth ? value = 1 : value = true
 
-        if (typeof smooth === 'number') value = smooth
+        if (typeof smooth == 'number') value = smooth
 
         ScrollTrigger.create({
             animation,
@@ -796,56 +832,58 @@ const contentEnterFromMenu = page => {
     .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
 }
 
-const pageContentAnimation = element => {
-    return gsap.timeline()
-
-    .fromTo(element, {zIndex: -200}, {
-        zIndex: -100,
-        ease: 'power1.in',
-        repeat: 1,
-        yoyo: true,
-        immediateRender: false
-    })
-
-    .fromTo(element, {yPercent: 500}, {
-        yPercent: -500,
-        duration: 1,
-        ease: 'none',
-        immediateRender: false
-    }, 0)
-}
-
-const pageTitleAnimation = element => {
-    return gsap.timeline()
-
-    .fromTo(element, {scale: 1}, {
-        scale: 1,
-        ease: 'power1.in',
-        repeat: 1,
-        yoyo: true,
-        immediateRender: false
-    })
-
-    .fromTo(element, {
-        yPercent: 500,
-        clipPath: 'inset(-800% -100% 800% -100%)'
-    }, {
-        yPercent: -500,
-        clipPath: 'inset(800% -100% -800% -100%)',
-        duration: 1,
-        ease: 'none',
-        immediateRender: false
-    }, 0)
-}
-
 const accessFrame = listener => {
-    if (window.accessFrame) gsap.ticker.remove(window.accessFrame)
+    if (document.accessFrame) gsap.ticker.remove(document.accessFrame)
 
-    window.accessFrame = listener
-    gsap.ticker.add(window.accessFrame)
+    document.accessFrame = listener
+    gsap.ticker.add(document.accessFrame)
 }
 
 const silencer = () => {return}
+
+const pageContentAnimation = {
+    timeline: {
+        enter: {
+            from: {zIndex: -200},
+            to: {
+                zIndex: -100,
+                ease: 'power1.in'
+            }
+        },
+        across: {
+            from: {yPercent: 500},
+            to: {
+                yPercent: -500,
+                duration: 1,
+                ease: 'none'
+            }
+        }
+    }
+}
+
+const pageTitleAnimation = {
+    timeline: {
+        enter: {
+            from: {scale: 1},
+            to: {
+                scale: 1,
+                ease: 'power1.in'
+            }
+        },
+        across: {
+            from: {
+                yPercent: 500,
+                clipPath: 'inset(-800% -100% 800% -100%)'
+            },
+            to: {
+                yPercent: -500,
+                clipPath: 'inset(800% -100% -800% -100%)',
+                duration: 1,
+                ease: 'none'
+            }
+        }
+    }
+}
 
 const vertexShader = `
     precision mediump float;
@@ -906,13 +944,10 @@ barba.init({
                 const pageTitles = next.container.querySelectorAll('.scroll_layers__page_title')
                 
                 const scrollIndicator = next.container.querySelector('.scroll_indicator')
-
-                const scrollHint = next.container.querySelector('.scroll_hint')
                 
                 const scrollLoop = new ScrollLoop({
                     elements: [pageContent, pageTitles],
                     animations: [pageContentAnimation, pageTitleAnimation],
-                    easingCurve: 'slow',
                     scrollSnapping: true,
                     keyScrolling: true,
                     isSPA: true,
@@ -920,9 +955,6 @@ barba.init({
                         limit: .5,
                         acceleration: 3000
                     }
-                }, {
-                    on: ['scroll', 'custom', 'keydown'],
-                    node: scrollHint
                 })
                 
                 const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
@@ -965,13 +997,10 @@ barba.init({
             afterLeave({current}) {
                 const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
                 const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title')
-
-                const scrollHint = current.container.querySelector('.scroll_hint')
                 
                 const proxy = new ScrollLoop({
                     elements: [pageContent, pageTitles],
                     animations: [pageContentAnimation, pageTitleAnimation],
-                    easingCurve: 'slow',
                     scrollSnapping: true,
                     keyScrolling: true,
                     isSPA: true,
@@ -979,13 +1008,12 @@ barba.init({
                         limit: .5,
                         acceleration: 3000
                     }
-                }, {
-                    on: ['scroll', 'custom', 'keydown'],
-                    node: scrollHint
                 })
 
                 proxy.scroll()
                 proxy.selfDestruct()
+
+                new Regent(['load', 'load'], [silencer, silencer])
 
                 accessFrame(silencer)
             }
