@@ -571,11 +571,7 @@ const pageContentAnimation = {
         },
         across: {
             from: {yPercent: 500},
-            to: {
-                yPercent: -500,
-                duration: 1,
-                ease: 'none'
-            }
+            to: {yPercent: -500}
         }
     }
 }
@@ -596,9 +592,7 @@ const pageTitleAnimation = {
             },
             to: {
                 yPercent: -500,
-                clipPath: 'inset(800% -100% -800% -100%)',
-                duration: 1,
-                ease: 'none'
+                clipPath: 'inset(800% -100% -800% -100%)'
             }
         }
     }
@@ -644,8 +638,9 @@ const fragmentShader = `
 `
 
 if (history.scrollRestoration) history.scrollRestoration = 'manual'
-
 barba.hooks.afterLeave(() => window.scrollTo(0, 0))
+
+barba.hooks.beforeEnter(() => {if (document.body.hasAttribute('aria-live')) document.body.removeAttribute('aria-live')})
 barba.hooks.enter(({current}) => closeMenu.setAttribute('href', current.url.href))
 
 barba.init({
@@ -927,5 +922,3 @@ barba.init({
         }
     ]
 })
-
-document.body.removeAttribute('aria-live')

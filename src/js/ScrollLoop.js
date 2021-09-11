@@ -16,9 +16,16 @@ export default class ScrollLoop extends Loop {
         this._effect = config.speedDial.effect
 
         this._presets = {
-            repeat: 1,
-            yoyo: true,
-            immediateRender: false
+            enter: {
+                repeat: 1,
+                yoyo: true,
+                immediateRender: false
+            },
+            across: {
+                duration: 1,
+                ease: 'none',
+                immediateRender: false
+            }
         }
 
         this._timelines = []
@@ -28,8 +35,8 @@ export default class ScrollLoop extends Loop {
                 const {timeline: {enter, across}} = this._animations[i]
     
                 const timeline = element => gsap.timeline()
-                .fromTo(element, {...enter.from}, {...enter.to, ...this._presets})
-                .fromTo(element, {...across.from}, {...across.to, ...this._presets.immediateRender}, 0)
+                .fromTo(element, {...enter.from}, {...enter.to, ...this._presets.enter})
+                .fromTo(element, {...across.from}, {...across.to, ...this._presets.across}, 0)
     
                 this._timelines.push(timeline)
             }
