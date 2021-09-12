@@ -676,7 +676,6 @@ barba.init({
                     animations: [pageContentAnimation, pageTitleAnimation],
                     scrollSnapping: true,
                     keyScrolling: true,
-                    isSPA: true,
                     speedDial: {
                         limit: .5,
                         acceleration: 3000,
@@ -732,21 +731,19 @@ barba.init({
                 const proxy = new ScrollLoop({
                     elements: [pageContent, pageTitles],
                     animations: [pageContentAnimation, pageTitleAnimation],
-                    scrollSnapping: true,
-                    keyScrolling: true,
-                    isSPA: true,
                     speedDial: {
                         limit: .5,
                         acceleration: 3000
-                    },
+                    }
+                })
+
+                proxy.scroll()
+                proxy.selfDestruct({
                     regent: {
                         on: ['load', 'load'],
                         call: [silencer, silencer]
                     }
                 })
-
-                proxy.scroll()
-                proxy.selfDestruct()
 
                 accessFrame(silencer)
             }

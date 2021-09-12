@@ -1,4 +1,4 @@
-import Regent from "./Regent"
+import Regent, { silencer } from "./Regent"
 import Loop from "./Loop"
 
 export default class ScrollLoop extends Loop {
@@ -10,7 +10,6 @@ export default class ScrollLoop extends Loop {
         this._animations = config.animations
         this._scrollSnapping = config.scrollSnapping
         this._keyScrolling = config.keyScrolling
-        this._isSPA = config.isSPA
         this._limit = config.speedDial.limit
         this._acceleration = config.speedDial.acceleration
         this._effect = config.speedDial.effect
@@ -118,11 +117,11 @@ export default class ScrollLoop extends Loop {
 
         let timer = null
 
-        const scrollSnap = () => {
+        const scrollSnap = e => {
             if (timer != null) clearTimeout(timer)
             timer = setTimeout(() => {
                 scrollDelta(motion.vars.delta)
-                if (this._config.onSnap) this._config.onSnap()
+                if (this._config.onSnap) this._config.onSnap(e)
             }, 200)
         }
 
@@ -133,28 +132,18 @@ export default class ScrollLoop extends Loop {
             
             if (e.code == 'ArrowDown') {
                 scrollDelta(motion.vars.delta + 1 / instance._space)
-                if (this._config.onKey.down) this._config.onKey.down()
+                if (this._config.onKey.down) this._config.onKey.down(e)
             }
 
             if (e.code == 'ArrowUp') {
                 scrollDelta(motion.vars.delta - 1 / instance._space)
-                if (this._config.onKey.up) this._config.onKey.up()
+                if (this._config.onKey.up) this._config.onKey.up(e)
             }
         }
 
-        if (this._scrollSnapping && this._keyScrolling && !this._isSPA) {
-            document.addEventListener('scroll', scrollSnap)
-            document.addEventListener('keydown', keyScroll)
-        }
-
-        if (this._scrollSnapping && !this._keyScrolling && !this._isSPA) document.addEventListener('scroll', scrollSnap)
-        if (!this._scrollSnapping && this._keyScrolling && !this._isSPA) document.addEventListener('keydown', keyScroll)
-
-        if (this._scrollSnapping && this._keyScrolling && this._isSPA) new Regent(['scroll', 'keydown'], [scrollSnap, keyScroll])
-        if (this._scrollSnapping && !this._keyScrolling && this._isSPA) new Regent(['scroll'], [scrollSnap])
-        if (!this._scrollSnapping && this._keyScrolling && this._isSPA) new Regent(['keydown'], [keyScroll])
-
-        if (this._config.regent) new Regent(this._config.regent.on, this._config.regent.call)
+        if (this._scrollSnapping && this._keyScrolling) new Regent(['scroll', 'keydown'], [scrollSnap, keyScroll])
+        if (this._scrollSnapping && !this._keyScrolling) new Regent(['scroll'], [scrollSnap])
+        if (!this._scrollSnapping && this._keyScrolling) new Regent(['keydown'], [keyScroll])
     }
 
     sync(animation, smooth) {
@@ -170,11 +159,19 @@ export default class ScrollLoop extends Loop {
         })
     }
 
-    selfDestruct() {
+    selfDestruct(overwrite) {
         const instances = ScrollTrigger.getAll()
         instances.forEach(instance => instance.kill())
 
         this._loopedInstances.forEach(instance => instance.destroy())
+
+        if (overwrite) new Regent(overwrite.regent.on, overwrite.regent.call)
+
+        if (!overwrite) {
+            if (this._scrollSnapping && this._keyScrolling) new Regent(['scroll', 'keydown'], [silencer, silencer])
+            if (this._scrollSnapping && !this._keyScrolling) new Regent(['scroll'], [silencer])
+            if (!this._scrollSnapping && this._keyScrolling) new Regent(['keydown'], [silencer])
+        }
     }
 
     refresh() {ScrollTrigger.refresh(true)}
