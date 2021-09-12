@@ -1,8 +1,7 @@
 export default class Loop {
-    constructor(nodes, timeline, n) {
+    constructor(nodes, timeline) {
         this._nodes = gsap.utils.toArray(nodes)
         this._timeline = timeline
-        this._n = n
     }
     
     _loop() {
@@ -10,14 +9,14 @@ export default class Loop {
         const overlap = Math.ceil(1 / space)
 
         const start = this._nodes.length * space + .5
-        const end = (this._nodes.length + overlap) * space + this._n
+        const end = (this._nodes.length + overlap) * space + .5
     
         const spaceTime = gsap.timeline({paused: true})
     
         const loop = gsap.timeline({
             repeat: -1,
             paused: true,
-            onRepeat() {this._time == this._dur && (this._tTime += this._dur - .01)}
+            onRepeat() {this._time == this._dur && (this._tTime += this._dur - space)}
         })
     
         const l = this._nodes.length + overlap * 2

@@ -10,9 +10,11 @@ export default class ScrollLoop extends Loop {
         this._animations = config.animations
         this._scrollSnapping = config.scrollSnapping
         this._keyScrolling = config.keyScrolling
-        this._limit = config.speedDial.limit
-        this._acceleration = config.speedDial.acceleration
-        this._effect = config.speedDial.effect
+        this._horizontal = config.horizontal
+        this._reversed = config.reversed
+        this._spacing = config.dial.spacing
+        this._distance = config.dial.distance
+        this._effect = config.dial.effect
 
         this._presets = {
             enter: {
@@ -22,35 +24,44 @@ export default class ScrollLoop extends Loop {
                 immediateRender: false
             },
             across: {
-                duration: 1,
-                ease: 'none',
-                immediateRender: false
+                from: {},
+                to: {
+                    duration: 1,
+                    ease: 'none',
+                    reversed: false,
+                    immediateRender: false
+                }
             }
         }
+
+        if (this._reversed) this._presets.across.to.reversed = true
+
+        this._percent = Number(`${this._spacing}00`)
+
+        this._horizontal ? this._axis = 'x' : this._axis = 'y'
+
+        this._presets.across.from[`${this._axis}Percent`] = this._percent
+        this._presets.across.to[`${this._axis}Percent`] = -this._percent
 
         this._timelines = []
 
-        if (Array.isArray(this._animations)) {
-            for (let i = 0; i < this._animations.length; i++) {
-                const {timeline: {enter, across}} = this._animations[i]
-    
-                const timeline = element => gsap.timeline()
-                .fromTo(element, {...enter.from}, {...enter.to, ...this._presets.enter})
-                .fromTo(element, {...across.from}, {...across.to, ...this._presets.across}, 0)
-    
-                this._timelines.push(timeline)
-            }
+        for (let i = 0; i < this._animations.length; i++) {
+            const {timeline: {enter, across}} = this._animations[i]
+
+            const timeline = element => gsap.timeline()
+            .fromTo(element, {...enter.from}, {...enter.to, ...this._presets.enter})
+            .fromTo(element, {...across.from, ...this._presets.across.from}, {...across.to, ...this._presets.across.to}, 0)
+
+            this._timelines.push(timeline)
         }
 
         this._instances = []
-        
-        if (Array.isArray(this._elements)) {
-            for (let i = 0; i < this._elements.length; i++) {
-                const elements = this._elements[i]
-                const timeline = this._timelines[i]
-                
-                this._instances.push(new Loop(elements, timeline, this._limit))
-            }
+
+        for (let i = 0; i < this._elements.length; i++) {
+            const elements = this._elements[i]
+            const timeline = this._timelines[i]
+            
+            this._instances.push(new Loop(elements, timeline, this._spacing))
         }
         
         this._loopedInstances = []
@@ -83,7 +94,7 @@ export default class ScrollLoop extends Loop {
 
         const scrollbar = ScrollTrigger.create({
             start: 0,
-            end: `+=${this._acceleration}`,
+            end: `+=${this._distance}000`,
             pin: scrollLoop,
             onUpdate: self => {
                 const scrollSelf = self.scroll()

@@ -567,8 +567,8 @@ const pageContentAnimation = {
             to: {zIndex: -100}
         },
         across: {
-            from: {yPercent: 500},
-            to: {yPercent: -500}
+            from: {scale: 1},
+            to: {scale: 1}
         }
     }
 }
@@ -580,14 +580,8 @@ const pageTitleAnimation = {
             to: {scale: 1}
         },
         across: {
-            from: {
-                yPercent: 500,
-                clipPath: 'inset(-800% -100% 800% -100%)'
-            },
-            to: {
-                yPercent: -500,
-                clipPath: 'inset(800% -100% -800% -100%)'
-            }
+            from: {clipPath: 'inset(-800% -100% 800% -100%)'},
+            to: {clipPath: 'inset(800% -100% -800% -100%)'}
         }
     }
 }
@@ -669,10 +663,10 @@ barba.init({
                     elements: [pageContent, pageTitles],
                     animations: [pageContentAnimation, pageTitleAnimation],
                     scrollSnapping: true,
-                    keyScrolling: true,
-                    speedDial: {
-                        limit: .5,
-                        acceleration: 3000,
+                    keyScrolling: false,
+                    dial: {
+                        spacing: 5,
+                        distance: 3,
                         effect: 'slow'
                     },
                     onKey: {
@@ -725,9 +719,9 @@ barba.init({
                 const proxy = new ScrollLoop({
                     elements: [pageContent, pageTitles],
                     animations: [pageContentAnimation, pageTitleAnimation],
-                    speedDial: {
-                        limit: .5,
-                        acceleration: 3000
+                    dial: {
+                        spacing: 5,
+                        distance: 3
                     }
                 })
 
