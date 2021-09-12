@@ -564,10 +564,7 @@ const pageContentAnimation = {
     timeline: {
         enter: {
             from: {zIndex: -200},
-            to: {
-                zIndex: -100,
-                ease: 'power1.in'
-            }
+            to: {zIndex: -100}
         },
         across: {
             from: {yPercent: 500},
@@ -580,10 +577,7 @@ const pageTitleAnimation = {
     timeline: {
         enter: {
             from: {scale: 1},
-            to: {
-                scale: 1,
-                ease: 'power1.in'
-            }
+            to: {scale: 1}
         },
         across: {
             from: {

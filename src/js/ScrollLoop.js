@@ -17,6 +17,7 @@ export default class ScrollLoop extends Loop {
         this._presets = {
             enter: {
                 repeat: 1,
+                ease: 'none',
                 yoyo: true,
                 immediateRender: false
             },
