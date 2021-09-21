@@ -1,7 +1,7 @@
 export default class Regent {
-    constructor(signal, receiver) {
-        this._on = signal
-        this._call = receiver
+    constructor(on, call) {
+        this._on = on
+        this._call = call
 
         for (let i = 0; i < this._on.length; i++) {
             if (document[`accessProp_${i}`] && document[`accessMethod_${i}`]) document.removeEventListener(document[`accessProp_${i}`], document[`accessMethod_${i}`])
@@ -14,10 +14,10 @@ export default class Regent {
     }
 }
 
-export function accessFrame(listener) {
+export function accessFrame(call) {
     if (document.accessFrame) gsap.ticker.remove(document.accessFrame)
 
-    document.accessFrame = listener
+    document.accessFrame = call
     
     gsap.ticker.add(document.accessFrame)
 }

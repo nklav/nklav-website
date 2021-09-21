@@ -41,16 +41,16 @@ export default class ScrollLoop extends Loop {
         this._horizontal ? this._axis = 'x' : this._axis = 'y'
 
         this._presets.across.from[`${this._axis}Percent`] = this._percent
-        this._presets.across.to[`${this._axis}Percent`] = -this._percent
+        this._presets.across.to[`${this._axis}Percent`] = -(this._percent)
 
         this._timelines = []
 
         for (let i = 0; i < this._animations.length; i++) {
             const {timeline: {enter, across}} = this._animations[i]
 
-            const timeline = element => gsap.timeline()
-            .fromTo(element, {...enter.from}, {...enter.to, ...this._presets.enter})
-            .fromTo(element, {...across.from, ...this._presets.across.from}, {...across.to, ...this._presets.across.to}, 0)
+            const timeline = node => gsap.timeline()
+            .fromTo(node, {...enter.from}, {...enter.to, ...this._presets.enter})
+            .fromTo(node, {...across.from, ...this._presets.across.from}, {...across.to, ...this._presets.across.to}, 0)
 
             this._timelines.push(timeline)
         }
@@ -58,10 +58,10 @@ export default class ScrollLoop extends Loop {
         this._instances = []
 
         for (let i = 0; i < this._elements.length; i++) {
-            const elements = this._elements[i]
+            const nodes = this._elements[i]
             const timeline = this._timelines[i]
             
-            this._instances.push(new Loop(elements, timeline, this._spacing))
+            this._instances.push(new Loop(nodes, timeline))
         }
         
         this._loopedInstances = []

@@ -635,7 +635,7 @@ barba.init({
     schema: {
         prefix: 'data-app',
         wrapper: 'root',
-        container: 'state',
+        container: 'core',
         namespace: 'page'
     },
     views: [
@@ -663,7 +663,7 @@ barba.init({
                     elements: [pageContent, pageTitles],
                     animations: [pageContentAnimation, pageTitleAnimation],
                     scrollSnapping: true,
-                    keyScrolling: false,
+                    keyScrolling: true,
                     dial: {
                         spacing: 5,
                         distance: 3,
