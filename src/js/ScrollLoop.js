@@ -86,7 +86,7 @@ export default class ScrollLoop extends Loop {
 
         const motion = gsap.to(playhead, {
             delta: 0,
-            duration: Number(scrollLoop.dataset.scrollSmoothing),
+            duration: Number(scrollLoop.dataset.scrollSmooth),
             ease: this._effect,
             paused: true,
             onUpdate: () => this._loopedInstances.forEach(instance => instance.timeline.time(timeLoop(playhead.delta)))
