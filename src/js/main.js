@@ -5,7 +5,7 @@ import { Curtains, Plane } from './bundle'
 import { accessFrame, silencer } from './Regent'
 import ScrollLoop from './ScrollLoop'
 
-import main from '../css/main'
+require('../css/main.css')
 
 const loader = document.querySelector('.loader')
 const progressBar = document.querySelector('.loader__progress_bar')
