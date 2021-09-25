@@ -28,9 +28,17 @@
 }
 
 :root {
+    --primary-ui-color: hsl(0, 100%, 100%);
     --w04: 'Archivo', 'Thin 100', sans-serif;
     --w05: 'Archivo', 'Extra-bold 800', sans-serif;
-    --primary-ui-color: hsl(0, 100%, 100%);
+    --plyr-color-main: var(--primary-ui-color);
+    --plyr-control-radius: 50%;
+    --plyr-video-control-color-hover: hsl(0, 0%, 0%);
+    --plyr-progress-loading-size: 0px;
+    --plyr-range-thumb-height: 0px;
+    --plyr-range-thumb-shadow: none;
+    --plyr-range-track-height: 2px;
+    --plyr-font-family: var(--w04);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
@@ -107,7 +115,8 @@ br {user-select: none;}
     fill: var(--primary-ui-color);
 }
 
-.menu {
+.menu,
+.close_player {
     position: fixed;
     left: 50%;
     bottom: 25px;
@@ -120,6 +129,8 @@ br {user-select: none;}
     pointer-events: none;
 }
 
+.close_player {z-index: 4;}
+
 .menu--open__ui_fragment {
     display: block;
     width: 50px;
@@ -128,12 +139,14 @@ br {user-select: none;}
     background: var(--primary-ui-color);
 }
 
-.menu--close {
+.menu--close,
+.close_player {
     padding: 0 0 0 25px;
     cursor: pointer;
 }
 
-.menu--close__in {
+.menu--close__in,
+.close_player__in {
     position: relative;
     top: 47.5%;
     display: block;
@@ -141,10 +154,11 @@ br {user-select: none;}
     height: 2px;
 }
 
-.menu--close__in:nth-child(1) {transform: translateY(50%) rotate(45deg);}
-.menu--close__in:nth-child(2) {transform: translateY(-50%) rotate(-45deg);}
+.menu--close__in:nth-child(1), .close_player__in:nth-child(1) {transform: translateY(50%) rotate(45deg);}
+.menu--close__in:nth-child(2), .close_player__in:nth-child(2) {transform: translateY(-50%) rotate(-45deg);}
 
-.menu--close__ui_fragment {
+.menu--close__ui_fragment,
+.close_player__ui_fragment {
     position: absolute;
     display: block;
     width: 100%;
@@ -152,8 +166,8 @@ br {user-select: none;}
     background: var(--primary-ui-color);
 }
 
-.menu--close__in:nth-child(1) .menu--close__ui_fragment {transform-origin: left;}
-.menu--close__in:nth-child(2) .menu--close__ui_fragment {transform-origin: right;}
+.menu--close__in:nth-child(1) .menu--close__ui_fragment, .close_player__in:nth-child(1) .close_player__ui_fragment {transform-origin: left;}
+.menu--close__in:nth-child(2) .menu--close__ui_fragment, .close_player__in:nth-child(2) .close_player__ui_fragment {transform-origin: right;}
 
 .gradient {
     position: fixed;
@@ -648,6 +662,25 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
 .mobile_content__description {margin: 30px 0 0 0;}
 .mobile_content__social {margin: 75px 0 0 0;}
 
+.plyr_ultra_container {
+    position: fixed;
+    z-index: 3;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.plyr_container {width: inherit;}
+
+.plyr {
+    width: 1280px;
+    margin: 0 auto;
+}
+
+@media (max-height: 720px) {.plyr {width: 150vh;}}
+
 @media (min-width: 320px) {
     .scroll_indicator,
     .scroll_indicator_index {
@@ -713,14 +746,15 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
 
     .scroll_indicator_index {display: none;}
     
-    .menu {
+    .menu,
+    .close_player {
         top: 50%;
         left: unset;
         right: 50px;
         transform: translate(0, -50%);
     }
     
-    .menu--close__in {top: 46.5%;}
+    .menu--close__in, .close_player__in {top: 46.5%;}
 
     .scroll_hint {font-size: 4.8rem;}
     

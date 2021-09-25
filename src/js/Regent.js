@@ -14,12 +14,14 @@ export default class Regent {
     }
 }
 
-export function accessFrame(call) {
+export function accessFrame(call, remain) {
     if (document.accessFrame) gsap.ticker.remove(document.accessFrame)
 
     document.accessFrame = call
     
     gsap.ticker.add(document.accessFrame)
+
+    if (remain) gsap.ticker.add(remain)
 }
 
 export function silencer() {return}

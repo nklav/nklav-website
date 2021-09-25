@@ -267,6 +267,86 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter({next}) {
+                const player = new Plyr(next.container.querySelector('#plyr'), {
+                    controls: ['progress', 'current-time', 'fullscreen'],
+                    tooltips: {seek: false},
+                    invertTime: false,
+                    toggleInvert: false
+                })
+
+                const play = next.container.querySelectorAll('.page_content__play')
+
+                const pageTransitionComponents = next.container.querySelectorAll('.ui_page_transition_component')
+
+                const playerContainer = next.container.querySelector('.plyr_ultra_container')
+
+                const openPlayer = () => {
+                    return gsap.timeline({onComplete: () => player.play()})
+
+                    .to('.to_home', {
+                        autoAlpha: 0,
+                        ease: 'none'
+                    })
+
+                    .to('.menu--open', {
+                        autoAlpha: 0,
+                        ease: 'none'
+                    }, '<')
+
+                    .to(pageTransitionComponents, {
+                        scaleY: 1,
+                        duration: .8,
+                        ease: 'power1.inOut'
+                    }, '<')
+
+                    .set(playerContainer, {display: 'flex'})
+                }
+
+                const closePlayer = () => {
+                    return gsap.timeline({onStart: () => player.stop()})
+                    
+                    .set(playerContainer, {display: 'none'})
+
+                    .to(pageTransitionComponents, {
+                        scaleY: 0,
+                        duration: .8,
+                        delay: .5,
+                        ease: 'power1.inOut'
+                    })
+
+                    .to('.to_home', {
+                        autoAlpha: 1,
+                        ease: 'none'
+                    })
+
+                    .to('.menu--open', {
+                        autoAlpha: 1,
+                        ease: 'none'
+                    }, '<')
+                }
+
+                const appear = gsap.timeline({paused: true})
+                
+                .set('.close_player', {
+                    display: 'block',
+                    pointerEvents: 'auto'
+                })
+
+                .from('.close_player', {
+                    opacity: 0,
+                    duration: .2,
+                    ease: 'none'
+                })
+
+                play.forEach(play => play.addEventListener('click', openPlayer))
+
+                next.container.querySelector('.close_player').addEventListener('click', closePlayer)
+
+                const monitorPlayer = () => {
+                    if (player.paused || player.ended) appear.play()
+                    if (player.playing || player.stopped) appear.reverse()
+                }
+
                 const heading = next.container.querySelector('.page_content__heading_container')
 
                 const mobileContainer = next.container.querySelector('.page_content__mobi_container')
@@ -278,7 +358,7 @@ barba.init({
                 const show = next.container.querySelector('.page_content__show_info')
                 const hide = next.container.querySelector('.mobile_content__hide_info')
 
-                const showInfo = gsap.timeline({paused: true})
+                const toggleInfo = gsap.timeline({paused: true})
 
                 .to(heading, {
                     autoAlpha: 0,
@@ -315,15 +395,15 @@ barba.init({
 
                 .set('.mobile_content__sns', {pointerEvents: 'auto'})
 
-                show.addEventListener('click', () => showInfo.play())
-                hide.addEventListener('click', () => showInfo.reverse())
+                show.addEventListener('click', () => toggleInfo.play())
+                hide.addEventListener('click', () => toggleInfo.reverse())
 
-                const monitor = () => {
+                const monitorWindow = () => {
                     let width = window.innerWidth
-                    if (width >= 1024) showInfo.restart().pause()
+                    if (width >= 1024) toggleInfo.restart().pause()
                 }
 
-                accessFrame(monitor)
+                accessFrame(monitorWindow, monitorPlayer)
             },
             afterLeave() {accessFrame(silencer)}
         }
