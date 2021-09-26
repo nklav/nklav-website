@@ -2,7 +2,7 @@
   "name": "nklav-website",
   "scripts": {
     "start": "parcel serve ./src/index.html",
-    "build": "parcel build ./src/index.html"
+    "build": "parcel build ./src/index.html --no-content-hash"
   },
   "dependencies": {
     "@barba/core": "^2.9.7",
