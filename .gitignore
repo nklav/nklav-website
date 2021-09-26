@@ -1,7 +1,4 @@
 node_modules
 dist
-assets
-plyr.css
-bundle.js
 .DS_Store
 .parcel-cache
