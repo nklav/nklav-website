@@ -297,6 +297,50 @@ br {user-select: none;}
 
 .scroll_index > .scroll_index__number + span {letter-spacing: 0;}
 
+.__isMobile {display: none;}
+
+.mobile {
+    display: none;
+    max-height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+}
+
+.mobile__child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    scroll-snap-align: center;
+}
+
+.mobile__thumb {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    height: 450px;
+}
+
+.mobile__thumb_img_1 {background: no-repeat center/contain url('../assets/images/mobile/reel.jpg');}
+.mobile__thumb_img_2 {background: no-repeat center/contain url('../assets/images/mobile/mavic.jpg');}
+.mobile__thumb_img_3 {background: no-repeat center/contain url('../assets/images/mobile/sora.jpg');}
+.mobile__thumb_img_4 {background: no-repeat center/contain url('../assets/images/mobile/ocean.jpg');}
+
+.mobile__page_title {
+    width: 80vw;
+    font: 800 12vw var(--w05);
+    font-stretch: 125%;
+    text-align: center;
+}
+
+.mobile__page_title a {
+    display: block;
+    width: inherit;
+}
+
+.isMobile {display: block;}
+
 .menu_page_container {
     display: flex;
     align-items: center;
@@ -420,6 +464,11 @@ br {user-select: none;}
 }
 
 .gl__to_this:hover .gl__page_title::after {transform: scaleX(1);}
+
+.mobile_gl {
+    width: inherit;
+    height: inherit;
+}
 
 .to_self_back {
     position: relative;

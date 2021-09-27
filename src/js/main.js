@@ -90,6 +90,8 @@ const fragmentShader = `
 
 const element = document.querySelector('.menu--close')
 
+const isMobile = () => {if (/Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent)) {return true} else {return false}}
+
 if (history.scrollRestoration) history.scrollRestoration = 'manual'
 barba.hooks.afterLeave(() => window.scrollTo(0, 0))
 
@@ -107,98 +109,117 @@ barba.init({
         {
             namespace: 'home',
             beforeEnter({next}) {
-                const pageContent = next.container.querySelectorAll('.scroll_layers__page_content')
-                const pageTitles = next.container.querySelectorAll('.scroll_layers__page_title')
-                
-                const scrollIndicator = next.container.querySelector('.scroll_indicator')
+                const element = next.container.querySelector('.scroll_indicator')
+                const animation = gsap.to(element, {rotation: 360})
 
-                const scrollHint = next.container.querySelector('.scroll_hint')
+                if (isMobile()) {
+                    next.container.querySelector('.mobile').classList.add('isMobile')
 
-                const keyDown = () => {
-                    scrollHint.innerHTML = 'down'
-                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                    const elements = [
+                        next.container.querySelector('.gradient--ceil'),
+                        next.container.querySelector('.gradient--floor'),
+                        next.container.querySelector('.scroll_layers'),
+                        next.container.querySelector('.scroll_indicator_index'),
+                        next.container.querySelector('.scroll_index')
+                    ]
+
+                    elements.forEach(element => element.classList.add('__isMobile'))
+
+                    ScrollTrigger.create({animation, scrub: .5, scroller: next.container.querySelector('.mobile')})
                 }
 
-                const keyUp = () => {
-                    scrollHint.innerHTML = 'up'
-                    setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
-                }
-                
-                const scrollLoop = new ScrollLoop({
-                    elements: [pageContent, pageTitles],
-                    animations: [animationData.content, animationData.titles],
-                    scrollSnapping: true,
-                    keyScrolling: true,
-                    dial: {
-                        spacing: 5,
-                        distance: 3,
-                        effect: 'slow'
-                    },
-                    onKey: {
-                        down: keyDown,
-                        up: keyUp
+                if (!isMobile()) {
+                    const pageContent = next.container.querySelectorAll('.scroll_layers__page_content')
+                    const pageTitles = next.container.querySelectorAll('.scroll_layers__page_title')
+    
+                    const scrollHint = next.container.querySelector('.scroll_hint')
+    
+                    const keyDown = () => {
+                        scrollHint.innerHTML = 'down'
+                        setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
                     }
-                })
-                
-                const scrollIndicatorAnimation = gsap.to(scrollIndicator, {rotation: 360})
-                
-                scrollLoop.scroll()
-                scrollLoop.refresh()
-                scrollLoop.sync(scrollIndicatorAnimation, true)
-
-                const videoElements = next.container.getElementsByClassName('scroll_layers__page_content')
-                const buffer = [...videoElements]
-
-                const scrollIndexNumber = next.container.querySelector('.scroll_index__number')
-                const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index')
-
-                const updateState = () => {
-                    for (let i = 0; i < buffer.length; i++) {
-                        const video = buffer[i]
-                        const videoStyles = video.getAttribute('style')
-
-                        const videoData = video.dataset.index
-
-                        if (videoStyles.includes('z-index: -100') && video.paused) {
-                            video.play()
-
-                            scrollIndexNumber.innerHTML = videoData
-                            scrollIndicatorIndex.innerHTML = videoData
+    
+                    const keyUp = () => {
+                        scrollHint.innerHTML = 'up'
+                        setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                    }
+                    
+                    const scrollLoop = new ScrollLoop({
+                        elements: [pageContent, pageTitles],
+                        animations: [animationData.content, animationData.titles],
+                        scrollSnapping: true,
+                        keyScrolling: true,
+                        dial: {
+                            spacing: 5,
+                            distance: 3,
+                            effect: 'slow'
+                        },
+                        onKey: {
+                            down: keyDown,
+                            up: keyUp
                         }
-
-                        if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause()
+                    })
+                    
+                    scrollLoop.scroll()
+                    scrollLoop.refresh()
+                    scrollLoop.sync(animation, true)
+    
+                    const videoElements = next.container.getElementsByClassName('scroll_layers__page_content')
+                    const buffer = [...videoElements]
+    
+                    const scrollIndexNumber = next.container.querySelector('.scroll_index__number')
+                    const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index')
+    
+                    const updateState = () => {
+                        for (let i = 0; i < buffer.length; i++) {
+                            const video = buffer[i]
+                            const videoStyles = video.getAttribute('style')
+    
+                            const videoData = video.dataset.index
+    
+                            if (videoStyles.includes('z-index: -100') && video.paused) {
+                                video.play()
+    
+                                scrollIndexNumber.innerHTML = videoData
+                                scrollIndicatorIndex.innerHTML = videoData
+                            }
+    
+                            if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause()
+                        }
                     }
+    
+                    const state = () => {
+                        const style = next.container.getAttribute('style')
+                        if (style.includes('opacity: 1')) updateState()
+                    }
+    
+                    accessFrame(state)
                 }
-
-                const state = () => {
-                    const style = next.container.getAttribute('style')
-                    if (style.includes('opacity: 1')) updateState()
-                }
-
-                accessFrame(state)
             },
             afterLeave({current}) {
-                const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
-                const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title')
-                
-                const proxy = new ScrollLoop({
-                    elements: [pageContent, pageTitles],
-                    animations: [animationData.content, animationData.titles],
-                    dial: {
-                        spacing: 5,
-                        distance: 3
-                    }
-                })
-
-                proxy.scroll()
-                proxy.selfDestruct({
-                    regent: {
-                        on: ['load', 'load'],
-                        call: [silencer, silencer]
-                    }
-                })
-
-                accessFrame(silencer)
+                if (!isMobile()) {
+                    const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
+                    const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title')
+                    
+                    const proxy = new ScrollLoop({
+                        elements: [pageContent, pageTitles],
+                        animations: [animationData.content, animationData.titles],
+                        dial: {
+                            spacing: 5,
+                            distance: 3
+                        }
+                    })
+    
+                    proxy.scroll()
+                    proxy.selfDestruct({
+                        regent: {
+                            on: ['load', 'load'],
+                            call: [silencer, silencer]
+                        }
+                    })
+    
+                    accessFrame(silencer)
+                }
             }
         },
         {
@@ -209,41 +230,11 @@ barba.init({
                     autoRender: false,
                     pixelRatio: Math.min(1.5, window.devicePixelRatio)
                 })
-                
-                accessFrame(init.render.bind(init))
-
-                const config = {
-                    vertexShader,
-                    fragmentShader,
-                    widthSegments: 20,
-                    heightSegments: 20,
-                    uniforms: {
-                        time: {
-                            name: 'uTime',
-                            type: '1f',
-                            value: 0
-                        }
-                    }
-                }
 
                 const toSelf = next.container.querySelector('.menu_page__to_self')
                 const toSelfBack = next.container.querySelector('.to_self_back')
 
-                const planeElements = next.container.getElementsByClassName('gl__plane')
-
-                const vector = []
-
-                for (let i = 0; i < planeElements.length; i++) {
-                    const plane = new Plane(init, planeElements[i], config)
-                    vector.push(plane)
-                }
-
-                vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('click', () => {
-                    document.body.classList.remove('no_scroll')
-                    plane.playVideos()
-                }, {once: true})).onRender(() => plane.uniforms.time.value++))
-                
-                toSelf.addEventListener('click', () => {
+                const scrollTo = () => {
                     gsap.to(window, {
                         scrollTo: {
                             y: '.gl',
@@ -252,7 +243,55 @@ barba.init({
                         duration: 2,
                         ease: 'power4.inOut'
                     })
-                })
+                }
+
+                if (isMobile()) {
+                    init.dispose()
+
+                    next.container.querySelectorAll('video').forEach(video => {
+                        video.classList.add('mobile_gl')
+                        video.setAttribute('style', 'display: block;')
+                    })
+
+                    toSelf.addEventListener('click', () => {
+                        document.body.classList.remove('no_scroll')
+                        scrollTo()
+                    })
+                }
+
+                if (!isMobile()) {
+                    accessFrame(init.render.bind(init))
+    
+                    const config = {
+                        vertexShader,
+                        fragmentShader,
+                        widthSegments: 20,
+                        heightSegments: 20,
+                        uniforms: {
+                            time: {
+                                name: 'uTime',
+                                type: '1f',
+                                value: 0
+                            }
+                        }
+                    }
+    
+                    const planeElements = next.container.getElementsByClassName('gl__plane')
+    
+                    const vector = []
+    
+                    for (let i = 0; i < planeElements.length; i++) {
+                        const plane = new Plane(init, planeElements[i], config)
+                        vector.push(plane)
+                    }
+    
+                    vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('click', () => {
+                        document.body.classList.remove('no_scroll')
+                        plane.playVideos()
+                    }, {once: true})).onRender(() => plane.uniforms.time.value++))
+
+                    toSelf.addEventListener('click', scrollTo)
+                }
 
                 toSelfBack.addEventListener('click', () => {
                     gsap.to(window, {
@@ -262,7 +301,7 @@ barba.init({
                     })
                 })
             },
-            afterLeave() {accessFrame(silencer)}
+            afterLeave() {if (!isMobile()) accessFrame(silencer)}
         },
         {
             namespace: 'content',
@@ -279,6 +318,8 @@ barba.init({
                 const pageTransitionComponents = next.container.querySelectorAll('.ui_page_transition_component')
 
                 const playerContainer = next.container.querySelector('.plyr_ultra_container')
+
+                const close = next.container.querySelector('.close_player')
 
                 const openPlayer = () => {
                     return gsap.timeline({onComplete: () => player.play()})
@@ -338,9 +379,13 @@ barba.init({
                     ease: 'none'
                 })
 
-                play.forEach(play => play.addEventListener('click', openPlayer))
+                play.forEach(play => {
+                    play.addEventListener('click', openPlayer)
+                    play.addEventListener('touchend', openPlayer)
+                })
 
-                next.container.querySelector('.close_player').addEventListener('click', closePlayer)
+                close.addEventListener('click', closePlayer)
+                close.addEventListener('touchend', closePlayer)
 
                 const monitorPlayer = () => {
                     if (player.paused || player.ended) appear.play()
@@ -396,7 +441,10 @@ barba.init({
                 .set('.mobile_content__sns', {pointerEvents: 'auto'})
 
                 show.addEventListener('click', () => toggleInfo.play())
+                show.addEventListener('touchend', () => toggleInfo.play())
+
                 hide.addEventListener('click', () => toggleInfo.reverse())
+                hide.addEventListener('touchend', () => toggleInfo.reverse())
 
                 const monitorWindow = () => {
                     let width = window.innerWidth
