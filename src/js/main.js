@@ -146,11 +146,6 @@ barba.init({
                 scrollLoop.refresh()
                 scrollLoop.sync(scrollIndicatorAnimation, true)
 
-                window.addEventListener('resize', e => {
-                    ScrollTrigger.refresh(true)
-                    console.log(e)
-                })
-
                 const videoElements = next.container.getElementsByClassName('scroll_layers__page_content')
                 const buffer = [...videoElements]
 
