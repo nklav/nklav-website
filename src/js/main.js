@@ -375,7 +375,10 @@ barba.init({
                     ease: 'none'
                 })
 
-                play.forEach(play => play.addEventListener('click', openPlayer))
+                play.forEach(play => {
+                    play.addEventListener('click', openPlayer)
+                    play.addEventListener('touchend', openPlayer)
+                })
 
                 next.container.querySelector('.close_player').addEventListener('click', closePlayer)
 
@@ -433,7 +436,10 @@ barba.init({
                 .set('.mobile_content__sns', {pointerEvents: 'auto'})
 
                 show.addEventListener('click', () => toggleInfo.play())
+                show.addEventListener('touchend', () => toggleInfo.play())
+                
                 hide.addEventListener('click', () => toggleInfo.reverse())
+                hide.addEventListener('touchend', () => toggleInfo.reverse())
 
                 const monitorWindow = () => {
                     let width = window.innerWidth
