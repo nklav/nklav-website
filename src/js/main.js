@@ -22,6 +22,8 @@ import {
 
 require('../css/main.css')
 
+console.log('%cwebsite by nklav https://github.com/nklav', 'font: 18px sans-serif')
+
 const animationData = {
     content: {
         timeline: {
