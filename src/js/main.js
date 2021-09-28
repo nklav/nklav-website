@@ -312,7 +312,8 @@ barba.init({
                     controls: ['progress', 'current-time', 'fullscreen'],
                     tooltips: {seek: false},
                     invertTime: false,
-                    toggleInvert: false
+                    toggleInvert: false,
+                    ratio: '16:9'
                 })
 
                 const play = next.container.querySelectorAll('.page_content__play')
