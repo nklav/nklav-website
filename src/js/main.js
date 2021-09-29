@@ -369,18 +369,29 @@ barba.init({
                     }, '<')
                 }
 
-                const appear = gsap.timeline({paused: true})
+                const appear = () => {
+                    return gsap.timeline({paused: true})
                 
-                .set('.close_player', {
-                    display: 'block',
-                    pointerEvents: 'auto'
-                })
+                    .set('.close_player', {display: 'block'})
 
-                .from('.close_player', {
-                    opacity: 0,
-                    duration: .2,
-                    ease: 'none'
-                })
+                    .from('.close_player', {
+                        opacity: 0,
+                        duration: .2,
+                        ease: 'none'
+                    })
+                }
+
+                const disappear = () => {
+                    return gsap.timeline({paused: true})
+                    
+                    .to('.close_player', {
+                        opacity: 0,
+                        duration: .2,
+                        ease: 'none'
+                    })
+
+                    .set('.close_player', {display: 'none'})
+                }
 
                 play.forEach(play => {
                     play.addEventListener('click', openPlayer)
@@ -390,13 +401,16 @@ barba.init({
                 close.addEventListener('click', closePlayer)
                 close.addEventListener('touchend', closePlayer)
 
-                next.container.querySelector('.plyr_container').addEventListener('touchend', () => player.pause())
+                next.container.querySelector('.plyr_container').addEventListener('touchend', () => {
+                    if (player.paused) player.play()
+                    if (player.playing) player.pause()
+                })
 
-                close.addEventListener('touchend', () => appear.reverse())
+                close.addEventListener('touchend', disappear)
 
                 const monitorPlayer = () => {
-                    if (player.paused || player.ended) appear.play()
-                    if (player.playing || player.stopped) appear.reverse()
+                    if (player.paused || player.ended) appear()
+                    if (player.playing || player.stopped) disappear()
                 }
 
                 const heading = next.container.querySelector('.page_content__heading_container')
