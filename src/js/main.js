@@ -402,6 +402,7 @@ barba.init({
                     if (player.playing || player.stopped) appear.reverse()
                 }
 
+                close.addEventListener('click', () => appear.reverse())
                 close.addEventListener('touchend', () => appear.reverse())
 
                 const heading = next.container.querySelector('.page_content__heading_container')
