@@ -370,7 +370,7 @@ barba.init({
                 }
 
                 const appear = () => {
-                    return gsap.timeline({paused: true})
+                    return gsap.timeline()
                 
                     .set('.close_player', {display: 'block'})
 
@@ -382,7 +382,7 @@ barba.init({
                 }
 
                 const disappear = () => {
-                    return gsap.timeline({paused: true})
+                    return gsap.timeline()
                     
                     .to('.close_player', {
                         opacity: 0,
