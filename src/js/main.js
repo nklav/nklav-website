@@ -390,6 +390,10 @@ barba.init({
                 close.addEventListener('click', closePlayer)
                 close.addEventListener('touchend', closePlayer)
 
+                next.container.querySelector('.plyr_container').addEventListener('touchend', () => player.pause())
+
+                close.addEventListener('touchend', () => appear.reverse())
+
                 const monitorPlayer = () => {
                     if (player.paused || player.ended) appear.play()
                     if (player.playing || player.stopped) appear.reverse()
