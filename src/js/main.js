@@ -308,17 +308,13 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter({next}) {
-                const config = {
-                    controls: ['progress', 'current-time', 'fullscreen'],
+                const player = new Plyr(next.container.querySelector('#plyr'), {
+                    controls: ['play', 'progress', 'current-time', 'fullscreen'],
                     tooltips: {seek: false},
                     invertTime: false,
                     toggleInvert: false,
                     ratio: '16:9'
-                }
-
-                if (isMobile()) {config.controls = ['play', 'progress', 'current-time', 'fullscreen']}
-
-                const player = new Plyr(next.container.querySelector('#plyr'), config)
+                })
 
                 const play = next.container.querySelectorAll('.page_content__play')
 
