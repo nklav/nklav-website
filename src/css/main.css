@@ -33,7 +33,7 @@
     --w05: 'Archivo', 'Extra-bold 800', sans-serif;
     --plyr-color-main: var(--primary-ui-color);
     --plyr-control-radius: 50%;
-    --plyr-video-control-color-hover: hsl(0, 0%, 0%);
+    --plyr-video-control-background-hover: none;
     --plyr-progress-loading-size: 0px;
     --plyr-range-thumb-height: 0px;
     --plyr-range-thumb-shadow: none;

@@ -308,13 +308,17 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter({next}) {
-                const player = new Plyr(next.container.querySelector('#plyr'), {
+                const config = {
                     controls: ['progress', 'current-time', 'fullscreen'],
                     tooltips: {seek: false},
                     invertTime: false,
                     toggleInvert: false,
                     ratio: '16:9'
-                })
+                }
+
+                if (isMobile()) {config.controls = ['play', 'progress', 'current-time', 'fullscreen']}
+
+                const player = new Plyr(next.container.querySelector('#plyr'), config)
 
                 const play = next.container.querySelectorAll('.page_content__play')
 
@@ -349,7 +353,10 @@ barba.init({
                 const closePlayer = () => {
                     return gsap.timeline({onStart: () => player.stop()})
                     
-                    .set(playerContainer, {display: 'none'})
+                    .set(playerContainer, {
+                        display: 'none',
+                        delay: .1
+                    })
 
                     .to(pageTransitionComponents, {
                         scaleY: 0,
@@ -369,29 +376,18 @@ barba.init({
                     }, '<')
                 }
 
-                const appear = () => {
-                    return gsap.timeline()
+                const appear = gsap.timeline({paused: true})
                 
-                    .set('.close_player', {display: 'block'})
+                .set(close, {
+                    display: 'block',
+                    pointerEvents: 'auto'
+                })
 
-                    .from('.close_player', {
-                        opacity: 0,
-                        duration: .2,
-                        ease: 'none'
-                    })
-                }
-
-                const disappear = () => {
-                    return gsap.timeline()
-                    
-                    .to('.close_player', {
-                        opacity: 0,
-                        duration: .2,
-                        ease: 'none'
-                    })
-
-                    .set('.close_player', {display: 'none'})
-                }
+                .from(close, {
+                    opacity: 0,
+                    duration: .2,
+                    ease: 'none'
+                })
 
                 play.forEach(play => {
                     play.addEventListener('click', openPlayer)
@@ -401,17 +397,12 @@ barba.init({
                 close.addEventListener('click', closePlayer)
                 close.addEventListener('touchend', closePlayer)
 
-                next.container.querySelector('.plyr_container').addEventListener('touchend', () => {
-                    if (player.paused) player.play()
-                    if (player.playing) player.pause()
-                })
-
-                close.addEventListener('touchend', disappear)
-
                 const monitorPlayer = () => {
-                    if (player.paused || player.ended) appear()
-                    if (player.playing || player.stopped) disappear()
+                    if (player.paused || player.ended) appear.play()
+                    if (player.playing || player.stopped) appear.reverse()
                 }
+
+                close.addEventListener('touchend', () => appear.reverse())
 
                 const heading = next.container.querySelector('.page_content__heading_container')
 
