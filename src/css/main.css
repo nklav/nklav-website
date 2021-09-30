@@ -444,7 +444,7 @@ br {user-select: none;}
     height: 101.25px;
 }
 
-.gl__plane video {display: none;}
+.gl__plane img {display: none;}
 
 .gl__page_title {
     display: inline-block;
@@ -942,7 +942,7 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     .page_content__heading {font-size: 12.2rem;}
 }
 
-@media (min-width: 1440px) {
+@media (min-width: 1920px) {
     .menu_page {width: 70%;}
 
     .menu_page__list, .to_self_back {font-size: 9.6rem;}

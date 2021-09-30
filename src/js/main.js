@@ -250,9 +250,9 @@ barba.init({
                 if (isMobile()) {
                     init.dispose()
 
-                    next.container.querySelectorAll('video').forEach(video => {
-                        video.classList.add('mobile_gl')
-                        video.setAttribute('style', 'display: block;')
+                    next.container.querySelectorAll('img').forEach(img => {
+                        img.classList.add('mobile_gl')
+                        img.setAttribute('style', 'display: block;')
                     })
 
                     toSelf.addEventListener('click', () => {
@@ -267,8 +267,8 @@ barba.init({
                     const config = {
                         vertexShader,
                         fragmentShader,
-                        widthSegments: 20,
-                        heightSegments: 20,
+                        widthSegments: 15,
+                        heightSegments: 15,
                         uniforms: {
                             time: {
                                 name: 'uTime',
@@ -287,10 +287,7 @@ barba.init({
                         vector.push(plane)
                     }
     
-                    vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('click', () => {
-                        document.body.classList.remove('no_scroll')
-                        plane.playVideos()
-                    }, {once: true})).onRender(() => plane.uniforms.time.value++))
+                    vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('click', () => document.body.classList.remove('no_scroll'), {once: true})).onRender(() => plane.uniforms.time.value++))
 
                     toSelf.addEventListener('click', scrollTo)
                 }
