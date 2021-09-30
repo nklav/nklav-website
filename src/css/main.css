@@ -224,6 +224,7 @@ br {user-select: none;}
     -webkit-text-stroke: 1px hsl(0, 0%, 40%);
     color: hsla(0, 0%, 0%, 0%);
     transform: translate(-50%, -50%);
+    user-select: none;
 }
 
 .scroll_layers {visibility: hidden;}
@@ -297,16 +298,18 @@ br {user-select: none;}
 
 .scroll_index > .scroll_index__number + span {letter-spacing: 0;}
 
-.__isMobile {display: none;}
+.__isMobile, .__isWindows {display: none;}
 
-.mobile {
+.mobile,
+.os {
     display: none;
     max-height: 100vh;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
 }
 
-.mobile__child {
+.mobile__child,
+.os__child {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -314,7 +317,8 @@ br {user-select: none;}
     scroll-snap-align: center;
 }
 
-.mobile__thumb {
+.mobile__thumb,
+.os__in {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -322,10 +326,29 @@ br {user-select: none;}
     height: 450px;
 }
 
+.os__in {position: relative;}
+
 .mobile__thumb_img_1 {background: no-repeat center/contain url('../assets/images/mobile/reel.jpg');}
 .mobile__thumb_img_2 {background: no-repeat center/contain url('../assets/images/mobile/mavic.jpg');}
 .mobile__thumb_img_3 {background: no-repeat center/contain url('../assets/images/mobile/sora.jpg');}
 .mobile__thumb_img_4 {background: no-repeat center/contain url('../assets/images/mobile/ocean.jpg');}
+
+.os__page_content, .os__page_title {position: absolute;}
+
+.os__page_content {
+    width: inherit;
+    height: inherit;
+}
+
+.os__page_title {
+    width: inherit;
+    height: inherit;
+    margin: 0;
+    font: 800 12vw var(--w05);
+    font-stretch: 125%;
+    text-align: center;
+    line-height: 450px;
+}
 
 .mobile__page_title {
     width: 80vw;
@@ -334,12 +357,22 @@ br {user-select: none;}
     text-align: center;
 }
 
-.mobile__page_title a {
+.mobile__page_title a,
+.os__page_title a {
     display: block;
     width: inherit;
 }
 
-.isMobile {display: block;}
+.os__page_title a {height: inherit;}
+
+.os__overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: hsla(0, 0%, 0%, 20%);
+}
+
+.isMobile, .isWindows {display: block;}
 
 .menu_page_container {
     display: flex;
@@ -730,6 +763,16 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
 
 @media (max-height: 720px) {.plyr {width: 150vh;}}
 
+@media (max-width: 767px) {
+    .os__in {width: 100%;}
+
+    .os__page_title {
+        width: inherit;
+        height: 20vw;
+        line-height: 20vw;
+    }
+}
+
 @media (min-width: 320px) {
     .scroll_indicator,
     .scroll_indicator_index {
@@ -807,7 +850,8 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
 
     .scroll_hint {font-size: 4.8rem;}
     
-    .scroll_layers__page_content {
+    .scroll_layers__page_content,
+    .os__in {
         width: 426px;
         height: 240px;
     }
@@ -825,6 +869,13 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     }
     
     .scroll_index {display: inline;}
+    .scroll_index.__isMobile {display: none;}
+    .scroll_index.__isWindows {display: none;}
+
+    .os__page_title {
+        font-size: 7.2rem;
+        line-height: 240px;
+    }
 
     .menu_page {width: 50%;}
 
@@ -852,7 +903,8 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
 @media (min-width: 1024px) {
     .scroll_hint {font-size: 6.4rem;}
 
-    .scroll_layers__page_content {
+    .scroll_layers__page_content,
+    .os__in {
         width: 640px;
         height: 360px;
     }
@@ -863,6 +915,11 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     }
 
     .scroll_layers__page_title a {height: 200px;}
+
+    .os__page_title {
+        font-size: 9.6rem;
+        line-height: 360px;
+    }
 
     .menu_page {
         flex-direction: row-reverse;
@@ -916,7 +973,8 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
 
     .scroll_hint {font-size: 9.6rem;}
 
-    .scroll_layers__page_content {
+    .scroll_layers__page_content,
+    .os__in {
         width: 800px;
         height: 450px;
     }
@@ -929,6 +987,11 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     .scroll_layers__page_title a {
         height: 300px;
         transform: translate(-150px, 50px);
+    }
+
+    .os__page_title {
+        font-size: 12.4rem;
+        line-height: 450px;
     }
 
     .menu_page__list, .to_self_back {font-size: 7.2rem;}

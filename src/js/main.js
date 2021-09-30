@@ -92,7 +92,8 @@ const fragmentShader = `
 
 const element = document.querySelector('.menu--close')
 
-const isMobile = () => {if (/Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent)) {return true} else {return false}}
+const isMobile = () => {if (/Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|IEMobile|Opera Mini/i.test(navigator.userAgent)) {return true} else {return false}}
+const isWindows = () => {if (/Windows|Linux|X11/i.test(navigator.userAgent)) {return true} else {return false}}
 
 if (history.scrollRestoration) history.scrollRestoration = 'manual'
 barba.hooks.afterLeave(() => window.scrollTo(0, 0))
@@ -114,23 +115,25 @@ barba.init({
                 const element = next.container.querySelector('.scroll_indicator')
                 const animation = gsap.to(element, {rotation: 360})
 
-                if (isMobile()) {
-                    next.container.querySelector('.mobile').classList.add('isMobile')
+                const elements = [
+                    next.container.querySelector('.gradient--ceil'),
+                    next.container.querySelector('.gradient--floor'),
+                    next.container.querySelector('.scroll_layers'),
+                    next.container.querySelector('.scroll_indicator_index'),
+                    next.container.querySelector('.scroll_index')
+                ]
 
-                    const elements = [
-                        next.container.querySelector('.gradient--ceil'),
-                        next.container.querySelector('.gradient--floor'),
-                        next.container.querySelector('.scroll_layers'),
-                        next.container.querySelector('.scroll_indicator_index'),
-                        next.container.querySelector('.scroll_index')
-                    ]
-
-                    elements.forEach(element => element.classList.add('__isMobile'))
-
-                    ScrollTrigger.create({animation, scrub: .5, scroller: next.container.querySelector('.mobile')})
+                const manageAttributes = (selector, selector2, selector3, array, n, animation) => {
+                    next.container.querySelector(selector).classList.add(selector2)
+                    array.forEach(item => item.classList.add(selector3))
+                    ScrollTrigger.create({animation, scrub: n, scroller: next.container.querySelector(selector)})
                 }
 
-                if (!isMobile()) {
+                if (isMobile()) manageAttributes('.mobile', 'isMobile', '__isMobile', elements, .5, animation)
+
+                if (!isMobile() && isWindows()) manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation)
+
+                if (!isMobile() && !isWindows()) {
                     const pageContent = next.container.querySelectorAll('.scroll_layers__page_content')
                     const pageTitles = next.container.querySelectorAll('.scroll_layers__page_title')
     
@@ -166,8 +169,8 @@ barba.init({
                     scrollLoop.refresh()
                     scrollLoop.sync(animation, true)
     
-                    const videoElements = next.container.getElementsByClassName('scroll_layers__page_content')
-                    const buffer = [...videoElements]
+                    const videos = next.container.getElementsByClassName('scroll_layers__page_content')
+                    const buffer = [...videos]
     
                     const scrollIndexNumber = next.container.querySelector('.scroll_index__number')
                     const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index')
@@ -199,7 +202,7 @@ barba.init({
                 }
             },
             afterLeave({current}) {
-                if (!isMobile()) {
+                if (!isMobile() && !isWindows()) {
                     const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
                     const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title')
                     
@@ -287,7 +290,10 @@ barba.init({
                         vector.push(plane)
                     }
     
-                    vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('click', () => document.body.classList.remove('no_scroll'), {once: true})).onRender(() => plane.uniforms.time.value++))
+                    vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('click', () => {
+                        document.body.classList.remove('no_scroll')
+                        plane.resize()
+                    }, {once: true})).onRender(() => plane.uniforms.time.value++))
 
                     toSelf.addEventListener('click', scrollTo)
                 }
