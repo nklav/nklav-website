@@ -131,7 +131,10 @@ barba.init({
 
                 if (isMobile()) manageAttributes('.mobile', 'isMobile', '__isMobile', elements, .5, animation)
 
-                if (!isMobile() && isWindows()) manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation)
+                if (!isMobile() && isWindows()) {
+                    manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation)
+                    elements[4].innerHTML = '1-4'
+                }
 
                 if (!isMobile() && !isWindows()) {
                     const pageContent = next.container.querySelectorAll('.scroll_layers__page_content')

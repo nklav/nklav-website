@@ -870,7 +870,6 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     
     .scroll_index {display: inline;}
     .scroll_index.__isMobile {display: none;}
-    .scroll_index.__isWindows {display: none;}
 
     .os__page_title {
         font-size: 7.2rem;
