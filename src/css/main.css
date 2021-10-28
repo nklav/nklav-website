@@ -332,6 +332,8 @@ br {user-select: none;}
 .mobile__thumb_img_2 {background: no-repeat center/contain url('../assets/images/mobile/mavic.jpg');}
 .mobile__thumb_img_3 {background: no-repeat center/contain url('../assets/images/mobile/sora.jpg');}
 .mobile__thumb_img_4 {background: no-repeat center/contain url('../assets/images/mobile/ocean.jpg');}
+.mobile__thumb_img_5 {background: no-repeat center/contain url('../assets/images/mobile/nature.jpg');}
+.mobile__thumb_img_6 {background: no-repeat center/contain url('../assets/images/mobile/g-airspace.jpg');}
 
 .os__page_content, .os__page_title {position: absolute;}
 
@@ -348,6 +350,7 @@ br {user-select: none;}
     font-stretch: 125%;
     text-align: center;
     line-height: 450px;
+    white-space: nowrap;
 }
 
 .mobile__page_title {
@@ -355,6 +358,7 @@ br {user-select: none;}
     font: 800 12vw var(--w05);
     font-stretch: 125%;
     text-align: center;
+    white-space: nowrap;
 }
 
 .mobile__page_title a,
@@ -872,7 +876,7 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     .scroll_index.__isMobile {display: none;}
 
     .os__page_title {
-        font-size: 7.2rem;
+        font-size: 4.8rem;
         line-height: 240px;
     }
 
@@ -916,7 +920,7 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     .scroll_layers__page_title a {height: 200px;}
 
     .os__page_title {
-        font-size: 9.6rem;
+        font-size: 7.2rem;
         line-height: 360px;
     }
 
@@ -989,7 +993,7 @@ main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
     }
 
     .os__page_title {
-        font-size: 12.4rem;
+        font-size: 9.6rem;
         line-height: 450px;
     }
 
