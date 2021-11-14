@@ -298,7 +298,6 @@ br {user-select: none;}
 
 .scroll_index > .scroll_index__number + span {letter-spacing: 0;}
 
-.isMobile, .isWindows {display: block;}
 .__isMobile, .__isWindows {display: none;}
 
 .mobile,
@@ -373,6 +372,8 @@ br {user-select: none;}
     height: 100%;
     background: hsla(0, 0%, 0%, 20%);
 }
+
+.isMobile, .isWindows {display: block;}
 
 .menu_page_container {
     display: flex;
