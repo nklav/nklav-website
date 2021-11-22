@@ -319,7 +319,9 @@ barba.init({
                     tooltips: {seek: false},
                     invertTime: false,
                     toggleInvert: false,
-                    ratio: '16:9'
+                    ratio: '16:9',
+                    quality: {default: 1080},
+                    youtube: {modestbranding: 1}
                 })
 
                 const play = next.container.querySelectorAll('.page_content__play')
