@@ -133,7 +133,7 @@ barba.init({
 
                 if (!isMobile() && isWindows()) {
                     manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation)
-                    elements[4].innerHTML = '1-6'
+                    elements[4].textContent = '1-6'
                 }
 
                 if (!isMobile() && !isWindows()) {
@@ -143,13 +143,13 @@ barba.init({
                     const scrollHint = next.container.querySelector('.scroll_hint')
     
                     const keyDown = () => {
-                        scrollHint.innerHTML = 'down'
-                        setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                        scrollHint.textContent = 'down'
+                        setTimeout(() => scrollHint.textContent = 'scroll', 1000)
                     }
     
                     const keyUp = () => {
-                        scrollHint.innerHTML = 'up'
-                        setTimeout(() => scrollHint.innerHTML = 'scroll', 1000)
+                        scrollHint.textContent = 'up'
+                        setTimeout(() => scrollHint.textContent = 'scroll', 1000)
                     }
                     
                     const scrollLoop = new ScrollLoop({
@@ -188,8 +188,8 @@ barba.init({
                             if (videoStyles.includes('z-index: -100') && video.paused) {
                                 video.play()
     
-                                scrollIndexNumber.innerHTML = videoData
-                                scrollIndicatorIndex.innerHTML = videoData
+                                scrollIndexNumber.textContent = videoData
+                                scrollIndicatorIndex.textContent = videoData
                             }
     
                             if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause()
