@@ -551,8 +551,11 @@ br {user-select: none;}
     transform-origin: bottom;
 }
 
-main > div > video,
-main > div > video + div {
+.saved {display: none;}
+
+.full_page_video,
+.mobile_full_page_image,
+.overlay {
     position: fixed;
     z-index: -1;
     width: 100vw;
@@ -560,7 +563,9 @@ main > div > video + div {
     object-fit: cover;
 }
 
-main > div > video + div {background: hsla(0, 0%, 0%, 20%);}
+.overlay {background: hsla(0, 0%, 0%, 20%);}
+
+.load {display: block;}
 
 .page_content,
 .mobile_content {

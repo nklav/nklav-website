@@ -22,7 +22,7 @@ import {
 
 require('../css/main.css')
 
-console.log('%cwebsite by nklav https://github.com/nklav', 'font: 18px sans-serif')
+console.log('%cwebsite by NKLAV https://github.com/nklav', 'font: 18px sans-serif')
 
 const animationData = {
     content: {
@@ -314,6 +314,19 @@ barba.init({
         {
             namespace: 'content',
             beforeEnter({next}) {
+                const videoResource = next.container.querySelector('.full_page_video')
+                const imageResource = next.container.querySelector('.mobile_full_page_image')
+
+                if (!isMobile()) {
+                    videoResource.classList.remove('saved')
+                    videoResource.classList.add('load')
+                }
+
+                if (isMobile()) {
+                    imageResource.classList.remove('saved')
+                    imageResource.classList.add('load')
+                }
+
                 const player = new Plyr(next.container.querySelector('#plyr'), {
                     controls: ['play', 'progress', 'current-time', 'fullscreen'],
                     tooltips: {seek: false},
