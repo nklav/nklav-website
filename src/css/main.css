@@ -640,6 +640,22 @@ br {user-select: none;}
     transform-origin: top;
 }
 
+.page_content__badge {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.page_content__badge svg {
+    width: 18px;
+}
+
+.page_content__badge span {
+    margin-top: 1px;
+    margin-left: 10px;
+    user-select: none;
+}
+
 .page_content__social,
 .mobile_content__social {
     display: flex;
