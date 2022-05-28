@@ -208,7 +208,7 @@ barba.init({
                         };
                     };
     
-                    const state = () => {
+                    function state() {
                         const style = next.container.getAttribute('style');
                         if (style.includes('opacity: 1')) updateState();
                     };
@@ -379,7 +379,7 @@ barba.init({
                     .set(playerContainer, {display: 'flex'});
                 };
 
-                function closePlayer() {
+                async function closePlayer() {
                     return gsap.timeline({onStart: () => player.stop()})
                     
                     .set(playerContainer, {
@@ -422,14 +422,14 @@ barba.init({
                     play.addEventListener('pointerdown', openPlayer);
                 });
 
-                close.addEventListener('pointerdown', closePlayer);
+                close.addEventListener('pointerdown', () => {
+                    closePlayer().then(() => appear.reverse());
+                });
 
                 const monitorPlayer = () => {
                     if (player.paused || player.ended) appear.play();
                     if (player.playing || player.stopped) appear.reverse();
                 };
-
-                close.addEventListener('pointerdown', () => appear.reverse());
 
                 const heading = next.container.querySelector('.page_content__heading_container');
 
