@@ -1,7 +1,7 @@
-import loadingAnimation from './loadingAnimation'
+import loadingAnimation from './loadingAnimation';
 
-const contentOnce = page => {
-    const video = page.querySelector('video')
+export default function contentOnce(page) {
+    const video = page.querySelector('video');
 
     return gsap.timeline()
 
@@ -70,7 +70,5 @@ const contentOnce = page => {
 
     .set(['.page_content__sns', '.page_content__play'], {pointerEvents: 'auto'})
 
-    .set('.page_content__play', {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
-}
-
-export default contentOnce
+    .set('.page_content__play', {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'});
+};

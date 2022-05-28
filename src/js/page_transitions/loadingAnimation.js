@@ -1,4 +1,4 @@
-const loadingAnimation = () => {
+export default function loadingAnimation() {
     return gsap.timeline({delay: 1})
 
     .set('.loader', {display: 'block'})
@@ -34,7 +34,5 @@ const loadingAnimation = () => {
         delay: .3
     })
 
-    .set('.loader', {display: 'none'})
-}
-
-export default loadingAnimation
+    .set('.loader', {display: 'none'});
+};

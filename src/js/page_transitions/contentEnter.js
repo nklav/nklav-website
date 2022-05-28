@@ -1,16 +1,16 @@
-const contentEnter = page => {
-    const video = page.querySelector('video')
+export default function contentEnter(page) {
+    const video = page.querySelector('video');
 
-    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
+    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component');
 
-    const heading = page.querySelector('.page_content__heading')
-    const description = page.querySelector('.page_content__description')
+    const heading = page.querySelector('.page_content__heading');
+    const description = page.querySelector('.page_content__description');
 
-    const shareLabel = page.querySelector('.page_content__share_label')
-    const socialIcons = page.querySelectorAll('.page_content__icon')
+    const shareLabel = page.querySelector('.page_content__share_label');
+    const socialIcons = page.querySelectorAll('.page_content__icon');
 
-    const play = page.querySelectorAll('.page_content__play')
-    const info = page.querySelector('.page_content__show_info')
+    const play = page.querySelectorAll('.page_content__play');
+    const info = page.querySelector('.page_content__show_info');
 
     return gsap.timeline({
         delay: .5,
@@ -80,7 +80,5 @@ const contentEnter = page => {
 
     .set(['.page_content__sns', play], {pointerEvents: 'auto'})
 
-    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
-}
-
-export default contentEnter
+    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'});
+};

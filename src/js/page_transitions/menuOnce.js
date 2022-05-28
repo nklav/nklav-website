@@ -1,6 +1,6 @@
-import loadingAnimation from './loadingAnimation'
+import loadingAnimation from './loadingAnimation';
 
-const menuOnce = page => {
+export default function menuOnce(page) {
     return gsap.timeline({onStart: () => document.body.classList.add('no_scroll')})
 
     .set('.menu--close', {display: 'block'})
@@ -29,7 +29,5 @@ const menuOnce = page => {
         stagger: .1
     }, '<')
 
-    .set('.menu_page__list_item', {pointerEvents: 'auto'})
-}
-
-export default menuOnce
+    .set('.menu_page__list_item', {pointerEvents: 'auto'});
+};

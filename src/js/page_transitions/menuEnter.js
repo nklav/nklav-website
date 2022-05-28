@@ -1,7 +1,7 @@
-const menuEnter = page => {
-    const listItems = page.querySelectorAll('.menu_page__list_item')
+export default function menuEnter(page) {
+    const listItems = page.querySelectorAll('.menu_page__list_item');
 
-    const footer = page.querySelector('.menu_page__footer')
+    const footer = page.querySelector('.menu_page__footer');
 
     return gsap.timeline({onStart: () => document.body.classList.add('no_scroll')})
 
@@ -24,7 +24,5 @@ const menuEnter = page => {
         ease: 'none'
     }, '<')
 
-    .set(['.menu--close', listItems], {pointerEvents: 'auto'})
-}
-
-export default menuEnter
+    .set(['.menu--close', listItems], {pointerEvents: 'auto'});
+};

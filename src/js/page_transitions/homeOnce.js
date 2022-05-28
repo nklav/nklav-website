@@ -1,6 +1,6 @@
-import loadingAnimation from './loadingAnimation'
+import loadingAnimation from './loadingAnimation';
 
-const homeOnce = page => {
+export default function homeOnce(page) {
     return gsap.timeline({
         onStart: () => document.body.classList.add('no_scroll'),
         onComplete: () => document.body.classList.remove('no_scroll')
@@ -35,7 +35,5 @@ const homeOnce = page => {
         duration: 1
     }, '<')
 
-    .set(['.menu--open', '.scroll_layers__page_title a'], {pointerEvents: 'auto'})
-}
-
-export default homeOnce
+    .set(['.menu--open', '.scroll_layers__page_title a'], {pointerEvents: 'auto'});
+};

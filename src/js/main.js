@@ -1,9 +1,9 @@
-import barba from '@barba/core'
-import Plyr from 'plyr'
-import { Curtains, Plane } from './bundle'
+import barba from '@barba/core';
+import Plyr from 'plyr';
+import { Curtains, Plane } from './bundle';
 
-import { accessFrame, silencer } from './Regent'
-import ScrollLoop from './ScrollLoop'
+import { accessFrame, silencer } from './Regent';
+import ScrollLoop from './ScrollLoop';
 
 import { 
     homeOnce, 
@@ -18,11 +18,11 @@ import {
     menuLeave, 
     contentLeaveToHome, 
     contentLeaveToMenu 
-} from './page_transitions'
+} from './page_transitions';
 
-require('../css/main.css')
+require('../css/main.css');
 
-console.log('%cwebsite by NKLAV https://github.com/nklav', 'font: 18px sans-serif')
+console.log('%cwebsite by NKLAV https://github.com/nklav', 'font: 18px sans-serif');
 
 const animationData = {
     content: {
@@ -49,7 +49,7 @@ const animationData = {
             }
         }
     }
-}
+};
 
 const vertexShader = `
     precision mediump float;
@@ -75,7 +75,7 @@ const vertexShader = `
         vTextureCoord = aTextureCoord;
         vVertexPosition = vertexPosition;
     }
-`
+`;
 
 const fragmentShader = `
     precision mediump float;
@@ -88,18 +88,30 @@ const fragmentShader = `
     void main() {
         gl_FragColor = texture2D(uSampler0, vTextureCoord);
     }
-`
+`;
 
-const element = document.querySelector('.menu--close')
+const element = document.querySelector('.menu--close');
 
-const isMobile = () => {if (/Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|IEMobile|Opera Mini/i.test(navigator.userAgent)) {return true} else {return false}}
-const isWindows = () => {if (/Windows|Linux|X11/i.test(navigator.userAgent)) {return true} else {return false}}
+function isMobile() {
+    if (/Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true
+    } else {
+        return false
+    };
+};
 
-if (history.scrollRestoration) history.scrollRestoration = 'manual'
-barba.hooks.afterLeave(() => window.scrollTo(0, 0))
+function isWindows() {
+    if (/Windows|Linux|X11/i.test(navigator.userAgent)) {
+        return true
+    } else {
+        return false
+    };
+};
 
-barba.hooks.beforeEnter(() => {if (document.body.hasAttribute('aria-live')) document.body.removeAttribute('aria-live')})
-barba.hooks.enter(({current}) => element.setAttribute('href', current.url.href))
+if (history.scrollRestoration) history.scrollRestoration = 'manual';
+barba.hooks.afterLeave(() => window.scrollTo(0, 0));
+
+barba.hooks.enter(({current}) => element.setAttribute('href', current.url.href));
 
 barba.init({
     schema: {
@@ -112,8 +124,8 @@ barba.init({
         {
             namespace: 'home',
             beforeEnter({next}) {
-                const element = next.container.querySelector('.scroll_indicator')
-                const animation = gsap.to(element, {rotation: 360})
+                const element = next.container.querySelector('.scroll_indicator');
+                const animation = gsap.to(element, {rotation: 360});
 
                 const elements = [
                     next.container.querySelector('.gradient--ceil'),
@@ -121,36 +133,36 @@ barba.init({
                     next.container.querySelector('.scroll_layers'),
                     next.container.querySelector('.scroll_indicator_index'),
                     next.container.querySelector('.scroll_index')
-                ]
+                ];
 
-                const manageAttributes = (selector, selector2, selector3, array, n, animation) => {
-                    next.container.querySelector(selector).classList.add(selector2)
-                    array.forEach(item => item.classList.add(selector3))
-                    ScrollTrigger.create({animation, scrub: n, scroller: next.container.querySelector(selector)})
-                }
+                function manageAttributes(selector, selector2, selector3, array, n, animation) {
+                    next.container.querySelector(selector).classList.add(selector2);
+                    array.forEach(item => item.classList.add(selector3));
+                    ScrollTrigger.create({animation, scrub: n, scroller: next.container.querySelector(selector)});
+                };
 
-                if (isMobile()) manageAttributes('.mobile', 'isMobile', '__isMobile', elements, .5, animation)
+                if (isMobile()) manageAttributes('.mobile', 'isMobile', '__isMobile', elements, .5, animation);
 
                 if (!isMobile() && isWindows()) {
-                    manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation)
-                    elements[4].textContent = '1-6'
-                }
+                    manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation);
+                    elements[4].textContent = '1-6';
+                };
 
                 if (!isMobile() && !isWindows()) {
-                    const pageContent = next.container.querySelectorAll('.scroll_layers__page_content')
-                    const pageTitles = next.container.querySelectorAll('.scroll_layers__page_title')
+                    const pageContent = next.container.querySelectorAll('.scroll_layers__page_content');
+                    const pageTitles = next.container.querySelectorAll('.scroll_layers__page_title');
     
-                    const scrollHint = next.container.querySelector('.scroll_hint')
+                    const scrollHint = next.container.querySelector('.scroll_hint');
     
-                    const keyDown = () => {
-                        scrollHint.textContent = 'down'
-                        setTimeout(() => scrollHint.textContent = 'scroll', 1000)
-                    }
+                    function keyDown() {
+                        scrollHint.textContent = 'down';
+                        setTimeout(() => scrollHint.textContent = 'scroll', 1000);
+                    };
     
-                    const keyUp = () => {
-                        scrollHint.textContent = 'up'
-                        setTimeout(() => scrollHint.textContent = 'scroll', 1000)
-                    }
+                    function keyUp() {
+                        scrollHint.textContent = 'up';
+                        setTimeout(() => scrollHint.textContent = 'scroll', 1000);
+                    };
                     
                     const scrollLoop = new ScrollLoop({
                         elements: [pageContent, pageTitles],
@@ -166,48 +178,48 @@ barba.init({
                             down: keyDown,
                             up: keyUp
                         }
-                    })
+                    });
                     
-                    scrollLoop.scroll()
-                    scrollLoop.refresh()
-                    scrollLoop.sync(animation, true)
+                    scrollLoop.scroll();
+                    scrollLoop.refresh();
+                    scrollLoop.sync(animation, true);
     
-                    const videos = next.container.getElementsByClassName('scroll_layers__page_content')
-                    const buffer = [...videos]
+                    const videos = next.container.getElementsByClassName('scroll_layers__page_content');
+                    const buffer = [...videos];
+
+                    const scrollIndexNumber = next.container.querySelector('.scroll_index__number');
+                    const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index');
     
-                    const scrollIndexNumber = next.container.querySelector('.scroll_index__number')
-                    const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index')
-    
-                    const updateState = () => {
+                    function updateState() {
                         for (let i = 0; i < buffer.length; i++) {
-                            const video = buffer[i]
-                            const videoStyles = video.getAttribute('style')
+                            const video = buffer[i];
+                            const videoStyles = video.getAttribute('style');
     
-                            const videoData = video.dataset.index
+                            const videoData = video.dataset.index;
     
                             if (videoStyles.includes('z-index: -100') && video.paused) {
-                                video.play()
+                                video.play();
     
-                                scrollIndexNumber.textContent = videoData
-                                scrollIndicatorIndex.textContent = videoData
+                                scrollIndexNumber.textContent = videoData;
+                                scrollIndicatorIndex.textContent = videoData;
                             }
     
-                            if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause()
-                        }
-                    }
+                            if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause();
+                        };
+                    };
     
-                    const state = () => {
-                        const style = next.container.getAttribute('style')
-                        if (style.includes('opacity: 1')) updateState()
-                    }
+                    function state() {
+                        const style = next.container.getAttribute('style');
+                        if (style.includes('opacity: 1')) updateState();
+                    };
     
-                    accessFrame(state)
-                }
+                    accessFrame(state);
+                };
             },
             afterLeave({current}) {
                 if (!isMobile() && !isWindows()) {
-                    const pageContent = current.container.querySelectorAll('.scroll_layers__page_content')
-                    const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title')
+                    const pageContent = current.container.querySelectorAll('.scroll_layers__page_content');
+                    const pageTitles = current.container.querySelectorAll('.scroll_layers__page_title');
                     
                     const proxy = new ScrollLoop({
                         elements: [pageContent, pageTitles],
@@ -216,7 +228,7 @@ barba.init({
                             spacing: 5,
                             distance: 3
                         }
-                    })
+                    });
     
                     proxy.scroll()
                     proxy.selfDestruct({
@@ -224,10 +236,10 @@ barba.init({
                             on: ['load', 'load'],
                             call: [silencer, silencer]
                         }
-                    })
+                    });
     
-                    accessFrame(silencer)
-                }
+                    accessFrame(silencer);
+                };
             }
         },
         {
@@ -237,12 +249,12 @@ barba.init({
                     container: 'c',
                     autoRender: false,
                     pixelRatio: Math.min(1.5, window.devicePixelRatio)
-                })
+                });
 
-                const toSelf = next.container.querySelector('.menu_page__to_self')
-                const toSelfBack = next.container.querySelector('.to_self_back')
+                const toSelf = next.container.querySelector('.menu_page__to_self');
+                const toSelfBack = next.container.querySelector('.to_self_back');
 
-                const scrollTo = () => {
+                function scrollTo() {
                     gsap.to(window, {
                         scrollTo: {
                             y: '.gl',
@@ -250,25 +262,25 @@ barba.init({
                         },
                         duration: 2,
                         ease: 'power4.inOut'
-                    })
-                }
+                    });
+                };
 
                 if (isMobile()) {
-                    init.dispose()
+                    init.dispose();
 
                     next.container.querySelectorAll('img').forEach(img => {
-                        img.classList.add('mobile_gl')
-                        img.setAttribute('style', 'display: block;')
-                    })
+                        img.classList.add('mobile_gl');
+                        img.setAttribute('style', 'display: block;');
+                    });
 
-                    toSelf.addEventListener('click', () => {
-                        document.body.classList.remove('no_scroll')
-                        scrollTo()
-                    })
-                }
+                    toSelf.addEventListener('pointerdown', () => {
+                        document.body.classList.remove('no_scroll');
+                        scrollTo();
+                    });
+                };
 
                 if (!isMobile()) {
-                    accessFrame(init.render.bind(init))
+                    accessFrame(init.render.bind(init));
     
                     const config = {
                         vertexShader,
@@ -282,50 +294,52 @@ barba.init({
                                 value: 0
                             }
                         }
-                    }
+                    };
     
-                    const planeElements = next.container.getElementsByClassName('gl__plane')
+                    const planeElements = next.container.getElementsByClassName('gl__plane');
     
-                    const vector = []
+                    const vector = [];
     
                     for (let i = 0; i < planeElements.length; i++) {
-                        const plane = new Plane(init, planeElements[i], config)
-                        vector.push(plane)
-                    }
+                        const plane = new Plane(init, planeElements[i], config);
+                        vector.push(plane);
+                    };
     
-                    vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('click', () => {
-                        document.body.classList.remove('no_scroll')
-                        plane.resize()
-                    }, {once: true})).onRender(() => plane.uniforms.time.value++))
+                    vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('pointerdown', () => {
+                        document.body.classList.remove('no_scroll');
+                        plane.resize();
+                    }, {once: true})).onRender(() => plane.uniforms.time.value++));
 
-                    toSelf.addEventListener('click', scrollTo)
-                }
+                    toSelf.addEventListener('pointerdown', scrollTo);
+                };
 
-                toSelfBack.addEventListener('click', () => {
+                toSelfBack.addEventListener('pointerdown', () => {
                     gsap.to(window, {
                         scrollTo: {y: '.menu_page_container'},
                         duration: 1,
                         ease: 'power4.inOut'
-                    })
-                })
+                    });
+                });
             },
-            afterLeave() {if (!isMobile()) accessFrame(silencer)}
+            afterLeave() {
+                if (!isMobile()) accessFrame(silencer);
+            }
         },
         {
             namespace: 'content',
             beforeEnter({next}) {
-                const videoResource = next.container.querySelector('.full_page_video')
-                const imageResource = next.container.querySelector('.mobile_full_page_image')
+                const videoResource = next.container.querySelector('.full_page_video');
+                const imageResource = next.container.querySelector('.mobile_full_page_image');
 
                 if (!isMobile()) {
-                    videoResource.classList.remove('saved')
-                    videoResource.classList.add('load')
-                }
+                    videoResource.classList.remove('saved');
+                    videoResource.classList.add('load');
+                };
 
                 if (isMobile()) {
-                    imageResource.classList.remove('saved')
-                    imageResource.classList.add('load')
-                }
+                    imageResource.classList.remove('saved');
+                    imageResource.classList.add('load');
+                };
 
                 const player = new Plyr(next.container.querySelector('#plyr'), {
                     controls: ['play', 'progress', 'current-time', 'fullscreen'],
@@ -333,17 +347,17 @@ barba.init({
                     invertTime: false,
                     toggleInvert: false,
                     ratio: '16:9'
-                })
+                });
 
-                const play = next.container.querySelectorAll('.page_content__play')
+                const play = next.container.querySelectorAll('.page_content__play');
 
-                const pageTransitionComponents = next.container.querySelectorAll('.ui_page_transition_component')
+                const pageTransitionComponents = next.container.querySelectorAll('.ui_page_transition_component');
 
-                const playerContainer = next.container.querySelector('.plyr_ultra_container')
+                const playerContainer = next.container.querySelector('.plyr_ultra_container');
 
-                const close = next.container.querySelector('.close_player')
+                const close = next.container.querySelector('.close_player');
 
-                const openPlayer = () => {
+                function openPlayer() {
                     return gsap.timeline({onComplete: () => player.play()})
 
                     .to('.to_home', {
@@ -362,10 +376,10 @@ barba.init({
                         ease: 'power1.inOut'
                     }, '<')
 
-                    .set(playerContainer, {display: 'flex'})
-                }
+                    .set(playerContainer, {display: 'flex'});
+                };
 
-                const closePlayer = () => {
+                function closePlayer() {
                     return gsap.timeline({onStart: () => player.stop()})
                     
                     .set(playerContainer, {
@@ -388,8 +402,8 @@ barba.init({
                     .to('.menu--open', {
                         autoAlpha: 1,
                         ease: 'none'
-                    }, '<')
-                }
+                    }, '<');
+                };
 
                 const appear = gsap.timeline({paused: true})
                 
@@ -402,34 +416,31 @@ barba.init({
                     opacity: 0,
                     duration: .2,
                     ease: 'none'
-                })
+                });
 
                 play.forEach(play => {
-                    play.addEventListener('click', openPlayer)
-                    play.addEventListener('touchend', openPlayer)
-                })
+                    play.addEventListener('pointerdown', openPlayer);
+                });
 
-                close.addEventListener('click', closePlayer)
-                close.addEventListener('touchend', closePlayer)
+                close.addEventListener('pointerdown', closePlayer);
 
-                const monitorPlayer = () => {
-                    if (player.paused || player.ended) appear.play()
-                    if (player.playing || player.stopped) appear.reverse()
-                }
+                function monitorPlayer() {
+                    if (player.paused || player.ended) appear.play();
+                    if (player.playing || player.stopped) appear.reverse();
+                };
 
-                close.addEventListener('click', () => appear.reverse())
-                close.addEventListener('touchend', () => appear.reverse())
+                close.addEventListener('pointerdown', () => appear.reverse());
 
-                const heading = next.container.querySelector('.page_content__heading_container')
+                const heading = next.container.querySelector('.page_content__heading_container');
 
-                const mobileContainer = next.container.querySelector('.page_content__mobi_container')
-                const mobileContent = next.container.querySelector('.mobile_content')
+                const mobileContainer = next.container.querySelector('.page_content__mobi_container');
+                const mobileContent = next.container.querySelector('.mobile_content');
 
-                const mobileUIFragments = next.container.querySelectorAll('.mobile_content__ui_fragment')
-                const mobileSocialIcons = next.container.querySelectorAll('.mobile_content__icon')
+                const mobileUIFragments = next.container.querySelectorAll('.mobile_content__ui_fragment');
+                const mobileSocialIcons = next.container.querySelectorAll('.mobile_content__icon');
 
-                const show = next.container.querySelector('.page_content__show_info')
-                const hide = next.container.querySelector('.mobile_content__hide_info')
+                const show = next.container.querySelector('.page_content__show_info');
+                const hide = next.container.querySelector('.mobile_content__hide_info');
 
                 const toggleInfo = gsap.timeline({paused: true})
 
@@ -466,65 +477,78 @@ barba.init({
                     stagger: .2
                 }, '<')
 
-                .set('.mobile_content__sns', {pointerEvents: 'auto'})
+                .set('.mobile_content__sns', {pointerEvents: 'auto'});
 
-                show.addEventListener('click', () => toggleInfo.play())
-                show.addEventListener('touchend', () => toggleInfo.play())
+                show.addEventListener('pointerdown', () => toggleInfo.play());
 
-                hide.addEventListener('click', () => toggleInfo.reverse())
-                hide.addEventListener('touchend', () => toggleInfo.reverse())
+                hide.addEventListener('pointerdown', () => toggleInfo.reverse());
 
-                const monitorWindow = () => {
-                    let width = window.innerWidth
-                    if (width >= 1024) toggleInfo.restart().pause()
-                }
+                function monitorWindow() {
+                    let width = window.innerWidth;
+                    if (width >= 1024) toggleInfo.restart().pause();
+                };
 
-                accessFrame(monitorWindow, monitorPlayer)
+                accessFrame(monitorWindow, monitorPlayer);
             },
-            afterLeave() {accessFrame(silencer)}
+            afterLeave() {
+                accessFrame(silencer);
+            }
         }
     ],
     transitions: [
         {
             once({next}) {
-                if (next.namespace == 'home') homeOnce(next.container)
-                if (next.namespace == 'menu') menuOnce(next.container)
-                if (next.namespace == 'content') contentOnce(next.container)
+                if (next.namespace == 'home') homeOnce(next.container);
+                if (next.namespace == 'menu') menuOnce(next.container);
+                if (next.namespace == 'content') contentOnce(next.container);
             }
         },
         {
             name: 'home-to-menu-or-content',
             from: {namespace: 'home'},
-            async leave({current}) {await homeLeave(current.container)},
+            async leave({current}) {
+                await homeLeave(current.container);
+            },
             enter({next}) {
-                if (next.namespace == 'menu') menuEnter(next.container)
-                if (next.namespace == 'content') contentEnter(next.container)
+                if (next.namespace == 'menu') menuEnter(next.container);
+                if (next.namespace == 'content') contentEnter(next.container);
             }
         },
         {
             name: 'menu-to-home-or-content',
             from: {namespace: 'menu'},
-            async leave({current}) {await menuLeave(current.container)},
+            async leave({current}) {
+                await menuLeave(current.container);
+            },
             enter({next, trigger}) {
-                if (next.namespace == 'home') homeEnter(next.container)
-                if (next.namespace == 'content' && trigger == element) contentEnterFromMenu(next.container)
-                if (next.namespace == 'content' && trigger == 'back') contentEnterFromMenu(next.container)
-                if (next.namespace == 'content' && trigger != element && trigger != 'back') contentEnter(next.container)
+                if (next.namespace == 'home') homeEnter(next.container);
+                if (next.namespace == 'content' && trigger == element) contentEnterFromMenu(next.container);
+                if (next.namespace == 'content' && trigger == 'back') contentEnterFromMenu(next.container);
+                if (next.namespace == 'content' && trigger != element && trigger != 'back') contentEnter(next.container);
             }
         },
         {
             name: 'content-to-home',
             from: {namespace: 'content'},
             to: {namespace: 'home'},
-            async leave({current}) {await contentLeaveToHome(current.container)},
-            enter({next}) {homeEnterFromContent(next.container)}
+            async leave({current}) {
+                await contentLeaveToHome(current.container);
+            },
+            enter({next, trigger}) {
+                if (trigger != 'back') homeEnterFromContent(next.container);
+                if (trigger == 'back') homeEnterFromContent(next.container);
+            }
         },
         {
             name: 'content-to-menu',
             from: {namespace: 'content'},
             to: {namespace: 'menu'},
-            async leave({current}) {await contentLeaveToMenu(current.container)},
-            enter({next}) {menuEnter(next.container)}
+            async leave({current}) {
+                await contentLeaveToMenu(current.container);
+            },
+            enter({next}) {
+                menuEnter(next.container);
+            }
         }
     ]
-})
+});
