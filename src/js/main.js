@@ -190,7 +190,7 @@ barba.init({
                     const scrollIndexNumber = next.container.querySelector('.scroll_index__number');
                     const scrollIndicatorIndex = next.container.querySelector('.scroll_indicator_index');
     
-                    const updateState = () => {
+                    function updateState() {
                         for (let i = 0; i < buffer.length; i++) {
                             const video = buffer[i];
                             const videoStyles = video.getAttribute('style');
@@ -254,7 +254,7 @@ barba.init({
                 const toSelf = next.container.querySelector('.menu_page__to_self');
                 const toSelfBack = next.container.querySelector('.to_self_back');
 
-                const scrollTo = () => {
+                function scrollTo() {
                     gsap.to(window, {
                         scrollTo: {
                             y: '.gl',
@@ -357,7 +357,7 @@ barba.init({
 
                 const close = next.container.querySelector('.close_player');
 
-                const openPlayer = () => {
+                function openPlayer() {
                     return gsap.timeline({onComplete: () => player.play()})
 
                     .to('.to_home', {
@@ -379,7 +379,7 @@ barba.init({
                     .set(playerContainer, {display: 'flex'});
                 };
 
-                const closePlayer = () => {
+                function closePlayer() {
                     return gsap.timeline({onStart: () => player.stop()})
                     
                     .set(playerContainer, {

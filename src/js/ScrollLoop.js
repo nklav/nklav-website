@@ -97,13 +97,13 @@ export default class ScrollLoop extends Loop {
             end: `+=${this._distance}000`,
             pin: scrollLoop,
             onUpdate: self => {
-                const scrollSelf = self.scroll()
+                const scrollSelf = self.scroll();
 
-                if (scrollSelf > self.end - 1) scrollCircle(1, 1)
-                if (scrollSelf < 1 && self.direction < 0) scrollCircle(-1, self.end - 1)
+                if (scrollSelf > self.end - 1) scrollCircle(1, 1);
+                if (scrollSelf < 1 && self.direction < 0) scrollCircle(-1, self.end - 1);
 
-                motion.vars.delta = (iteration + self.progress) * loopedInstance.timeline.duration()
-                motion.invalidate().restart()
+                motion.vars.delta = (iteration + self.progress) * loopedInstance.timeline.duration();
+                motion.invalidate().restart();
             }
         });
         
@@ -129,8 +129,8 @@ export default class ScrollLoop extends Loop {
 
         let timer = null;
 
-        const scrollSnap = e => {
-            if (timer != null) clearTimeout(timer)
+        function scrollSnap(e) {
+            if (timer != null) clearTimeout(timer);
             timer = setTimeout(() => {
                 scrollDelta(motion.vars.delta);
                 if (this._config.onSnap) this._config.onSnap(e);
