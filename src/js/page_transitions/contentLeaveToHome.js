@@ -1,9 +1,9 @@
-const contentLeaveToHome = page => {
-    const video = page.querySelector('video')
+export default function contentLeaveToHome(page) {
+    const video = page.querySelector('video');
 
-    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
+    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component');
 
-    const play = page.querySelectorAll('.page_content__play')
+    const play = page.querySelectorAll('.page_content__play');
 
     return gsap.timeline()
 
@@ -21,7 +21,5 @@ const contentLeaveToHome = page => {
         }
     })
 
-    .set(page, {}, '+=.5')
-}
-
-export default contentLeaveToHome
+    .set(page, {}, '+=.5');
+};

@@ -1,5 +1,5 @@
-const menuLeave = page => {
-    const listItems = page.querySelectorAll('.menu_page__list_item')
+export default function menuLeave(page) {
+    const listItems = page.querySelectorAll('.menu_page__list_item');
 
     return gsap.timeline()
 
@@ -16,7 +16,5 @@ const menuLeave = page => {
         autoAlpha: 0,
         duration: .8,
         ease: 'none'
-    }, 0)
-}
-
-export default menuLeave
+    }, 0);
+};

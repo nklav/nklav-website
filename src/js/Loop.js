@@ -1,34 +1,36 @@
 export default class Loop {
     constructor(nodes, timeline) {
-        this._nodes = gsap.utils.toArray(nodes)
-        this._timeline = timeline
-    }
+        this._nodes = gsap.utils.toArray(nodes);
+        this._timeline = timeline;
+    };
     
     _loop() {
-        const space = 1 / this._nodes.length
-        const overlap = Math.ceil(1 / space)
+        const space = 1 / this._nodes.length;
+        const overlap = Math.ceil(1 / space);
 
-        const start = this._nodes.length * space + .5
-        const end = (this._nodes.length + overlap) * space + .5
+        const start = this._nodes.length * space + .5;
+        const end = (this._nodes.length + overlap) * space + .5;
     
-        const spaceTime = gsap.timeline({paused: true})
+        const spaceTime = gsap.timeline({paused: true});
     
         const loop = gsap.timeline({
             repeat: -1,
             paused: true,
-            onRepeat() {this._time == this._dur && (this._tTime += this._dur - space)}
-        })
+            onRepeat() {
+                this._time == this._dur && (this._tTime += this._dur - space);
+            }
+        });
     
-        const l = this._nodes.length + overlap * 2
+        const l = this._nodes.length + overlap * 2;
     
         for (let i = 0; i < l; i++) {
-            let index = i % this._nodes.length
-            let time = i * space
+            let index = i % this._nodes.length;
+            let time = i * space;
     
-            spaceTime.add(this._timeline(this._nodes[index]), time)
-        }
+            spaceTime.add(this._timeline(this._nodes[index]), time);
+        };
     
-        spaceTime.time(start)
+        spaceTime.time(start);
     
         loop.to(spaceTime, {
             time: end,
@@ -41,13 +43,15 @@ export default class Loop {
             duration: start - (overlap * space + 1),
             ease: 'none',
             immediateRender: false
-        })
+        });
     
         return {
             timeline: loop,
             destroy: () => loop.kill()
-        }
-    }
+        };
+    };
 
-    get _space() {return this._nodes.length}
-}
+    get _space() {
+        return this._nodes.length;
+    };
+};

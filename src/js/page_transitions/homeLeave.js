@@ -1,5 +1,5 @@
-const homeLeave = page => {
-    const pageTitles = page.querySelectorAll('.scroll_layers__page_title a')
+export default function homeLeave(page) {
+    const pageTitles = page.querySelectorAll('.scroll_layers__page_title a');
 
     return gsap.timeline()
 
@@ -25,7 +25,5 @@ const homeLeave = page => {
         autoAlpha: 0,
         duration: .8,
         ease: 'none'
-    }, '>-.5')
-}
-
-export default homeLeave
+    }, '>-.5');
+};

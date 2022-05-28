@@ -1,9 +1,9 @@
-const contentEnterFromMenu = page => {
-    const video = page.querySelector('video')
+export default function contentEnterFromMenu(page) {
+    const video = page.querySelector('video');
 
-    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component')
+    const pageTransitionComponents = page.querySelectorAll('.ui_page_transition_component');
 
-    const play = page.querySelectorAll('.page_content__play')
+    const play = page.querySelectorAll('.page_content__play');
 
     return gsap.timeline({
         delay: .5,
@@ -33,7 +33,5 @@ const contentEnterFromMenu = page => {
 
     .set(['.menu--open', '.page_content__sns', play], {pointerEvents: 'auto'})
 
-    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'})
-}
-
-export default contentEnterFromMenu
+    .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'});
+};
