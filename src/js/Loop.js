@@ -2,7 +2,7 @@ export default class Loop {
     constructor(nodes, timeline) {
         this._nodes = gsap.utils.toArray(nodes);
         this._timeline = timeline;
-    };
+    }
     
     _loop() {
         const space = 1 / this._nodes.length;
@@ -28,7 +28,7 @@ export default class Loop {
             let time = i * space;
     
             spaceTime.add(this._timeline(this._nodes[index]), time);
-        };
+        }
     
         spaceTime.time(start);
     
@@ -49,9 +49,9 @@ export default class Loop {
             timeline: loop,
             destroy: () => loop.kill()
         };
-    };
+    }
 
     get _space() {
         return this._nodes.length;
-    };
-};
+    }
+}

@@ -25,4 +25,4 @@ export default function menuEnter(page) {
     }, '<')
 
     .set(['.menu--close', listItems], {pointerEvents: 'auto'});
-};
+}

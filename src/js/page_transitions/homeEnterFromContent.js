@@ -23,4 +23,4 @@ export default function homeEnterFromContent(page) {
     .set(['.to_home', '.menu--open', pageTitles], {pointerEvents: 'auto'})
 
     .set('.menu--open__ui_fragment', {transformOrigin: 'left'});
-};
+}

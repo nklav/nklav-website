@@ -34,4 +34,4 @@ export default function contentLeaveToMenu(page) {
             video.currentTime = 0
         }
     });
-};
+}

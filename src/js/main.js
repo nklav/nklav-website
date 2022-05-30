@@ -92,21 +92,21 @@ const fragmentShader = `
 
 const element = document.querySelector('.menu--close');
 
-const isMobile = () => {
+function isMobile() {
     if (/Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         return true
     } else {
         return false
-    };
-};
+    }
+}
 
-const isWindows = () => {
+function isWindows() {
     if (/Windows|Linux|X11/i.test(navigator.userAgent)) {
         return true
     } else {
         return false
-    };
-};
+    }
+}
 
 if (history.scrollRestoration) history.scrollRestoration = 'manual';
 barba.hooks.afterLeave(() => window.scrollTo(0, 0));
@@ -135,18 +135,20 @@ barba.init({
                     next.container.querySelector('.scroll_index')
                 ];
 
-                const manageAttributes = (selector, selector2, selector3, array, n, animation) => {
+                function manageAttributes(selector, selector2, selector3, array, n, animation) {
                     next.container.querySelector(selector).classList.add(selector2);
                     array.forEach(item => item.classList.add(selector3));
                     ScrollTrigger.create({animation, scrub: n, scroller: next.container.querySelector(selector)});
-                };
+                }
 
-                if (isMobile()) manageAttributes('.mobile', 'isMobile', '__isMobile', elements, .5, animation);
+                if (isMobile()) {
+                    manageAttributes('.mobile', 'isMobile', '__isMobile', elements, .5, animation);
+                } 
 
                 if (!isMobile() && isWindows()) {
                     manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation);
                     elements[4].textContent = '1-6';
-                };
+                }
 
                 if (!isMobile() && !isWindows()) {
                     const pageContent = next.container.querySelectorAll('.scroll_layers__page_content');
@@ -157,12 +159,12 @@ barba.init({
                     const keyDown = () => {
                         scrollHint.textContent = 'down';
                         setTimeout(() => scrollHint.textContent = 'scroll', 1000);
-                    };
+                    }
     
                     const keyUp = () => {
                         scrollHint.textContent = 'up';
                         setTimeout(() => scrollHint.textContent = 'scroll', 1000);
-                    };
+                    }
                     
                     const scrollLoop = new ScrollLoop({
                         elements: [pageContent, pageTitles],
@@ -205,16 +207,16 @@ barba.init({
                             }
     
                             if (!videoStyles.includes('z-index: -100') && !video.paused) video.pause();
-                        };
-                    };
+                        }
+                    }
     
                     function state() {
                         const style = next.container.getAttribute('style');
                         if (style.includes('opacity: 1')) updateState();
-                    };
+                    }
     
                     accessFrame(state);
-                };
+                }
             },
             afterLeave({current}) {
                 if (!isMobile() && !isWindows()) {
@@ -239,7 +241,7 @@ barba.init({
                     });
     
                     accessFrame(silencer);
-                };
+                }
             }
         },
         {
@@ -263,7 +265,7 @@ barba.init({
                         duration: 2,
                         ease: 'power4.inOut'
                     });
-                };
+                }
 
                 if (isMobile()) {
                     init.dispose();
@@ -277,7 +279,7 @@ barba.init({
                         document.body.classList.remove('no_scroll');
                         scrollTo();
                     });
-                };
+                }
 
                 if (!isMobile()) {
                     accessFrame(init.render.bind(init));
@@ -303,7 +305,7 @@ barba.init({
                     for (let i = 0; i < planeElements.length; i++) {
                         const plane = new Plane(init, planeElements[i], config);
                         vector.push(plane);
-                    };
+                    }
     
                     vector.forEach(plane => plane.onReady(() => toSelf.addEventListener('pointerdown', () => {
                         document.body.classList.remove('no_scroll');
@@ -311,7 +313,7 @@ barba.init({
                     }, {once: true})).onRender(() => plane.uniforms.time.value++));
 
                     toSelf.addEventListener('pointerdown', scrollTo);
-                };
+                }
 
                 toSelfBack.addEventListener('pointerdown', () => {
                     gsap.to(window, {
@@ -334,12 +336,12 @@ barba.init({
                 if (!isMobile()) {
                     videoResource.classList.remove('saved');
                     videoResource.classList.add('load');
-                };
+                }
 
                 if (isMobile()) {
                     imageResource.classList.remove('saved');
                     imageResource.classList.add('load');
-                };
+                }
 
                 const player = new Plyr(next.container.querySelector('#plyr'), {
                     controls: ['play', 'progress', 'current-time', 'fullscreen'],
@@ -377,7 +379,7 @@ barba.init({
                     }, '<')
 
                     .set(playerContainer, {display: 'flex'});
-                };
+                }
 
                 async function closePlayer() {
                     return gsap.timeline({onStart: () => player.stop()})
@@ -403,7 +405,7 @@ barba.init({
                         autoAlpha: 1,
                         ease: 'none'
                     }, '<');
-                };
+                }
 
                 const appear = gsap.timeline({paused: true})
                 
@@ -426,10 +428,10 @@ barba.init({
                     closePlayer().then(() => appear.reverse());
                 });
 
-                const monitorPlayer = () => {
+                function monitorPlayer() {
                     if (player.paused || player.ended) appear.play();
                     if (player.playing || player.stopped) appear.reverse();
-                };
+                }
 
                 const heading = next.container.querySelector('.page_content__heading_container');
 
@@ -483,10 +485,10 @@ barba.init({
 
                 hide.addEventListener('pointerdown', () => toggleInfo.reverse());
 
-                const monitorWindow = () => {
+                function monitorWindow() {
                     let width = window.innerWidth;
                     if (width >= 1024) toggleInfo.restart().pause();
-                };
+                }
 
                 accessFrame(monitorWindow, monitorPlayer);
             },

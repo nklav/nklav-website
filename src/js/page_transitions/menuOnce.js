@@ -30,4 +30,4 @@ export default function menuOnce(page) {
     }, '<')
 
     .set('.menu_page__list_item', {pointerEvents: 'auto'});
-};
+}

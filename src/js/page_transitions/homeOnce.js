@@ -36,4 +36,4 @@ export default function homeOnce(page) {
     }, '<')
 
     .set(['.menu--open', '.scroll_layers__page_title a'], {pointerEvents: 'auto'});
-};
+}

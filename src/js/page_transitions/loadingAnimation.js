@@ -35,4 +35,4 @@ export default function loadingAnimation() {
     })
 
     .set('.loader', {display: 'none'});
-};
+}

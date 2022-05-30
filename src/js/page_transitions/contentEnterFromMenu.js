@@ -7,7 +7,9 @@ export default function contentEnterFromMenu(page) {
 
     return gsap.timeline({
         delay: .5,
-        onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}
+        onStart: () => {
+            if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll');
+        }
     })
 
     .set(['.to_home', '.menu--open'], {display: 'block'})
@@ -34,4 +36,4 @@ export default function contentEnterFromMenu(page) {
     .set(['.menu--open', '.page_content__sns', play], {pointerEvents: 'auto'})
 
     .set(play, {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'});
-};
+}

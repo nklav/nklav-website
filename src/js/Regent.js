@@ -10,9 +10,9 @@ export default class Regent {
             document[`accessMethod_${i}`] = this._call[i];
 
             document.addEventListener(document[`accessProp_${i}`], document[`accessMethod_${i}`]);
-        };
-    };
-};
+        }
+    }
+}
 
 export function accessFrame(call, remain) {
     if (document.accessFrame) gsap.ticker.remove(document.accessFrame);
@@ -22,8 +22,8 @@ export function accessFrame(call, remain) {
     gsap.ticker.add(document.accessFrame);
 
     if (remain) gsap.ticker.add(remain);
-};
+}
 
 export function silencer() {
-    return
-};
+    return;
+}

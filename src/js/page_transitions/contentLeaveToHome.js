@@ -22,4 +22,4 @@ export default function contentLeaveToHome(page) {
     })
 
     .set(page, {}, '+=.5');
-};
+}

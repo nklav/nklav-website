@@ -26,4 +26,4 @@ export default function homeLeave(page) {
         duration: .8,
         ease: 'none'
     }, '>-.5');
-};
+}

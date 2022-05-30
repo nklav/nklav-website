@@ -53,7 +53,7 @@ export default class ScrollLoop extends Loop {
             .fromTo(node, {...across.from, ...this._presets.across.from}, {...across.to, ...this._presets.across.to}, 0);
 
             this._timelines.push(timeline);
-        };
+        }
 
         this._instances = [];
 
@@ -62,15 +62,15 @@ export default class ScrollLoop extends Loop {
             const timeline = this._timelines[i];
             
             this._instances.push(new Loop(nodes, timeline));
-        };
+        }
         
         this._loopedInstances = [];
 
         for (let i = 0; i < this._instances.length; i++) {
             const instance = this._instances[i]._loop();
             this._loopedInstances.push(instance);
-        };
-    };
+        }
+    }
 
     scroll() {
         const scrollLoop = document.querySelector('[data-scroll-loop]');
@@ -113,7 +113,7 @@ export default class ScrollLoop extends Loop {
             iteration += iterationDelta;
             scrollbar.scroll(scrollPoint);
             scrollbar.update();
-        };
+        }
 
         const scrollDelta = delta => {
             const snap = gsap.utils.snap(1 / instance._space);
@@ -125,17 +125,17 @@ export default class ScrollLoop extends Loop {
             if (progress >= 1 || progress < 0) scrollCircle(Math.floor(progress), m);
 
             scrollbar.scroll(m);
-        };
+        }
 
         let timer = null;
 
-        function scrollSnap(e) {
+        const scrollSnap = e => {
             if (timer != null) clearTimeout(timer);
             timer = setTimeout(() => {
                 scrollDelta(motion.vars.delta);
                 if (this._config.onSnap) this._config.onSnap(e);
             }, 200);
-        };
+        }
 
         const keyScroll = e => {
             const keyCodes = ['Space', 'ArrowUp', 'ArrowDown'];
@@ -145,13 +145,13 @@ export default class ScrollLoop extends Loop {
             if (e.code == 'ArrowDown') {
                 scrollDelta(motion.vars.delta + 1 / instance._space);
                 if (this._config.onKey.down) this._config.onKey.down(e);
-            };
+            }
 
             if (e.code == 'ArrowUp') {
                 scrollDelta(motion.vars.delta - 1 / instance._space);
                 if (this._config.onKey.up) this._config.onKey.up(e);
-            };
-        };
+            }
+        }
 
         if (this._scrollSnapping && this._keyScrolling) new Regent(['scroll', 'keydown'], [scrollSnap, keyScroll]);
         if (this._scrollSnapping && !this._keyScrolling) new Regent(['scroll'], [scrollSnap]);
@@ -169,7 +169,7 @@ export default class ScrollLoop extends Loop {
             animation,
             scrub: value
         });
-    };
+    }
 
     selfDestruct(overwrite) {
         const instances = ScrollTrigger.getAll();
@@ -183,8 +183,10 @@ export default class ScrollLoop extends Loop {
             if (this._scrollSnapping && this._keyScrolling) new Regent(['scroll', 'keydown'], [silencer, silencer]);
             if (this._scrollSnapping && !this._keyScrolling) new Regent(['scroll'], [silencer]);
             if (!this._scrollSnapping && this._keyScrolling) new Regent(['keydown'], [silencer]);
-        };
-    };
+        }
+    }
 
-    refresh() {ScrollTrigger.refresh(true);};
-};
+    refresh() {
+        ScrollTrigger.refresh(true);
+    }
+}

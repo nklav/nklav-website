@@ -71,4 +71,4 @@ export default function contentOnce(page) {
     .set(['.page_content__sns', '.page_content__play'], {pointerEvents: 'auto'})
 
     .set('.page_content__play', {transition: 'transform .5s cubic-bezier(.2, 0, 0, 2)'});
-};
+}

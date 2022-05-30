@@ -17,4 +17,4 @@ export default function menuLeave(page) {
         duration: .8,
         ease: 'none'
     }, 0);
-};
+}

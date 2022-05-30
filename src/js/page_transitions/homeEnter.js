@@ -12,7 +12,9 @@ export default function homeEnter(page) {
 
     return gsap.timeline({
         delay: .5,
-        onStart: () => {if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll')}
+        onStart: () => {
+            if (document.body.classList.contains('no_scroll')) document.body.classList.remove('no_scroll');
+        }
     })
 
     .set(['.to_home', '.menu--open'], {display: 'block'})
@@ -38,4 +40,4 @@ export default function homeEnter(page) {
     }, '<')
 
     .set(['.menu--open', pageTitles], {pointerEvents: 'auto'});
-};
+}
