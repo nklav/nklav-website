@@ -328,12 +328,13 @@ br {user-select: none;}
 
 .os__in {position: relative;}
 
-.mobile__thumb_img_1 {background: no-repeat center/contain url('../assets/images/mobile/reel-2021.jpg');}
-.mobile__thumb_img_2 {background: no-repeat center/contain url('../assets/images/mobile/mavic.jpg');}
-.mobile__thumb_img_3 {background: no-repeat center/contain url('../assets/images/mobile/sora.jpg');}
-.mobile__thumb_img_4 {background: no-repeat center/contain url('../assets/images/mobile/ocean.jpg');}
-.mobile__thumb_img_5 {background: no-repeat center/contain url('../assets/images/mobile/nature.jpg');}
-.mobile__thumb_img_6 {background: no-repeat center/contain url('../assets/images/mobile/g-airspace.jpg');}
+.mobile__thumb_img_1 {background: no-repeat center/contain url('../assets/images/mobile/the-country.jpg');}
+.mobile__thumb_img_2 {background: no-repeat center/contain url('../assets/images/mobile/reel-2021.jpg');}
+.mobile__thumb_img_3 {background: no-repeat center/contain url('../assets/images/mobile/mavic.jpg');}
+.mobile__thumb_img_4 {background: no-repeat center/contain url('../assets/images/mobile/sora.jpg');}
+.mobile__thumb_img_5 {background: no-repeat center/contain url('../assets/images/mobile/ocean.jpg');}
+.mobile__thumb_img_6 {background: no-repeat center/contain url('../assets/images/mobile/nature.jpg');}
+.mobile__thumb_img_7 {background: no-repeat center/contain url('../assets/images/mobile/g-airspace.jpg');}
 
 .os__page_content, .os__page_title {position: absolute;}
 

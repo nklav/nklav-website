@@ -147,7 +147,7 @@ barba.init({
 
                 if (!isMobile() && isWindows()) {
                     manageAttributes('.os', 'isWindows', '__isWindows', elements, .5, animation);
-                    elements[4].textContent = '1-6';
+                    elements[4].textContent = '1-7';
                 }
 
                 if (!isMobile() && !isWindows()) {
